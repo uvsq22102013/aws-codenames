@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./codenames.db"
+}
+
+enum StatutPartie {
+  EN_ATTENTE
+  EN_COURS
+  TERMINEE
+}
+
+enum TypeCarte {
+  ROUGE
+  BLEU
+  NEUTRE
+  ASSASSIN
+}
+
+enum Role {
+  MAITRE_ESPION
+  AGENT
+}
+
+enum TypeAction {
+  INDICE
+  SELECTION
+}
+
+model Utilisateur {
+  id              Int      @id @default(autoincrement())
+  pseudo          String   @unique
+  email           String   @unique
+  mdp_hash        String
+  dateInscription DateTime @default(now())
+
+  membres  MembreEquipe[]
+  messages Message[]
+  parties  Partie[]       @relation("UtilisateurParties") 
+  actions  ActionJeu[] 
+}
+
+model Partie {
+  id           Int          @id @default(autoincrement())
+  statut       StatutPartie @default(EN_ATTENTE)
+  createurId   Int
+  dateCreation DateTime     @default(now())
+
+  createur Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")
+  messages Message[]
+  cartes   Carte[]
+  actions  ActionJeu[]
+  membres  MembreEquipe[]
+}
+
+model MembreEquipe {
+  utilisateurId Int
+  partieId      Int
+  equipe        String
+  role          Role   @default(AGENT)
+
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+
+  @@id([utilisateurId, partieId])
+}
+
+model Mot {
+  id     Int    @id @default(autoincrement())
+  mot    String
+  langue String @default("fr")
+
+  cartes Carte[]
+
+  @@unique([mot, langue])
+}
+
+model Carte {
+  id       Int       @id @default(autoincrement())
+  partieId Int
+  motId    Int
+  type     TypeCarte
+  revelee  Boolean   @default(false)
+
+  partie  Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  mot     Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
+  actions ActionJeu[] @relation("CarteActions") 
+}
+
+
+
+
+model ActionJeu {
+  id            Int        @id @default(autoincrement())
+  partieId      Int
+  utilisateurId Int
+  typeAction    TypeAction
+  motDonne      String?
+  nombreMots    Int?
+  carteId       Int?
+  resultat      String?
+  dateAction    DateTime   @default(now())
+
+  partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  carte       Carte?      @relation(fields: [carteId], references: [id], onDelete: Cascade, name: "CarteActions")
+}
+
+model Message {
+  id            Int      @id @default(autoincrement())
+  partieId      Int
+  utilisateurId Int
+  contenu       String
+  dateMessage   DateTime @default(now())
+
+  partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+}
