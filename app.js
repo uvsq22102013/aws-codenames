@@ -1,13 +1,30 @@
-const express = require('express')
-const path = require('path');
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
 
-const app = express()
-const port = 3000
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 
-app.use(express.static(path.join(__dirname, 'public')));
+let compteur = 0;
 
-app.get('/', (req, res) => {
-  const filePath = path.join(__dirname, 'index.html');
-  res.sendFile(filePath);
+app.use(express.static("public"));
+
+io.on("connection", (socket) => {
+    console.log("Un joueur s'est connecté !");
+
+    socket.emit("majCompteur", compteur);
+
+    socket.on("incrementer", () => {
+        compteur++; 
+        io.emit("majCompteur", compteur);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Un joueur s'est déconnecté.");
+    });
 });
-app.listen(port, () => console.log('Notre application est démarrée'))
+
+server.listen(3000, () => {
+    console.log("Serveur démarré sur http://localhost:3000");
+});
