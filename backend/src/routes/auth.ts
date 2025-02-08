@@ -1,24 +1,30 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import prisma from "../prismaClient";
 
 const router = express.Router();
-const SECRET_KEY = process.env.JWT_SECRET || "super_secret_key";
 
 // Inscription
-router.post("/register", async (req, res) => {
+router.post("/register", async (req: Request, res: Response): Promise<void> => {
     const { pseudo, email, mdp } = req.body;
-    const hashedPassword = await bcrypt.hash(mdp, 10);
+
+    if (!pseudo || !email || !mdp) {
+        res.status(400).json({ error: "Tous les champs sont requis." });
+        return;
+    }
 
     try {
+        const hashedPassword = await bcrypt.hash(mdp, 10);
         const user = await prisma.utilisateur.create({
             data: { pseudo, email, mdp_hash: hashedPassword },
         });
-        res.json({ message: "Utilisateur inscrit", user });
+        res.json({ message: "Utilisateur inscrit avec succès", user });
     } catch (error) {
-        res.status(500).json({ error: "Erreur d'inscription" });
+        console.error("Erreur Prisma :", error);
+        res.status(500).json({ error: "Erreur d'inscription backend" });
     }
 });
 
-export default router; 
+
+
+export default router;
