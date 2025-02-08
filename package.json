@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/uvsq22102013/aws-codenames#readme",
   "dependencies": {
+    "aws-codenames": "file:",
     "express": "^4.21.2"
   },
   "devDependencies": {
