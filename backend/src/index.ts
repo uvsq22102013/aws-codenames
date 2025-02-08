@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/words", wordsRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/game", gameRoutes);
 
 const PORT = 3000;
