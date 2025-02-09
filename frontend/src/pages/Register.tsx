@@ -6,19 +6,55 @@ export default function Register() {
   const [pseudo, setPseudo] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [error, setError] = useState(""); // Stocke l'erreur à afficher
   const navigate = useNavigate();
 
+  // Fonction de validation du mot de passe
+  const validatePassword = (password: string) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    return regex.test(password);
+  };
+  // Fonction de validation d'email
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const handleRegister = async () => {
+    setError(""); // Reset de l'erreur
+
+    // Vérification des champs avant envoi
+    if (!pseudo || !email || !password || !password2) {
+      setError("Tous les champs sont requis.");
+      return;
+    }
+    //verifie si le mail est valide
+    if (!validateEmail(email)) {
+      setError("L'email n'est pas valide.");
+      return;
+    }
+    //verifie que les mdp sont identiques
+    if (password !== password2) {
+      setError("Les mots de passe doivent être identiques.");
+      return;
+    }
+    // verifie si le mdp est valide
+    if (!validatePassword(password)) {
+      setError("Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
+      return;
+    }
     try {
       await axios.post("http://localhost:3000/api/auth/register", {
         pseudo,
         email,
         mdp: password,
+        mdp2: password2,
       });
       alert("Inscription réussie !");
       navigate("/login");
-    } catch (error) {
-      alert("Erreur d'inscription front.");
+    } catch (error: any) {
+      setError(error.response?.data?.error || "Erreur d'inscription front.");
     }
   };
 
@@ -26,10 +62,12 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-200">
       <div className="p-6 bg-white shadow-lg rounded">
         <h2 className="text-2xl font-bold">Inscription</h2>
+        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
         <input type="text" placeholder="Pseudo" className="border p-2 mt-2 w-full" onChange={(e) => setPseudo(e.target.value)} />
         <input type="email" placeholder="Email" className="border p-2 mt-2 w-full" onChange={(e) => setEmail(e.target.value)} />
         <input type="password" placeholder="Mot de passe" className="border p-2 mt-2 w-full" onChange={(e) => setPassword(e.target.value)} />
-        <button onClick={handleRegister} className="bg-green-500 text-white p-2 mt-4 w-full">S'inscrire</button>
+        <input type="password" placeholder="Confirmez le mot de passe" className="border p-2 mt-2 w-full" onChange={(e) => setPassword2(e.target.value)} />
+        <button onClick={handleRegister} className="bg-green-500 text-white p-2 mt-4 w-full disabled:bg-gray-400" disabled={!pseudo || !email || !password || !password2}>S'inscrire</button>
       </div>
     </div>
   );
