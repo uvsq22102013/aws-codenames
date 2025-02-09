@@ -4,7 +4,7 @@ import prisma from "../prismaClient";
 const router = express.Router();
 
 // Route pour créer une partie
-router.post("/create", async (req, res) => {
+router.post("/game", async (req, res) => {
     const { createurId } = req.body;
 
     try {
