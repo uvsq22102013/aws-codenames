@@ -6,6 +6,7 @@ export default function Login() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Stocke l'erreur à afficher
+  const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -31,7 +32,10 @@ export default function Login() {
         <h2 className="text-2xl font-bold">Connexion</h2>
         {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
         <input type="text" placeholder="Pseudo ou Email" className="border p-2 mt-2 w-full" onChange={(e) => setLogin(e.target.value)} />
-        <input type="password" placeholder="Mot de passe" className="border p-2 mt-2 w-full" onChange={(e) => setPassword(e.target.value)} />
+        <div className="relative mt-2">
+        <input type={showPassword ? "text" : "password"} placeholder="Mot de passe" className="border p-2 w-full pr-10" onChange={(e) => setPassword(e.target.value)} />
+        <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "🙈" : "👁️"}</button>
+        </div>
         <button onClick={handleLogin} className="bg-blue-500 text-white p-2 mt-4 w-full disabled:bg-gray-400" disabled={!login || !password }>Se Connecter</button>
       </div>
     </div>

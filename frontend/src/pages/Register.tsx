@@ -8,6 +8,8 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [error, setError] = useState(""); // Stocke l'erreur à afficher
+  const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
+  const [showPassword2, setShowPassword2] = useState(false); // État pour afficher/masquer la confirmation du mot de passe
   const navigate = useNavigate();
 
   // Fonction de validation du mot de passe
@@ -65,8 +67,14 @@ export default function Register() {
         {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
         <input type="text" placeholder="Pseudo" className="border p-2 mt-2 w-full" onChange={(e) => setPseudo(e.target.value)} />
         <input type="email" placeholder="Email" className="border p-2 mt-2 w-full" onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Mot de passe" className="border p-2 mt-2 w-full" onChange={(e) => setPassword(e.target.value)} />
-        <input type="password" placeholder="Confirmez le mot de passe" className="border p-2 mt-2 w-full" onChange={(e) => setPassword2(e.target.value)} />
+        <div className="relative mt-2">
+          <input type={showPassword ? "text" : "password"} placeholder="Mot de passe" className="border p-2 w-full pr-10" onChange={(e) => setPassword(e.target.value)} />
+          <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "🙈" : "👁️"}</button>
+        </div>
+        <div className="relative mt-2">
+          <input type={showPassword2 ? "text" : "password"} placeholder="Confirmez le mot de passe" className="border p-2 w-full pr-10" onChange={(e) => setPassword2(e.target.value)} />
+          <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword2(!showPassword2)}>{showPassword2 ? "🙈" : "👁️"}</button>
+        </div>
         <button onClick={handleRegister} className="bg-green-500 text-white p-2 mt-4 w-full disabled:bg-gray-400" disabled={!pseudo || !email || !password || !password2}>S'inscrire</button>
       </div>
     </div>
