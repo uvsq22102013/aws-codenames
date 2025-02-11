@@ -3,49 +3,50 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Register() {
-  const [pseudo, setPseudo] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
+  const [pseudo, setPseudo] = useState("");//Pseudo
+  const [email, setEmail] = useState("");//Email
+  const [password, setPassword] = useState("");//Mot de passe
+  const [password2, setPassword2] = useState("");//Confirmer le mot de passe
   const [error, setError] = useState(""); // Stocke l'erreur à afficher
   const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
   const [showPassword2, setShowPassword2] = useState(false); // État pour afficher/masquer la confirmation du mot de passe
-  const navigate = useNavigate();
+  const navigate = useNavigate();//Pour aller vers la page suivante
 
-  // Fonction de validation du mot de passe
+  // Fonction de validation du mot de passe 
   const validatePassword = (password: string) => {
+    //Expression regulière pour le mot de passe 
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    //Teste la vlidité du mot de passe   
     return regex.test(password);
   };
-  // Fonction de validation d'email
+
+  // Fonction de validation d'email  
   const validateEmail = (email: string) => {
+    //Expression regulière pour le mail   
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //Teste la validité de l'email  
     return regex.test(email);
   };
-
+  
+  //Gerer l'inscription
   const handleRegister = async () => {
-    setError(""); // Reset de l'erreur
-
-    // Vérification des champs avant envoi
-    if (!pseudo || !email || !password || !password2) {
-      setError("Tous les champs sont requis.");
-      return;
-    }
-    //verifie si le mail est valide
+    setError(""); // Reset de l'erreur 
+    //verifie si le mail est valide  
     if (!validateEmail(email)) {
       setError("L'email n'est pas valide.");
       return;
     }
-    //verifie que les mdp sont identiques
+    //verifie que les mdp sont identiques  
     if (password !== password2) {
       setError("Les mots de passe doivent être identiques.");
       return;
     }
-    // verifie si le mdp est valide
+    // verifie si le mdp est valide 
     if (!validatePassword(password)) {
       setError("Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
       return;
     }
+    //Essaye de faire un POST sur le back pour gerer une inscription 
     try {
       await axios.post("http://localhost:3000/api/auth/register", {
         pseudo,
@@ -54,12 +55,14 @@ export default function Register() {
         mdp2: password2,
       });
       alert("Inscription réussie !");
+      //Renvoi vers la page de connexion 
       navigate("/login");
+      //Renvoi une erreur si le POST echoue 
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur d'inscription front.");
     }
   };
-
+  //HTML utilisant Tailwind css de la page de Inscription
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200">
       <div className="p-6 bg-white shadow-lg rounded">
