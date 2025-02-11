@@ -8,6 +8,34 @@ export default function HomePage() {
   const [roomCode, setRoomCode] = useState("");
     const navigate = useNavigate();
 
+    //langue du jeu
+    const [language, setLanguage] = useState<"fr" | "en">("fr"); 
+
+
+    //dictionnaire des langues (anglais ou francais)
+    const texts: { [key in "fr" | "en"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; } } = {
+      fr: {
+        title: "CodeNames",
+        createGame: "Créer une nouvelle partie",
+        joinGame: "Intégrer une partie existante",
+        enterRoomCode: "Numéro de la partie",
+        createdSuccess: "Nouvelle partie créée avec succès ! ID: ",
+        joinedSuccess: "Vous avez rejoint la partie ",
+        errorCreate: "Erreur lors de la création de la partie",
+        errorJoin: "Erreur lors de la connexion à la partie",
+      },
+      en: {
+        title: "CodeNames",
+        createGame: "Create a new game",
+        joinGame: "Join an existing game",
+        enterRoomCode: "Game Room Number",
+        createdSuccess: "New game created successfully! ID: ",
+        joinedSuccess: "You have joined the game ",
+        errorCreate: "Error creating the game",
+        errorJoin: "Error joining the game",
+      },
+    };
+
   //fonction pour créer une nouvelle partie
 
   const handleCreateRoom = async () => {
@@ -103,32 +131,37 @@ export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
 
-      <h1 className="text-3xl font-bold mb-6">CodeNames</h1>
 
-      <button 
+<button
+        className="absolute top-4 right-4 w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition"
+        onClick={() => setLanguage(language === "fr" ? "en" : "fr")}
+      >
+        {language === "fr" ? "EN" : "FR"}
+      </button>
+
+      <h1 className="text-3xl font-bold mb-6">{texts[language].title}</h1>
+
+      <button
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-4"
         onClick={handleCreateRoom}
       >
-        Creer une nouvelle partie 
+        {texts[language].createGame}
       </button>
 
-
       <div className="flex flex-col items-center bg-gray-800 p-4 rounded-lg shadow-md">
-
-        <input 
-          type="text" 
-          placeholder="Numéro de la partie" 
+        <input
+          type="text"
+          placeholder={texts[language].enterRoomCode}
           className="px-3 py-2 border border-gray-600 rounded mb-2 text-black"
           value={roomCode}
           onChange={(e) => setRoomCode(e.target.value)}
         />
 
-
-        <button 
+        <button
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
           onClick={handleJoinRoom}
         >
-          Intégrer une partie existante
+          {texts[language].joinGame}
         </button>
       </div>
     </div>
