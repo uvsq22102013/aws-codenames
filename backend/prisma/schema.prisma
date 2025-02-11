@@ -37,10 +37,7 @@ model Utilisateur {
   mdp_hash        String
   dateInscription DateTime @default(now())
 
-  membres  MembreEquipe[]
-  messages Message[]
   parties  Partie[]       @relation("UtilisateurParties") 
-  actions  ActionJeu[] 
 }
 
 model Partie {

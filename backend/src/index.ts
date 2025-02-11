@@ -10,7 +10,7 @@ app.use(express.json());
 
 app.use("/words", wordsRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/game", gameRoutes);
+app.use("/api/game", gameRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {
