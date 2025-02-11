@@ -37,7 +37,11 @@ model Utilisateur {
   mdp_hash        String
   dateInscription DateTime @default(now())
 
-  parties  Partie[]       @relation("UtilisateurParties") 
+  // Relation uniquement avec Partie
+  parties      Partie[]       @relation("UtilisateurParties")
+  MembreEquipe MembreEquipe[]
+  ActionJeu    ActionJeu[]
+  Message      Message[]
 }
 
 model Partie {
@@ -84,11 +88,8 @@ model Carte {
 
   partie  Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
   mot     Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
-  actions ActionJeu[] @relation("CarteActions") 
+  actions ActionJeu[] @relation("CarteActions")
 }
-
-
-
 
 model ActionJeu {
   id            Int        @id @default(autoincrement())

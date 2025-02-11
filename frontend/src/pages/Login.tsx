@@ -12,6 +12,7 @@ export default function Login() {
   //Gere la connexion
   const handleLogin = async () => {
     setError(""); // Reset de l'erreur
+
     //Essaye de faire un POST sur back pour gerer la connexion 
     try {
       const response = await axios.post("http://localhost:3000/api/auth/login", {
@@ -23,12 +24,14 @@ export default function Login() {
       localStorage.setItem("token", response.data.token);
       alert("Connexion réussie !");
       //Renvoi vers la page game
-      navigate("/game");
+      navigate("/join");
       //Si le POST echoue, renvoi une erreur
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur de connexion front.");
     }
   };
+
+
   //HTML utilisant Tailwind css de la page de connexion
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200">
