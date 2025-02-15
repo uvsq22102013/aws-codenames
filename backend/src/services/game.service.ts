@@ -99,3 +99,17 @@ export async function finDeviner(payload:{partieId : number,utilisateurId:number
         },
     });
 }
+
+
+
+export async function changerRole(payload:{partieId : number,utilisateurId:number, equipe: Equipe, role : Role}) {
+    await prisma.MembreEquipe.update({
+        where : {utilisateurId:payload.utilisateurId},
+        data: {
+            role : payload.role,
+            equipe : payload.equipe,
+            
+        },
+    });
+    
+}

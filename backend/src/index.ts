@@ -1,18 +1,36 @@
+
 import express from "express";
+import http from "http"; // Ajout pour le serveur HTTP
+import { Server } from "socket.io"; // Ajout pour Socket.io
 import cors from "cors";
+
 import wordsRoutes from "./routes/words";
 import authRoutes from "./routes/auth";
-import gameRoutes from "./routes/game";
+import joinRoutes from "./routes/join";
+import gameRoutes from "./routes/game.routes"; // Ta nouvelle route partie
+import gameSocket from "./sockets/game.socket"; // Gestion socket partie
 
 const app = express();
+const server = http.createServer(app); // Permet de brancher socket.io
+const io = new Server(server, {
+  cors: { origin: "*" },
+});
+
 app.use(cors());
 app.use(express.json());
 
 app.use("/words", wordsRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/game", gameRoutes);
+app.use("/api/join", joinRoutes);
+app.use("/api/parties", gameRoutes); // Ajout de la route partie
+
+// Gestion des événements Socket.io (Temps réel)
+io.on("connection", (socket) => {
+  console.log(`Nouvelle connexion : ${socket.id}`);
+  gameSocket(io, socket);
+});
 
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Serveur en écoute sur http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Serveur en écoute sur http://localhost:${PORT}`);
 });

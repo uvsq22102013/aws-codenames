@@ -28,6 +28,13 @@ enum Role {
 enum TypeAction {
   INDICE
   SELECTION
+  PASSER
+  VALIDERSELECTION
+}
+
+enum Equipe {
+  ROUGE
+  BLEU
 }
 
 model Utilisateur {
@@ -37,7 +44,6 @@ model Utilisateur {
   mdp_hash        String
   dateInscription DateTime @default(now())
 
-  // Relation uniquement avec Partie
   parties      Partie[]       @relation("UtilisateurParties")
   MembreEquipe MembreEquipe[]
   ActionJeu    ActionJeu[]
@@ -45,10 +51,12 @@ model Utilisateur {
 }
 
 model Partie {
-  id           Int          @id @default(autoincrement())
-  statut       StatutPartie @default(EN_ATTENTE)
-  createurId   Int
-  dateCreation DateTime     @default(now())
+  id            Int          @id @default(autoincrement())
+  statut        StatutPartie @default(EN_ATTENTE)
+  createurId    Int
+  dateCreation  DateTime     @default(now())
+  equipeEnCours Equipe?
+  roleEncours   Role?
 
   createur Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")
   messages Message[]
@@ -60,7 +68,7 @@ model Partie {
 model MembreEquipe {
   utilisateurId Int
   partieId      Int
-  equipe        String
+  equipe        Equipe
   role          Role   @default(AGENT)
 
   utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
@@ -79,26 +87,36 @@ model Mot {
   @@unique([mot, langue])
 }
 
-model Carte {
-  id       Int       @id @default(autoincrement())
-  partieId Int
-  motId    Int
-  type     TypeCarte
-  revelee  Boolean   @default(false)
+model Selection {
+  id            Int     @id @default(autoincrement())
+  utilisateurId Int
+  Carte         Carte[]
+}
 
-  partie  Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
-  mot     Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
-  actions ActionJeu[] @relation("CarteActions")
+model Carte {
+  id               Int       @id @default(autoincrement())
+  partieId         Int
+  motId            Int
+  type             TypeCarte
+  revelee          Boolean   @default(false)
+  selectionner     Selection @relation(fields: [selectionId], references: [id])
+  trouveeParEquipe Equipe? // ROUGE | BLEU -> Pour savoir si l'agent a trouvé ce mot
+
+  partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  mot         Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
+  actions     ActionJeu[] @relation("CarteActions")
+  selectionId Int
 }
 
 model ActionJeu {
   id            Int        @id @default(autoincrement())
   partieId      Int
   utilisateurId Int
+  equipe        Equipe
   typeAction    TypeAction
-  motDonne      String?
+  motDonne      String? // Uniquement pour TypeAction.INDICE
   nombreMots    Int?
-  carteId       Int?
+  carteId       Int? // Pour TypeAction.SELECTION
   resultat      String?
   dateAction    DateTime   @default(now())
 
