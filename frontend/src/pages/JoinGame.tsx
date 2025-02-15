@@ -44,7 +44,7 @@ export default function HomePage() {
 
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/game/create", {
+      const response = await axios.post("http://localhost:3000/api/join/create", {
 
         createurId: 1, //ID du créateur de la partie est 2 (à modifier plus tard)
 
@@ -90,7 +90,7 @@ export default function HomePage() {
     try {
       // Envoi d'une requête POST au backend avec axios
 
-      const response = await axios.post("http://localhost:3000/api/game/join-game", {
+      const response = await axios.post("http://localhost:3000/api/join/join-game", {
         roomCode,
 
 
