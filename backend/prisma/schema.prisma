@@ -23,6 +23,7 @@ enum TypeCarte {
 enum Role {
   MAITRE_ESPION
   AGENT
+  INCONNU
 }
 
 enum TypeAction {
@@ -57,6 +58,7 @@ model Partie {
   dateCreation  DateTime     @default(now())
   equipeEnCours Equipe?
   roleEncours   Role?
+  langue        String       @default("fr")
 
   createur Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")
   messages Message[]
@@ -99,13 +101,13 @@ model Carte {
   motId            Int
   type             TypeCarte
   revelee          Boolean   @default(false)
-  selectionner     Selection @relation(fields: [selectionId], references: [id])
   trouveeParEquipe Equipe? // ROUGE | BLEU -> Pour savoir si l'agent a trouvé ce mot
+  selectionId      Int?
 
-  partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
-  mot         Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
-  actions     ActionJeu[] @relation("CarteActions")
-  selectionId Int
+  partie    Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  mot       Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
+  actions   ActionJeu[] @relation("CarteActions")
+  Selection Selection?  @relation(fields: [selectionId], references: [id])
 }
 
 model ActionJeu {
