@@ -1,6 +1,5 @@
 import prisma from "../prismaClient";
-import { Equipe, TypeCarte, Role, TypeAction, StatutPartie } from '@prisma/client';
-
+import { Equipe, TypeCarte, Role, TypeAction, StatutPartie } from '@prisma/client'; 
 export async function getpartieById(partieId:number) {
     return prisma.partie.findUnique({
         where: {id:partieId},
@@ -18,7 +17,7 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
       include: {
         cartes: { include: { mot: true } },
         membres: { include: { utilisateur: true } },
-        actions: { include: { carte: { include: { mot: true } }, utilisateur: true } },
+        actions: { include: { carte: { include: { mot: true } }, utilisateur: true }},
       },
     });
   
@@ -51,6 +50,7 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
       ...partie,
       cartes: cartesFiltrees,
       membres: membresFiltres,
+
     };
   }
   
@@ -59,7 +59,7 @@ export async function donnerIndice(payload: {mot:string, nombreMots:number, part
 
     await prisma.actionJeu.create({
         data: {
-            partieId: payload.partieId,
+            partieId: Number(payload.partieId),
             utilisateurId: payload.utilisateurId,
             equipe: payload.equipe,
             typeAction: TypeAction.INDICE,
@@ -68,9 +68,10 @@ export async function donnerIndice(payload: {mot:string, nombreMots:number, part
         },
     });
     await prisma.partie.update({
-        where : {id: payload.partieId},
+        where : {id: Number(payload.partieId)},
         data:{
             roleEncours : Role.AGENT
+            
         },
 
     });
@@ -79,7 +80,7 @@ export async function donnerIndice(payload: {mot:string, nombreMots:number, part
 export async function selectionnerCarte(payload:{carteId:number ,partieId : number,utilisateurId:number, equipe: Equipe}) {
     await prisma.actionJeu.create({
         data: {
-            partieId: payload.partieId,
+            partieId: Number(payload.partieId),
             utilisateurId: payload.utilisateurId,
             equipe: payload.equipe,
             typeAction: TypeAction.SELECTION,

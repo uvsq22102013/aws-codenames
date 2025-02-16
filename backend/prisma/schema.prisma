@@ -56,8 +56,8 @@ model Partie {
   statut        StatutPartie @default(EN_ATTENTE)
   createurId    Int
   dateCreation  DateTime     @default(now())
-  equipeEnCours Equipe?
-  roleEncours   Role?
+  equipeEnCours Equipe       @default(ROUGE)
+  roleEncours   Role         @default(MAITRE_ESPION)
   langue        String       @default("fr")
 
   createur Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")

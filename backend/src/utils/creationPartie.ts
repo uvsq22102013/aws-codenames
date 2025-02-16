@@ -45,9 +45,11 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
           create: {
             utilisateurId: createurId,
             equipe: Equipe.ROUGE,
-            role: Role.AGENT,
+            role: Role.MAITRE_ESPION,
           },
         },
+        roleEncours : Role.MAITRE_ESPION,
+        equipeEnCours : Equipe.ROUGE,
       },
       include: { createur: true, membres: true },
     });

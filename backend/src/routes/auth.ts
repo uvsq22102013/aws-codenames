@@ -79,7 +79,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 
         const token = jwt.sign(
             { id: user.id, pseudo: user.pseudo },
-            'testkey', // A Changer dans une variable d'environnement !
+            'testkey', 
             { expiresIn: '24h' }
           );
           
