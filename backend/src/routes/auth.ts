@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
 import prisma from "../prismaClient";
 
 const router = express.Router();
@@ -76,7 +77,21 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        res.json({ message: "Connexion réussie", user });
+        const token = jwt.sign(
+            { id: user.id, pseudo: user.pseudo },
+            'testkey', // A Changer dans une variable d'environnement !
+            { expiresIn: '24h' }
+          );
+          
+          res.json({
+            token,
+            user: {
+              id: user.id,
+              pseudo: user.pseudo,
+              email: user.email,
+            },
+          });
+          
     //En cas d'erreur renvoi l'erreur de connexion
     } catch (error) {
         console.error("Erreur Prisma :", error);
