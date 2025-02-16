@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/Logo_CodeNames_blanc.svg';
 import axios from "axios";
+import { setUtilisateur } from '../../utils/utilisateurs';
+
 
 export default function Login() {
   const [login, setLogin] = useState("");//Login povant être un email ou un pseudo
@@ -23,9 +25,11 @@ export default function Login() {
       });
       //Genere un token contenant les données de l'utilisateur connecté 
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("utilisateur", JSON.stringify(response.data.user));
+      setUtilisateur(response.data.user);
       alert("Connexion réussie !");
       //Renvoi vers la page game
-      navigate("/join");
+      navigate('/join', { state: { user: response.data.user } });
       //Si le POST echoue, renvoi une erreur
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur de connexion front.");

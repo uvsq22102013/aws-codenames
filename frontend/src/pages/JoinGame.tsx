@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getUtilisateur } from "../../utils/utilisateurs";
 
 export default function HomePage() {
 
@@ -39,14 +40,14 @@ export default function HomePage() {
   //fonction pour créer une nouvelle partie
 
   const handleCreateRoom = async () => {
+    const utilisateur = getUtilisateur();
 
     try {
-
 
       //ici on envoi une requete POST au backend pour créer une partie 
       const response = await axios.post("http://localhost:3000/api/join/create", {
 
-        createurId: 1, //ID du créateur de la partie est 2 (à modifier plus tard)
+        createurId: utilisateur.id,
 
       });
 
@@ -79,6 +80,8 @@ export default function HomePage() {
   const handleJoinRoom = async () => {
 
 // verifie si l'utilisateur entre quelque chose
+const utilisateur = getUtilisateur();
+
     if (roomCode.trim() === "") {
 
 
@@ -92,8 +95,7 @@ export default function HomePage() {
 
       const response = await axios.post("http://localhost:3000/api/join/join-game", {
         roomCode,
-
-
+        playerId: utilisateur.id,
       });
 
       //message dde confirmation qu'on a bien rejoint la partie
