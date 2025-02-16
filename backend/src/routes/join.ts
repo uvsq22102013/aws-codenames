@@ -1,7 +1,13 @@
 import express, { Request, Response } from "express";
 import prisma from "../prismaClient";
+import { Partie , TypeAction,TypeCarte,StatutPartie, Equipe, Role } from "@prisma/client";
+import { creerPartieAvecCartes } from "../utils/creationPartie";
+import { RejoindrePartie_Payload } from "../types/game.types";
+import e from "express";
+import { rejoindrePartie } from "../services/game.service";
 
 const router = express.Router();
+
 
 // Route pour créer une partie
 router.post("/create", async (req: Request, res: Response): Promise<void>  => {
@@ -25,24 +31,7 @@ router.post("/create", async (req: Request, res: Response): Promise<void>  => {
         }
 
         // Création de la partie avec Prisma
-        const partie = await prisma.partie.create({
-            data: {
-                createurId,
-                statut: "EN_ATTENTE", // Valeur par défaut
-                dateCreation: new Date(),
-                membres: {
-                    create: {
-                        utilisateurId: createurId,
-                        equipe: "ROUGE", // Mettre une équipe par défaut
-                        role: "MAITRE_ESPION", // Rôle par défaut
-                    },
-                },
-            },
-            include: {
-                createur: true, // Inclure les infos du créateur dans la réponse
-                membres: true,  // Inclure les membres de l'équipe
-            },
-        });
+        const partie = await creerPartieAvecCartes(createurId, "fr");
 
         res.status(201).json(partie); // 201 = Création réussie
     } catch (error: any) {
@@ -55,7 +44,8 @@ router.post("/create", async (req: Request, res: Response): Promise<void>  => {
 router.post("/join-game", async (req: Request, res: Response): Promise<void> => {
 
     //on récupère le code de la partie envoyé par le front
-    const { roomCode } = req.body; 
+    const { roomCode } = req.body;
+    const { playerId } = req.body; 
 
 
     //on vérifie que le code de la partie est bien valide
@@ -82,12 +72,16 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
       }
   
 
-
-      // dans le cas contraire si la partie existe on renvoit l'ID de la partie créée
-      res.json({ message: `Vous avez rejoint la partie ${game.id}.`, game });
-
-
-    } catch (error) { 
+      // on regarde si la partie est en cours
+        if (game.statut !== StatutPartie.EN_ATTENTE) {
+          res.status(400).json({ error: "La partie est déjà en cours." });
+          return;
+        } else {
+          rejoindrePartie({ partieId: game.id, utilisateurId: playerId });
+          // dans le cas contraire si la partie existe on renvoit l'ID de la partie créée
+          res.json({ message: `Vous avez rejoint la partie ${game.id}.`, game });
+        }
+      } catch (error) {
 
 
     //erreur si il ya un pb avec le serveur
