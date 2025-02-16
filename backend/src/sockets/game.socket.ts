@@ -6,17 +6,24 @@ export default function gameSocket(io: Server, socket: Socket) {
   console.log(`User connecté : ${socket.id}`);
 
   socket.on('rejoindrePartie', (data: RejoindrePartie_Payload) => {
-    socket.join(`partie-${data.partieId}`);
     console.log(`Joueur a rejoint la partie ${data.partieId}`);
+    socket.join(`partie-${data.partieId}`);
   });
-  console.log(`Back socket: rejoindrePartie`);
+  
+  // Tu peux rajouter ça mais optionnel
+  socket.on('quitterPartie', (data: RejoindrePartie_Payload) => {
+    console.log(`Joueur a quitté la partie ${data.partieId}`);
+    socket.leave(`partie-${data.partieId}`);
+  });
+  
   socket.on('donnerIndice', async (data: Indice_Payload) => {
+    const partID = Number(data.partieId);
     const membre = await prisma.membreEquipe.findUnique({
-      where: { utilisateurId_partieId: { utilisateurId: data.utilisateurId, partieId: data.partieId } },
+      where: { utilisateurId_partieId: { utilisateurId: data.utilisateurId, partieId: partID } },
     });
   
     if (!membre || membre.role !== 'MAITRE_ESPION') {
-      console.log('Tentative interdite : Non espion');
+      console.log('Tentative interdite : No n espion');
       return;
     }
 

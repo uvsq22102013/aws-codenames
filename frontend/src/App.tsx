@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Game from "./pages/Game";
 import JoinGame from "./pages/JoinGame";
-import Test from "./pages/Test";
+// import Test from "./pages/Test";
 
 function App() {
   return (
@@ -15,8 +15,6 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/game/:partieId" element={<Game />} />
         <Route path="/join" element={<JoinGame />} />
-        <Route path="/test" element={<Test />} />
-
       </Routes>
     </BrowserRouter>
   );
