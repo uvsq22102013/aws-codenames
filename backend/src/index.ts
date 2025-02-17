@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth";
 import joinRoutes from "./routes/join";
 import gameRoutes from "./routes/game.routes"; // Ta nouvelle route partie
 import gameSocket from "./sockets/game.socket"; // Gestion socket partie
+import teamsRoutes from "./routes/teams";
 
 const app = express();
 const server = http.createServer(app); // Permet de brancher socket.io
@@ -23,6 +24,7 @@ app.use("/words", wordsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/join", joinRoutes);
 app.use("/api/parties", gameRoutes); // Ajout de la route partie
+app.use("/api/teams", teamsRoutes);
 
 // Gestion des événements Socket.io (Temps réel)
 io.on("connection", (socket) => {

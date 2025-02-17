@@ -47,6 +47,12 @@ export default function gameSocket(io: Server, socket: Socket) {
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
     console.log(`Back socket: majPartie apres carte valider`);
   });
+
+  socket.on('choixEquipe', (data) => {
+    const { team, type, pseudo, partieId } = data;
+    io.to(`partie-${partieId}`).emit('majEquipe', { team, type, pseudo });
+  });
+
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);
   });

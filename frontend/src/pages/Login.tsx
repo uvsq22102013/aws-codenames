@@ -23,13 +23,10 @@ export default function Login() {
         email: login,
         mdp: password,
       });
-      //Genere un token contenant les données de l'utilisateur connecté 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("utilisateur", JSON.stringify(response.data.user));
       setUtilisateur(response.data.user);
       alert("Connexion réussie !");
-      //Renvoi vers la page game
-      navigate('/join', { state: { user: response.data.user } });
+      //Renvoi vers la page join
+      navigate('/join');
       //Si le POST echoue, renvoi une erreur
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur de connexion front.");
