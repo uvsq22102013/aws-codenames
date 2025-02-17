@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
 import { io } from 'socket.io-client';
@@ -14,10 +15,14 @@ export default function Teams() {
   const [redTeam, setRedTeam] = useState<{ pseudo: string, type: string }[]>([]);
 
   const utilisateur = getUtilisateur();
+  const navigate = useNavigate();
 
   // Récupérer l'ID de la partie depuis le localStorage
   const storedGameId = localStorage.getItem("partieId");
   const gameId = storedGameId ? parseInt(storedGameId, 10) : null;
+
+  const storedCreatorId = localStorage.getItem("createurId");
+  const createurId = storedCreatorId ? parseInt(storedCreatorId, 10) : null;
 
   useEffect(() => {
     if (gameId) {
@@ -30,6 +35,11 @@ export default function Teams() {
 
       updateTeams(pseudo, team, type);
 
+    });
+
+    socket.on('partieLancee', (data) => {
+      console.log(`Partie ${data.partieId} lancée`);
+      navigate(`/game/${data.partieId}`);
     });
 
     return () => {
@@ -95,6 +105,11 @@ export default function Teams() {
     handleChoice("ROUGE", "AGENT", "redAgent");
   };
 
+  const handleStartGame = () => {
+    socket.emit('lancerPartie', { partieId: gameId });
+    navigate(`/game/${gameId}`);
+  };
+
   return (
     <div className="flex h-screen">
       <div className="w-1/2 bg-blue-500 flex flex-col items-center justify-center space-y-5 relative">
@@ -153,6 +168,14 @@ export default function Teams() {
           </ul>
         </div>
       </div>
+      {utilisateur.id === createurId && (
+        <button 
+          className="absolute bottom-10 right-10 bg-yellow-500 text-white font-bold py-4 px-8 rounded"
+          onClick={handleStartGame}
+        >
+          Lancer la partie
+        </button>
+      )}
     </div>
   );
 }

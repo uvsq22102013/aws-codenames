@@ -57,6 +57,7 @@ export default function HomePage() {
       //message qui confirme que la partie a bien été créée
        alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
       localStorage.setItem("partieId", response.data.id);
+      localStorage.setItem("createurId", response.data.createurId);
       socket.emit('rejoindrePartie', { partieId: response.data.id });
       //on renvoi le joueur vers le lien de la partie
       navigate("/teams");

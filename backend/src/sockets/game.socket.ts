@@ -53,6 +53,12 @@ export default function gameSocket(io: Server, socket: Socket) {
     io.to(`partie-${partieId}`).emit('majEquipe', { team, type, pseudo });
   });
 
+  socket.on('lancerPartie', (data) => {
+    const { partieId } = data;
+    console.log(`Partie ${partieId} lancée`);
+    io.to(`partie-${partieId}`).emit('partieLancee', { partieId });
+  });
+  
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);
   });
