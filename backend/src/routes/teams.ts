@@ -28,6 +28,21 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        if (type === "MAITRE_ESPION") {
+            const existingMaitreEspion = await prisma.membreEquipe.findFirst({
+                where: {
+                    partieId,
+                    equipe: team,
+                    role: "MAITRE_ESPION",
+                },
+            });
+
+            if (existingMaitreEspion) {
+                res.status(400).json({ error: "Déjà un MAITRE_ESPION" });
+                return;
+            }
+        }
+
         const membreEquipe = await prisma.membreEquipe.upsert({
             where: {
                 utilisateurId_partieId: {

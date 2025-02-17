@@ -48,7 +48,7 @@ export default function Teams() {
     }
   };
 
-  const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT") => {
+  const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT", buttonName: string) => {
     try {
       await axios.post("http://localhost:3000/api/teams", {
         team,
@@ -59,6 +59,7 @@ export default function Teams() {
   
       setTeamChoice(team);
       setPlayerType(type);
+      setClickedButton(buttonName);
 
       socket.emit('choixEquipe', {
         team,
@@ -68,31 +69,30 @@ export default function Teams() {
       });
 
     } catch (error: any) {
-      setError(error.response?.data?.error || "Erreur de choix d'équipe.");
+      if (error.response?.data?.error === "Déjà un MAITRE_ESPION") {
+        alert("Il ne peut y avoir qu'un seul maître espion par équipe.");
+      } else {
+        setError(error.response?.data?.error || "Erreur de choix d'équipe.");
+      }
     }
   };
 
   const handleBlueEspionClick = () => {
-    handleChoice("BLEU", "MAITRE_ESPION");
-    setClickedButton("blueEspion");
+    handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
 
   };
 
   const handleBlueAgentClick = () => {
-    handleChoice("BLEU", "AGENT");
-    setClickedButton("blueAgent");
-
+    handleChoice("BLEU", "AGENT", "blueAgent");
   };
 
   const handleRedEspionClick = () => {
-    handleChoice("ROUGE", "MAITRE_ESPION");
-    setClickedButton("redEspion");
+    handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
 
   };
 
   const handleRedAgentClick = () => {
-    handleChoice("ROUGE", "AGENT");
-    setClickedButton("redAgent");
+    handleChoice("ROUGE", "AGENT", "redAgent");
   };
 
   return (
