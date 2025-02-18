@@ -18,12 +18,16 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
         cartes: { include: { mot: true } },
         membres: { include: { utilisateur: true } },
         actions: { include: { carte: { include: { mot: true } }, utilisateur: true }},
-      },
+    
+        
+    },
     });
   
     if (!partie) return null;
   
     const monMembre = partie.membres.find((m) => m.utilisateurId === utilisateurId);
+    const roleEncours = partie.roleEncours;
+    const equipeEncours = partie.equipeEnCours;
     const monRole = monMembre?.role;
     const monEquipe = monMembre?.equipe;
   
@@ -40,17 +44,18 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
     });
   
     const membresFiltres = partie.membres.map((membre) => {
-      if (membre.equipe === monEquipe) {
+    //   if (membre.equipe === monEquipe) {
         return membre;
-      }
-      return { ...membre, role: Role.INCONNU };
+    //   }
+    //   return { ...membre, role: Role.INCONNU };
     });
   
     return {
       ...partie,
       cartes: cartesFiltrees,
       membres: membresFiltres,
-
+      roleEncours,
+      equipeEncours,
     };
   }
   

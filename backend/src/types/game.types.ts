@@ -13,6 +13,7 @@ export type Indice_Payload = {
   };
   
 // Type pour la sélection d'une carte
+
   export type SelectionCarte_Payload = {
     carteId:number ,
     partieId : number,
@@ -31,3 +32,5 @@ export type Indice_Payload = {
     utilisateurId:number, 
     equipe: Equipe
   };
+
+

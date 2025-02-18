@@ -3,6 +3,7 @@ export const getUtilisateur = () => {
     return utilisateurJSON ? JSON.parse(utilisateurJSON) : null;
   };
   
+  
   export const setUtilisateur = (utilisateur: any) => {
     localStorage.setItem('utilisateur', JSON.stringify(utilisateur));
   };

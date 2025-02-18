@@ -10,8 +10,6 @@ const socket = io('http://localhost:3000');
 const Game = () => {
   const { partieId } = useParams();
 
-
-
   const partieIdNumber = Number(partieId);
   const [partie, setPartie] = useState<any>(null);
 
@@ -24,7 +22,7 @@ const Game = () => {
     try {
       const token = getToken();
 
-      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, {
+      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, { // axios
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -89,10 +87,20 @@ const Game = () => {
     return partie?.membres.find((m: any) => m.utilisateurId === utilisateur.id)?.role;
   };
 
+  const getRoleEnCours = () => {
+    return partie?.roleEnCours;
+  };
+  const getEquipeEnCours = () => {
+    return partie?.equipeEnCours;
+  };
+
+
   if (!partie) return <p>Chargement...</p>;
 
   const equipeUtilisateur = getEquipeUtilisateur();
   const roleUtilisateur = getRoleUtilisateur();
+  const roleEncours = getRoleEnCours();
+  const equipeEnCours = getEquipeEnCours();
 
   return (
     <div className="min-h-screen bg-[#8C2F25] text-white p-4">
@@ -138,7 +146,6 @@ const Game = () => {
 <div className="grid grid-cols-5 gap-[2px] mb-4 place-items-center">
   {partie.cartes.map((carte: any) => {
 
-
     return <Cellule
     key={carte.id}
     carte={carte}
@@ -153,7 +160,7 @@ const Game = () => {
 
 
       {/* Zone indices - Seulement pour maître espion */}
-      {roleUtilisateur === 'MAITRE_ESPION' && (
+      {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === roleUtilisateur && (
         <div className="mb-4 bg-gray-800 p-4 rounded">
           <h2 className="text-lg mb-2">Donner un indice</h2>
           <input
@@ -181,11 +188,16 @@ const Game = () => {
         <div className="bg-red-700 p-4 rounded w-1/2 mr-2">
           <h3 className="font-bold">Agents</h3>
           {partie.membres
-            .filter((m: any) => m.equipe === 'ROUGE')
+            .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT')
             .map((m: any) => (
               <p key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
           <h3 className="font-bold mt-2">Espions</h3>
+          {partie.membres
+            .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION')
+            .map((m: any) => (
+              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+            ))}
         </div>
 
         {/* Equipe Bleue */}
@@ -194,11 +206,16 @@ const Game = () => {
         <div className="bg-blue-700 p-4 rounded w-1/2 ml-2">    
           <h3 className="font-bold">Agents</h3>   
           {partie.membres    
-            .filter((m: any) => m.equipe === 'BLEU')    
+            .filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' )    
             .map((m: any) => (    
-              <p key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
             ))}     
           <h3 className="font-bold mt-2">Espions</h3>    
+          {partie.membres    
+            .filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' )    
+            .map((m: any) => (    
+              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+            ))}  
         </div>
       </div>
 
