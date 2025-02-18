@@ -40,10 +40,10 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
     });
   
     const membresFiltres = partie.membres.map((membre) => {
-      if (membre.equipe === monEquipe) {
+      //if (membre.equipe === monEquipe) {
         return membre;
-      }
-      return { ...membre, role: Role.INCONNU };
+      //}
+      //return { ...membre, role: Role.INCONNU };
     });
   
     return {
@@ -160,16 +160,36 @@ export async function finDeviner(payload:{partieId : number,utilisateurId:number
     });
 }
 
+export async function getMembres(partieId: number) {
+    return await prisma.membreEquipe.findMany({
+      where: {
+        partieId: partieId,
+      },
+      include: {
+        utilisateur: true,
+      },
+    });
+  }
 
 
-export async function changerRole(payload:{partieId : number,utilisateurId:number, equipe: Equipe, role : Role}) {
-    await prisma.membreEquipe.update({
-        where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
-        data: {
-            role : payload.role,
-            equipe : payload.equipe,
-            
+export async function changerRole(payload:{team : Equipe, type : Role, utilisateurId : number, partieId : number}) {
+    await prisma.membreEquipe.upsert({
+        where: {
+            utilisateurId_partieId: {
+                utilisateurId : payload.utilisateurId,
+                partieId : payload.partieId,
+            },
+        },
+        update: {
+            equipe: payload.team,
+            role: payload.type,
+        },
+        create: {
+            utilisateurId : payload.utilisateurId,
+            partieId : payload.partieId,
+            equipe: payload.team,
+            role: payload.type,
         },
     });
-    
+  
 }

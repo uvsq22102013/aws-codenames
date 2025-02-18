@@ -56,11 +56,9 @@ export default function HomePage() {
 
       //message qui confirme que la partie a bien été créée
        alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
-      localStorage.setItem("partieId", response.data.id);
       localStorage.setItem("createurId", response.data.createurId);
-      socket.emit('rejoindrePartie', { partieId: response.data.id });
       //on renvoi le joueur vers le lien de la partie
-      navigate("/teams");
+      navigate(`/teams/${response.data.id}`);
 
       
     } catch (error) {
@@ -105,13 +103,8 @@ const utilisateur = getUtilisateur();
 
       //message dde confirmation qu'on a bien rejoint la partie
       alert(`Vous avez rejoint la partie ${response.data.game.id}`);
-
-      localStorage.setItem("partieId", response.data.game.id);
-      socket.emit('rejoindrePartie', { partieId: response.data.game.id });
-      //redirige vers la partie
-      navigate("/teams");
-
-
+      localStorage.setItem("createurId", response.data.createurId);
+      navigate(`/teams/${response.data.game.id}`);
 
     } catch (error) {
 

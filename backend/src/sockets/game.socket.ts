@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { validerCarte, donnerIndice, selectionnerCarte } from '../services/game.service';
+import { validerCarte, donnerIndice, selectionnerCarte, changerRole } from '../services/game.service';
 import { Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload } from '../types/game.types';
 import prisma from '../prismaClient';
 export default function gameSocket(io: Server, socket: Socket) {
@@ -10,7 +10,6 @@ export default function gameSocket(io: Server, socket: Socket) {
     socket.join(`partie-${data.partieId}`);
   });
   
-  // Tu peux rajouter ça mais optionnel
   socket.on('quitterPartie', (data: RejoindrePartie_Payload) => {
     console.log(`Joueur a quitté la partie ${data.partieId}`);
     socket.leave(`partie-${data.partieId}`);
@@ -48,9 +47,10 @@ export default function gameSocket(io: Server, socket: Socket) {
     console.log(`Back socket: majPartie apres carte valider`);
   });
 
-  socket.on('choixEquipe', (data) => {
-    const { team, type, pseudo, partieId } = data;
-    io.to(`partie-${partieId}`).emit('majEquipe', { team, type, pseudo });
+  socket.on('choixEquipe', async (data) => {
+    console.log("EMIT rcezucvhgzv");
+    await changerRole(data);
+    io.to(`partie-${data.partieId}`).emit('majEquipe');
   });
 
   socket.on('lancerPartie', (data) => {
@@ -58,6 +58,7 @@ export default function gameSocket(io: Server, socket: Socket) {
     console.log(`Partie ${partieId} lancée`);
     io.to(`partie-${partieId}`).emit('partieLancee', { partieId });
   });
+
   
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);

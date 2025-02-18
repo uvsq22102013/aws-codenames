@@ -2,39 +2,50 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
+import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:3000');
 
-export default function Teams() {
-  const [teamChoice, setTeamChoice] = useState<"ROUGE" | "BLEU">("ROUGE");
-  const [playerType, setPlayerType] = useState<"MAITRE_ESPION" | "AGENT">("AGENT");
-  const [clickedButton, setClickedButton] = useState("");
-  const [error, setError] = useState("");
-  const [blueTeam, setBlueTeam] = useState<{ pseudo: string, type: string }[]>([]);
-  const [redTeam, setRedTeam] = useState<{ pseudo: string, type: string }[]>([]);
+interface Joueur {
+  utilisateur: {
+    pseudo: string;
+  };
+  equipe: "BLEU" | "ROUGE";
+  role: string;
+}
 
+export default function Teams() {
+
+  const [clickedButton, setClickedButton] = useState("");
+  const [joueurs, setJoueurs] = useState<Joueur[]>([]);
+  const { partieId } = useParams();
+  const gameId = Number(partieId);
   const utilisateur = getUtilisateur();
   const navigate = useNavigate();
-
-  // Récupérer l'ID de la partie depuis le localStorage
-  const storedGameId = localStorage.getItem("partieId");
-  const gameId = storedGameId ? parseInt(storedGameId, 10) : null;
 
   const storedCreatorId = localStorage.getItem("createurId");
   const createurId = storedCreatorId ? parseInt(storedCreatorId, 10) : null;
 
+  const chargerMembres = async () => {
+    try {  
+      const res = await axios.get(`http://localhost:3000/api/teams/${gameId}`, {
+      });
+  
+      setJoueurs(res.data);
+    } catch (err) {
+      console.error('Erreur chargement des membres :', err);
+    }
+  };
+
   useEffect(() => {
     if (gameId) {
       socket.emit('rejoindrePartie', { partieId: gameId });
+      chargerMembres();
     }
 
-    socket.on('majEquipe', (data) => {
-      const { team, type, pseudo } = data;
-      console.log(`Utilisateur ${pseudo} a rejoint l'équipe ${team} en tant que ${type}`);
-
-      updateTeams(pseudo, team, type);
-
+    socket.on('majEquipe', () => {
+      chargerMembres();
     });
 
     socket.on('partieLancee', (data) => {
@@ -47,49 +58,28 @@ export default function Teams() {
     };
   }, [gameId]);
 
-  const updateTeams = (pseudo: string, newTeam: "ROUGE" | "BLEU", type: string) => {
-    setBlueTeam((prevBlueTeam) => prevBlueTeam.filter(player => player.pseudo !== pseudo));
-    setRedTeam((prevRedTeam) => prevRedTeam.filter(player => player.pseudo !== pseudo));
-
-    if (newTeam === "BLEU") {
-      setBlueTeam((prevBlueTeam) => [...prevBlueTeam, { pseudo, type }]);
-    } else if (newTeam === "ROUGE") {
-      setRedTeam((prevRedTeam) => [...prevRedTeam, { pseudo, type }]);
-    }
-  };
-
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT", buttonName: string) => {
-    try {
-      await axios.post("http://localhost:3000/api/teams", {
-        team,
-        type,
-        utilisateurId: utilisateur.id,
-        partieId: gameId,
-      });
-  
-      setTeamChoice(team);
-      setPlayerType(type);
-      setClickedButton(buttonName);
+    setClickedButton(buttonName);
 
+    if(gameId) {
       socket.emit('choixEquipe', {
         team,
         type,
-        pseudo: utilisateur.pseudo,
+        utilisateurId : utilisateur.id,
         partieId: gameId,
       });
-
-    } catch (error: any) {
-      if (error.response?.data?.error === "Déjà un MAITRE_ESPION") {
-        alert("Il ne peut y avoir qu'un seul maître espion par équipe.");
-      } else {
-        setError(error.response?.data?.error || "Erreur de choix d'équipe.");
-      }
     }
-  };
+
+    chargerMembres();
+  } 
 
   const handleBlueEspionClick = () => {
-    handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
-
+    const blueEspionExists = joueurs.some(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION");
+    if (!blueEspionExists) {
+      handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
+    } else {
+      alert("Il ne peut y avoir qu'un seul maître espion dans l'équipe bleue.");
+    }
   };
 
   const handleBlueAgentClick = () => {
@@ -97,8 +87,12 @@ export default function Teams() {
   };
 
   const handleRedEspionClick = () => {
-    handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
-
+    const redEspionExists = joueurs.some(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION");
+    if (!redEspionExists) {
+      handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
+    } else {
+      alert("Il ne peut y avoir qu'un seul maître espion dans l'équipe rouge.");
+    }
   };
 
   const handleRedAgentClick = () => {
@@ -110,6 +104,9 @@ export default function Teams() {
     navigate(`/game/${gameId}`);
   };
 
+  const blueTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "BLEU");
+  const redTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "ROUGE");
+  
   return (
     <div className="flex h-screen">
       <div className="w-1/2 bg-blue-500 flex flex-col items-center justify-center space-y-5 relative">
@@ -131,10 +128,10 @@ export default function Teams() {
             Joueurs de l'équipe bleue
           </h2>
           <ul className="space-y-1">
-            {blueTeam.map((player, index) => (
+            {blueTeam.map((player: Joueur, index: number) => (
               <li key={index} className="flex justify-between items-center text-black text-lg bg-blue-500/30 p-1 rounded-lg">
-                <span className="font-medium">{player.pseudo}</span>
-                <span className="text-xs text-black uppercase">{player.type}</span>
+              <span className="font-medium">{player.utilisateur.pseudo}</span>
+              <span className="text-xs text-black uppercase">{player.role}</span>
               </li>
             ))}
           </ul>
@@ -159,10 +156,10 @@ export default function Teams() {
             Joueurs de l'équipe rouge
           </h2>
           <ul className="space-y-1">
-            {redTeam.map((player, index) => (
+            {redTeam.map((player: Joueur, index: number) => (
               <li key={index} className="flex justify-between items-center text-black text-lg bg-red-500/30 p-1 rounded-lg">
-                <span className="font-medium">{player.pseudo}</span>
-                <span className="text-xs text-black uppercase">{player.type}</span>
+              <span className="font-medium">{player.utilisateur.pseudo}</span>
+              <span className="text-xs text-black uppercase">{player.role}</span>
               </li>
             ))}
           </ul>
