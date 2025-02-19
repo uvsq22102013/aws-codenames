@@ -9,7 +9,6 @@ const socket = io('http://localhost:3000');
 
 const Game = () => {
   const { partieId } = useParams();
-
   const partieIdNumber = Number(partieId);
   const [partie, setPartie] = useState<any>(null);
 
@@ -18,11 +17,11 @@ const Game = () => {
   const utilisateur = getUtilisateur();
        
 
-  const chargerPartie = async () => {
+   const chargerPartie = async () => {
     try {
       const token = getToken();
 
-      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, { // axios
+      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -43,7 +42,6 @@ const Game = () => {
   
     socket.emit('rejoindrePartie', { partieId });
   
-
     const majHandler = () => {
       console.log('majPartie reçue, rechargement...');
       chargerPartie();

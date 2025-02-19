@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choix du Joueur</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <h2>Choisissez un joueur :</h2>
+    <button class="blue" onclick="enregistrerJoueur('Joueur Bleu')">Joueur Bleu</button>
+    <button class="red" onclick="enregistrerJoueur('Joueur Rouge')">Joueur Rouge</button>
+
+    <button class = "black" onclick="supprimerJoueur()">Réinitialiser</button>
+
+
+    <h3 id="resultat"></h3>
+
+    <h2>Compteur Multijoueur</h2>
+    <h1 id="compteur">0</h1>
+    <button id="bouton">Incrémenter</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

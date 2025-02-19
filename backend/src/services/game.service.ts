@@ -18,9 +18,7 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
         cartes: { include: { mot: true } },
         membres: { include: { utilisateur: true } },
         actions: { include: { carte: { include: { mot: true } }, utilisateur: true }},
-    
-        
-    },
+      },
     });
   
     if (!partie) return null;
@@ -170,16 +168,38 @@ export async function finDeviner(payload:{partieId : number,utilisateurId:number
     });
 }
 
+export async function getMembres(partieId: number) {
+    return await prisma.membreEquipe.findMany({
+      where: {
+        partieId: partieId,
+      },
+      include: {
+        utilisateur: true,
+      },
+    });
+  }
 
 
-export async function changerRole(payload:{partieId : number,utilisateurId:number, equipe: Equipe, role : Role}) {
-    await prisma.membreEquipe.update({
-        where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
-        data: {
-            role : payload.role,
-            equipe : payload.equipe,
-            
+export async function changerRole(payload:{team : Equipe, type : Role, utilisateurId : number, partieId : number}) {
+    await prisma.membreEquipe.upsert({
+        // Recherche du joueur à insérer ou a mettre à jour dans la table membreEquipe
+        where: {
+            utilisateurId_partieId: {
+                utilisateurId : payload.utilisateurId,
+                partieId : payload.partieId,
+            },
+        },
+        // S'il existe, on met à jour ses valeurs.
+        update: {
+            equipe: payload.team,
+            role: payload.type,
+        },
+        // S'il n'existe pas, on insère un nouveau tuple.
+        create: {
+            utilisateurId : payload.utilisateurId,
+            partieId : payload.partieId,
+            equipe: payload.team,
+            role: payload.type,
         },
     });
-    
 }

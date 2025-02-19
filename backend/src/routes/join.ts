@@ -45,8 +45,6 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
 
     //on récupère le code de la partie envoyé par le front
     const { roomCode } = req.body;
-    const { playerId } = req.body; 
-
 
     //on vérifie que le code de la partie est bien valide
     if (!roomCode) {
@@ -65,7 +63,6 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
   
       if (!game) {
 
-
         // si on trouve pas de partie avec cette ID, on renvoit un message d'erreure 
         res.status(404).json({ error: "La partie n'existe pas." });
         return;
@@ -77,7 +74,6 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
           res.status(400).json({ error: "La partie est déjà en cours." });
           return;
         } else {
-          rejoindrePartie({ partieId: game.id, utilisateurId: playerId });
           // dans le cas contraire si la partie existe on renvoit l'ID de la partie créée
           res.json({ message: `Vous avez rejoint la partie ${game.id}.`, game });
         }

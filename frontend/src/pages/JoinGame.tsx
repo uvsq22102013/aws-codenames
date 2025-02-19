@@ -2,6 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
 
 export default function HomePage() {
 
@@ -53,9 +56,9 @@ export default function HomePage() {
 
       //message qui confirme que la partie a bien été créée
        alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
-       
+      localStorage.setItem("createurId", response.data.createurId);
       //on renvoi le joueur vers le lien de la partie
-      navigate(`/game/${response.data.id}`);
+      navigate(`/teams/${response.data.id}`);
 
       
     } catch (error) {
@@ -100,12 +103,8 @@ const utilisateur = getUtilisateur();
 
       //message dde confirmation qu'on a bien rejoint la partie
       alert(`Vous avez rejoint la partie ${response.data.game.id}`);
-
-
-      //redirige vers la partie
-      window.location.href = `/game/${response.data.game.id}`;
-
-
+      localStorage.setItem("createurId", response.data.createurId);
+      navigate(`/teams/${response.data.game.id}`);
 
     } catch (error) {
 

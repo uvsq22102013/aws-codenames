@@ -11,6 +11,5 @@ export default function Home() {
       <p className="mt-4 font-bold text-blue-300">À vous de décrypter le message !</p>
     </div>
 
-
   );
 }
