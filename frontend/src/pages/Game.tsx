@@ -9,9 +9,6 @@ const socket = io('http://localhost:3000');
 
 const Game = () => {
   const { partieId } = useParams();
-
-
-
   const partieIdNumber = Number(partieId);
   const [partie, setPartie] = useState<any>(null);
 
@@ -20,7 +17,7 @@ const Game = () => {
   const utilisateur = getUtilisateur();
        
 
-  const chargerPartie = async () => {
+   const chargerPartie = async () => {
     try {
       const token = getToken();
 

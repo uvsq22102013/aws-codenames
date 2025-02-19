@@ -16,17 +16,18 @@ interface Joueur {
 }
 
 export default function Teams() {
-
-  const [clickedButton, setClickedButton] = useState("");
-  const [joueurs, setJoueurs] = useState<Joueur[]>([]);
+  const [clickedButton, setClickedButton] = useState(""); // Variable qui nous servira pour l'affichage.
+  const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
   const { partieId } = useParams();
   const gameId = Number(partieId);
   const utilisateur = getUtilisateur();
   const navigate = useNavigate();
 
+  // On récupère l'id du créateur de la partie dans le localStorage.
   const storedCreatorId = localStorage.getItem("createurId");
   const createurId = storedCreatorId ? parseInt(storedCreatorId, 10) : null;
 
+  // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
     try {  
       const res = await axios.get(`http://localhost:3000/api/teams/${gameId}`, {
@@ -40,6 +41,7 @@ export default function Teams() {
 
   useEffect(() => {
     if (gameId) {
+      // On rejoint la room socket io pour recevoir les maj
       socket.emit('rejoindrePartie', { partieId: gameId });
       chargerMembres();
     }
@@ -48,6 +50,7 @@ export default function Teams() {
       chargerMembres();
     });
 
+    // On écoute si le créateur de la partie a lancé le jeu.
     socket.on('partieLancee', (data) => {
       console.log(`Partie ${data.partieId} lancée`);
       navigate(`/game/${data.partieId}`);
@@ -58,9 +61,11 @@ export default function Teams() {
     };
   }, [gameId]);
 
+  // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT", buttonName: string) => {
     setClickedButton(buttonName);
 
+    // Emission du choix avec socket io pour mettre à jour la BDD et informer les autres joueurs.
     if(gameId) {
       socket.emit('choixEquipe', {
         team,
@@ -74,6 +79,7 @@ export default function Teams() {
   } 
 
   const handleBlueEspionClick = () => {
+    // On vérifie si il existe déjà un joueur espion dans l'équipe bleue avant de valider le choix d'équipe.
     const blueEspionExists = joueurs.some(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION");
     if (!blueEspionExists) {
       handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
@@ -87,6 +93,7 @@ export default function Teams() {
   };
 
   const handleRedEspionClick = () => {
+    // On vérifie si il existe déjà un joueur espion dans l'équipe rouge avant de valider le choix d'équipe.
     const redEspionExists = joueurs.some(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION");
     if (!redEspionExists) {
       handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
@@ -99,11 +106,13 @@ export default function Teams() {
     handleChoice("ROUGE", "AGENT", "redAgent");
   };
 
+  // Renvoi sur la page de jeu lors du lancement de la partie par le créateur de la partie.
   const handleStartGame = () => {
     socket.emit('lancerPartie', { partieId: gameId });
     navigate(`/game/${gameId}`);
   };
 
+  // Séparation des joueurs bleu et rouge contenus dans "joueurs".
   const blueTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "BLEU");
   const redTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "ROUGE");
   
