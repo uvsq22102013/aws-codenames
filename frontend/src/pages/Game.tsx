@@ -92,6 +92,7 @@ const Game = () => {
   const getEquipeEnCours = () => {
     return partie?.equipeEnCours;
   };
+  
 
 
   if (!partie)  { chargerPartie(); return <p>Chargement...</p>;}
