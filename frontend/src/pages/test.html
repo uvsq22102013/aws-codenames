@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Names Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-blue-900 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Navbar -->
+    <div class="w-full flex justify-between items-center bg-yellow-500 px-4 py-2 rounded-lg">
+        <div class="text-black font-bold">Joueurs : 👤 1</div>
+        <div class="flex gap-2">
+            <button class="bg-yellow-400 px-4 py-2 rounded-lg font-semibold">Réinitialiser</button>
+            <button class="bg-yellow-400 px-4 py-2 rounded-lg font-semibold">Actualités</button>
+            <button class="bg-yellow-400 px-4 py-2 rounded-lg font-semibold">Règles</button>
+        </div>
+        <button class="bg-gray-200 px-4 py-2 rounded-lg">Ayoub</button>
+    </div>
+
+    <!-- Zone des équipes + Plateau centré -->
+    <div class="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center md:items-start mt-4 gap-4">
+
+        <!-- Équipe rouge (Haut gauche sur grand écran, pleine largeur sur mobile) -->
+        <div class="bg-red-700 text-white p-4 rounded-lg w-full md:w-1/5 flex flex-col items-center">
+            <div class="flex items-center gap-2">
+                <img src="https://via.placeholder.com/50" alt="Espion rouge" class="rounded-lg">
+                <span class="text-3xl font-bold">8</span>
+            </div>
+            <div class="mt-4 w-full">
+                <button class="bg-yellow-400 w-full py-2 rounded-lg text-black font-semibold mb-2">Rejoindre en tant qu'agent</button>
+                <button class="bg-yellow-400 w-full py-2 rounded-lg text-black font-semibold">Rejoindre en tant qu'espion</button>
+            </div>
+        </div>
+
+        <!-- Plateau de jeu centré (s'adapte selon l'écran) -->
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-2 bg-gray-800 p-4 rounded-lg">
+            <!-- Cartes du jeu -->
+            <div class="bg-gray-200 border-2 border-gray-300 w-24 h-16 md:w-32 md:h-20 flex items-center justify-center text-xl font-bold">EMPEREUR</div>
+            <div class="bg-gray-200 border-2 border-gray-300 w-24 h-16 md:w-32 md:h-20 flex items-center justify-center text-xl font-bold">TALON</div>
+            <div class="bg-gray-200 border-2 border-gray-300 w-24 h-16 md:w-32 md:h-20 flex items-center justify-center text-xl font-bold">ZÉRO</div>
+            <div class="bg-gray-200 border-2 border-gray-300 w-24 h-16 md:w-32 md:h-20 flex items-center justify-center text-xl font-bold">GLACE</div>
+            <div class="bg-gray-200 border-2 border-gray-300 w-24 h-16 md:w-32 md:h-20 flex items-center justify-center text-xl font-bold">ABEILLE</div>
+            <!-- Ajoute d'autres cartes ici -->
+        </div>
+
+        <!-- Équipe bleue (Haut droite sur grand écran, pleine largeur sur mobile) -->
+        <div class="bg-blue-700 text-white p-4 rounded-lg w-full md:w-1/5 flex flex-col items-center">
+            <div class="flex items-center gap-2">
+                <img src="https://via.placeholder.com/50" alt="Espion bleu" class="rounded-lg">
+                <span class="text-3xl font-bold">9</span>
+            </div>
+            <div class="mt-4 w-full">
+                <button class="bg-yellow-400 w-full py-2 rounded-lg text-black font-semibold mb-2">Rejoindre en tant qu'agent</button>
+                <button class="bg-yellow-400 w-full py-2 rounded-lg text-black font-semibold">Rejoindre en tant qu'espion</button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

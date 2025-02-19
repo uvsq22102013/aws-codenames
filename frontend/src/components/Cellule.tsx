@@ -88,7 +88,6 @@ const Cellule = ({
           backgroundPosition: 'center',
         }}
       >
-        {/* Overlay */}
         {carteRevelee && (
           <div className="absolute inset-0 bg-black bg-opacity-30 rounded" />
         )}

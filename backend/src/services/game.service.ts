@@ -136,14 +136,19 @@ export async function validerCarte(payload:{carteId:number ,partieId : number,ut
 }
 
 export async function rejoindrePartie(payload:{partieId : number,utilisateurId:number}) {
-    await prisma.membreEquipe.create({
-        data: {
-            utilisateurId: payload.utilisateurId,
-            partieId: payload.partieId,
-            equipe: Equipe.BLEU,
-            role: Role.AGENT,
-        },
-    });
+    const existDeja = await prisma.membreEquipe.findUnique({
+        where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
+    });    
+    if(!existDeja) {
+        await prisma.membreEquipe.create({
+            data: {
+                utilisateurId: payload.utilisateurId,
+                partieId: payload.partieId,
+                equipe: Equipe.BLEU,
+                role: Role.AGENT,
+            },
+        });
+    }
 }
 
 export async function finDeviner(payload:{partieId : number,utilisateurId:number, equipe: Equipe}) {

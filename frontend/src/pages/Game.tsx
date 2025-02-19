@@ -43,8 +43,7 @@ const Game = () => {
   
     socket.emit('rejoindrePartie', { partieId });
   
-    chargerPartie();
-  
+
     const majHandler = () => {
       console.log('majPartie reçue, rechargement...');
       chargerPartie();
@@ -95,7 +94,7 @@ const Game = () => {
   };
 
 
-  if (!partie) return <p>Chargement...</p>;
+  if (!partie)  { chargerPartie(); return <p>Chargement...</p>;}
 
   const equipeUtilisateur = getEquipeUtilisateur();
   const roleUtilisateur = getRoleUtilisateur();
@@ -108,7 +107,7 @@ const Game = () => {
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
         <div className="text-lg font-bold">Joueurs : 👤 {partie.membres.length}</div>
         <div className="flex gap-2 flex-wrap">
-          <button className="bg-yellow-400 px-4 py-2 rounded">🔄 Réinitialiser</button>
+          <button className="bg-yellow-400 px-4 py-2 rounded" >🔄 Réinitialiser</button>
           <button className="bg-yellow-400 px-4 py-2 rounded">📰 Actualités</button>
           <button className="bg-yellow-400 px-4 py-2 rounded">📜 Règles</button>
           <div className="bg-blue-500 px-4 py-2 rounded">{utilisateur.pseudo}</div>
@@ -142,20 +141,55 @@ const Game = () => {
           );
         })}
       </div> */}
+          
+  <div className="w-full h-full flex">
 
-<div className="grid grid-cols-5 gap-[2px] mb-4 place-items-center">
-  {partie.cartes.map((carte: any) => {
+    <div className="bg-red-700 text-white p-4 w-1/5 h-full flex flex-col items-center">
+        <h3 className="font-bold">Agents</h3>
+        {partie.membres
+          .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT')
+          .map((m: any) => (
+            <p key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+          ))}
+        <h3 className="font-bold mt-2">Espions</h3>
+        {partie.membres
+          .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION')
+          .map((m: any) => (
+            <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+          ))}
 
-    return <Cellule
-    key={carte.id}
-    carte={carte}
-    roleUtilisateur={roleUtilisateur}
-    onSelectionner={selectionnerCarte}
-    onValiderCarte={validerCarte}
-    estSelectionnee={carte.selectionId}
-  />
+    </div>
+
+    <div className="grid grid-cols-5 gap-2 bg-gray-800 p-6 rounded-lg flex-1 h-full flex flex-wra  justify-center items-center">
+      {partie.cartes.map((carte: any) => {
+
+        return <Cellule
+        key={carte.id}
+        carte={carte}
+        roleUtilisateur={roleUtilisateur}
+        onSelectionner={selectionnerCarte}
+        onValiderCarte={validerCarte}
+        estSelectionnee={carte.selectionId}
+      />
+    
+    })}
+  </div>
+  <div className="bg-blue-700 text-white p-4 w-1/5 h-full flex flex-col items-center">
+        <h3 className="font-bold">Agents</h3>   
+          {partie.membres    
+            .filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' )    
+            .map((m: any) => (    
+              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+            ))}     
+          <h3 className="font-bold mt-2">Espions</h3>    
+          {partie.membres    
+            .filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' )    
+            .map((m: any) => (    
+              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+            ))}  
+        </div>
+
   
-  })}
 </div>
 
 
@@ -181,43 +215,6 @@ const Game = () => {
           </button>
         </div>
       )}
-
-      {/* Equipe Rouge */}
-
-      <div className="flex">
-        <div className="bg-red-700 p-4 rounded w-1/2 mr-2">
-          <h3 className="font-bold">Agents</h3>
-          {partie.membres
-            .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT')
-            .map((m: any) => (
-              <p key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
-            ))}
-          <h3 className="font-bold mt-2">Espions</h3>
-          {partie.membres
-            .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION')
-            .map((m: any) => (
-              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
-            ))}
-        </div>
-
-        {/* Equipe Bleue */}
-
-
-        <div className="bg-blue-700 p-4 rounded w-1/2 ml-2">    
-          <h3 className="font-bold">Agents</h3>   
-          {partie.membres    
-            .filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' )    
-            .map((m: any) => (    
-              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
-            ))}     
-          <h3 className="font-bold mt-2">Espions</h3>    
-          {partie.membres    
-            .filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' )    
-            .map((m: any) => (    
-              <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
-            ))}  
-        </div>
-      </div>
 
       {/* Historique */}
       <div className="bg-gray-800 p-4 rounded mt-4">     
