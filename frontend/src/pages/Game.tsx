@@ -14,6 +14,7 @@ const Game = () => {
 
   const [motIndice, setMotIndice] = useState('');
   const [nombreMots, setNombreMots] = useState(1);
+  const [indice, setIndice] = useState<any>(null);
   const utilisateur = getUtilisateur();
        
 
@@ -29,8 +30,26 @@ const Game = () => {
       if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
       const data = await res.json();
       setPartie(data);
+      localStorage.setItem('partie', JSON.stringify(data));
     } catch (err) {
       console.error('erreur chargement partie :', err);
+    }
+  };
+  const chargerIndice = async () => {
+    try {
+      const token = getToken();
+
+      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}/indice`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
+      const data = await res.json();
+      setIndice(data);
+      localStorage.setItem('indice', JSON.stringify(data));
+    } catch (err) {
+      console.error('erreur chargement indice :', err);
     }
   };
 
@@ -45,6 +64,7 @@ const Game = () => {
     const majHandler = () => {
       console.log('majPartie reçue, rechargement...');
       chargerPartie();
+      chargerIndice();
     };
   
     socket.on('majPartie', majHandler);
@@ -68,6 +88,10 @@ const Game = () => {
     setNombreMots(1);
   };
 
+  const passerTour = () => {
+    socket.emit('finDeviner', { partieId : Number (partieId) , utilisateurId: utilisateur.id , equipe : getEquipeUtilisateur() });
+  };
+
   const selectionnerCarte = (carteId: number) => {
     const equipe = getEquipeUtilisateur();
     socket.emit('selectionnerCarte', { partieId, carteId, equipe, utilisateurId: utilisateur.id });
@@ -83,22 +107,27 @@ const Game = () => {
   const getRoleUtilisateur = () => {
     return partie?.membres.find((m: any) => m.utilisateurId === utilisateur.id)?.role;
   };
-
   const getRoleEnCours = () => {
-    return partie?.roleEnCours;
+    return partie?.roleEncours;
   };
   const getEquipeEnCours = () => {
-    return partie?.equipeEnCours;
+    return partie?.equipeEncours;
   };
-  
+  const getIndiceEnCours = () => {
+    return partie?.indice;
+  };
 
 
-  if (!partie)  { chargerPartie(); return <p>Chargement...</p>;}
+  if (!partie)  { chargerPartie(); 
+    chargerIndice();
+    return <p>Chargement...</p>;
+  }
 
   const equipeUtilisateur = getEquipeUtilisateur();
   const roleUtilisateur = getRoleUtilisateur();
   const roleEncours = getRoleEnCours();
   const equipeEnCours = getEquipeEnCours();
+  const indiceEnCours = getIndiceEnCours();
 
   return (
     <div className="min-h-screen bg-[#8C2F25] text-white p-4">
@@ -166,6 +195,9 @@ const Game = () => {
         key={carte.id}
         carte={carte}
         roleUtilisateur={roleUtilisateur}
+        roleEncours={roleEncours}
+        equipeUtilisateur={equipeUtilisateur}
+        equipeEnCours={equipeEnCours}
         onSelectionner={selectionnerCarte}
         onValiderCarte={validerCarte}
         estSelectionnee={carte.selectionId}
@@ -189,11 +221,11 @@ const Game = () => {
         </div>
 
   
+
+
 </div>
-
-
       {/* Zone indices - Seulement pour maître espion */}
-      {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === roleUtilisateur && (
+      {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
         <div className="mb-4 bg-gray-800 p-4 rounded">
           <h2 className="text-lg mb-2">Donner un indice</h2>
           <input
@@ -214,8 +246,17 @@ const Game = () => {
           </button>
         </div>
       )}
+      {roleEncours === 'AGENT' ? (
+        <div className="mb-4 bg-gray-800 p-4 rounded">
+          <h2 className="text-lg mb-2">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
+          {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
+          <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded">
+            Valider
+          </button>
+          ) : null}
+        </div>
+      ) : null}
 
-      {/* Historique */}
       <div className="bg-gray-800 p-4 rounded mt-4">     
         <h3 className="text-lg">Historique</h3>
         {partie.actions.map((action: any) => (    

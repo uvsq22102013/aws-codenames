@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 interface CelluleProps {
   carte: any;
   roleUtilisateur: string | undefined;
+  roleEncours: string | undefined;
+  equipeUtilisateur: string | undefined
+  equipeEnCours: string | undefined;
   onSelectionner: (carteId: number) => void;
   onValiderCarte: (carteId: number) => void;
   estSelectionnee?: boolean;
@@ -11,6 +14,9 @@ interface CelluleProps {
 const Cellule = ({
   carte,
   roleUtilisateur,
+  roleEncours,
+  equipeUtilisateur,
+  equipeEnCours,
   onSelectionner,
   onValiderCarte,
   estSelectionnee = false,
@@ -60,7 +66,7 @@ const Cellule = ({
     return 'bg-gray-300 text-black';
   };
 
-  const estCliquable = !carte.revelee && roleUtilisateur === 'AGENT';
+  const estCliquable = !carte.revelee && roleUtilisateur === 'AGENT' && roleEncours === roleUtilisateur && equipeEnCours === equipeUtilisateur;
 
   return (
     <div

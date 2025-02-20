@@ -52,19 +52,32 @@ model Utilisateur {
 }
 
 model Partie {
-  id            Int          @id @default(autoincrement())
-  statut        StatutPartie @default(EN_ATTENTE)
-  createurId    Int
-  dateCreation  DateTime     @default(now())
-  equipeEnCours Equipe       @default(ROUGE)
-  roleEncours   Role         @default(MAITRE_ESPION)
-  langue        String       @default("fr")
+  id             Int            @id @default(autoincrement())
+  statut         StatutPartie   @default(EN_ATTENTE)
+  createurId     Int
+  dateCreation   DateTime       @default(now())
+  equipeEnCours  Equipe         @default(ROUGE)
+  roleEncours    Role           @default(MAITRE_ESPION)
+  langue         String         @default("fr")
+  indice         Indice?        @relation(fields: [indiceId], references: [id])
+  equipeGagnante Equipe?
+  createur       Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")
+  messages       Message[]
+  cartes         Carte[]
+  actions        ActionJeu[]
+  membres        MembreEquipe[]
+  indiceId       Int?
+}
 
-  createur Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")
-  messages Message[]
-  cartes   Carte[]
-  actions  ActionJeu[]
-  membres  MembreEquipe[]
+model Indice {
+  id                        Int          @id @default(autoincrement())
+  createur                  MembreEquipe @relation(fields: [membreEquipeUtilisateurId, membreEquipePartieId], references: [utilisateurId, partieId])
+  mot                       String
+  nbmots                    Int
+  membreEquipeUtilisateurId Int
+  membreEquipePartieId      Int
+
+  Partie Partie[]
 }
 
 model MembreEquipe {
@@ -75,6 +88,7 @@ model MembreEquipe {
 
   utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  Indice      Indice[]
 
   @@id([utilisateurId, partieId])
 }

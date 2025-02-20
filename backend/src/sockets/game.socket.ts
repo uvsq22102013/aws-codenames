@@ -1,7 +1,6 @@
 import { Server, Socket } from 'socket.io';
-import { validerCarte, donnerIndice, selectionnerCarte, changerRole } from '../services/game.service';
-import { Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload } from '../types/game.types';
-import prisma from '../prismaClient';
+import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner} from '../services/game.service';
+import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload } from '../types/game.types';
 export default function gameSocket(io: Server, socket: Socket) {
   console.log(`User connecté : ${socket.id}`);
 
@@ -17,9 +16,7 @@ export default function gameSocket(io: Server, socket: Socket) {
   
   socket.on('donnerIndice', async (data: Indice_Payload) => {
     const partID = Number(data.partieId);
-    const membre = await prisma.membreEquipe.findUnique({
-      where: { utilisateurId_partieId: { utilisateurId: data.utilisateurId, partieId: partID } },
-    });
+    const membre = await trouverMembreEquipe({partieId:partID, utilisateurId:data.utilisateurId});
   
     if (!membre || membre.role !== 'MAITRE_ESPION') {
       console.log('Tentative interdite : No n espion');
@@ -27,7 +24,8 @@ export default function gameSocket(io: Server, socket: Socket) {
     }
 
     await donnerIndice(data);
-    console.log(`Back socket: Indice donné : ${data.mot} (${data.nombreMots})`);
+    console.log(`Back socket: Indice donné : ${data.motDonne} (${data.nombreMots})`);
+    
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
     console.log(`Back socket: majPartie apres indice envoyé`);
   });
@@ -55,8 +53,23 @@ export default function gameSocket(io: Server, socket: Socket) {
 
   socket.on('lancerPartie', (data) => {
     const { partieId } = data;
+    lancerPartie(partieId);
     console.log(`Partie ${partieId} lancée`);
     io.to(`partie-${partieId}`).emit('partieLancee', { partieId });
+  });
+
+  socket.on('recupererDernierIndice', (data) => {
+    const { partieId } = data;
+    const indice = recupererDernierIndice(partieId);
+    const indiceJson = JSON.stringify(indice); // Convert the indice object to JSON
+    io.to(`partie-${partieId}`).emit('dernierIndice', { indice: indiceJson }); // Emit the JSON representation of the indice
+    console.log(`Indice envoyer`);
+  });
+
+  socket.on('finDeviner', async (data : FinDeviner_Payload) => {
+    const { partieId } = data;
+    finDeviner(data);
+    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
   });
 
   

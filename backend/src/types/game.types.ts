@@ -5,10 +5,10 @@ import { Equipe, TypeCarte, Role, TypeAction, StatutPartie } from '@prisma/clien
 
 // Type indice ce que l'espion donne comme indice avec le nombre de mots
 export type Indice_Payload = {
-  mot:string, 
-  nombreMots:number, 
   partieId : number, 
   utilisateurId:number,
+  motDonne:string, 
+  nombreMots:number, 
   equipe : Equipe
   };
   
