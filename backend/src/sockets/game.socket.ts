@@ -1,6 +1,13 @@
 import { Server, Socket } from 'socket.io';
 import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner} from '../services/game.service';
 import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload } from '../types/game.types';
+
+// const crypterData = (data: any, publicKey: string) => {
+//   const encryptor = new JSEncrypt();
+//   encryptor.setPublicKey(publicKey);
+//   return encryptor.encrypt(JSON.stringify(data)); // convertir  l'objet en string avant chiffrement
+// };
+
 export default function gameSocket(io: Server, socket: Socket) {
   console.log(`User connecté : ${socket.id}`);
 

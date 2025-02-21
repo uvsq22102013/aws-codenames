@@ -177,7 +177,7 @@ const Game = () => {
         {partie.membres
           .filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT')
           .map((m: any) => (
-            <p key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+            <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
           ))}
         <h3 className="font-bold mt-2">Espions</h3>
         {partie.membres
