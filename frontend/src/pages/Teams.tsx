@@ -32,7 +32,7 @@ export default function Teams() {
     try {  
       const res = await axios.get(`http://localhost:3000/api/teams/${gameId}`, {
       });
-  
+      
       setJoueurs(res.data);
     } catch (err) {
       console.error('Erreur chargement des membres :', err);

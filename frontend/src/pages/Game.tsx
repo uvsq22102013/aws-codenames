@@ -107,7 +107,7 @@ const Game = () => {
     socket.emit('validerCarte', { partieId : partieIdNumber, carteId, equipe, utilisateurId: utilisateur.id });
   };
   const renitPartie = () => {
-    socket.emit('renitPartie', partieIdNumber);
+    socket.emit('renitPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
   };
   const getEquipeUtilisateur = () => {
     return partie?.membres.find((m: any) => m.utilisateurId === utilisateur.id)?.equipe;

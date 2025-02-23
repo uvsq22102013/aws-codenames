@@ -32,6 +32,36 @@ export async function gameOver(partieId:number) {
     return partie?.statut === StatutPartie.TERMINEE;
 }
 
+export async function changerHost(partieId:number, utilisateurId:number) {
+    await prisma.partie.update({
+        where : {id: partieId},
+        data:{
+            createurId : utilisateurId,
+        },
+    });
+}
+export async function virerJoueur(partieId:number, utilisateurId:number) {
+    await prisma.membreEquipe.delete({
+        where: {utilisateurId_partieId: {utilisateurId, partieId}},
+    });
+}
+
+
+export async function devenirSpectateur(payload:{partieId:number, utilisateurId:number}) {
+    await prisma.membreEquipe.delete({
+        where: {utilisateurId_partieId: {utilisateurId:payload.utilisateurId, partieId:payload.partieId}},
+    });
+    return payload.partieId;
+}
+
+export async function getHost(partieId:number) {
+    const partie = await prisma.partie.findUnique({
+        where: {id:partieId},
+        select: {createurId: true, id: true},
+    });
+    return partie?.createurId;
+}
+
 export async function getPartiePourUtilisateur(partieId: number, utilisateurId: number) {
     const partie = await prisma.partie.findUnique({
     where: { id: partieId },
@@ -153,6 +183,17 @@ export async function selectionnerCarte(payload:{carteId:number ,partieId : numb
         }
     });
 }
+
+export async function deselectionnerCarte(payload:{carteId:number ,partieId : number,utilisateurId:number, equipe: Equipe}) {
+
+    await prisma.carte.update({
+        where: {id:payload.carteId},
+        data: {
+            selectionId: undefined,
+        }
+    });
+}
+
 export async function validerCarte(payload:{carteId:number ,partieId : number,utilisateurId:number, equipe: Equipe}) {
     const equipeEnCoursconst = await prisma.partie.findUnique({
         where: { id: payload.partieId },

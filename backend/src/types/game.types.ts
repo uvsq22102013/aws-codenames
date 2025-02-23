@@ -31,3 +31,24 @@ export type Indice_Payload = {
     utilisateurId:number, 
     equipe: Equipe
   };
+
+  export type changerHost_Payload = {
+    partieId: number,
+    utilisateurId: number
+    newHostId: number
+  };
+
+  export type virerJoueur_Payload = {
+    partieId: number,
+    utilisateurId: number
+    joueurId: number
+  };
+
+  export type renitPartie_Payload = {
+    partieId: number,
+    utilisateurId: number
+  };
+ export type devenirSpectateur_Payload = {
+    partieId: number,
+    utilisateurId: number
+  };
