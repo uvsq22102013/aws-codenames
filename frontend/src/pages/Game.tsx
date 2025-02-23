@@ -1,11 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { getUtilisateur } from '../../utils/utilisateurs';
 import { getToken } from '../../utils/token';
 import { useParams } from 'react-router-dom';
 import Cellule from '../components/Cellule';
+import Button from '../components/Buttons';
 
 const socket = io('http://localhost:3000');
 
@@ -13,6 +14,7 @@ const Game = () => {
   const { partieId } = useParams();
   const partieIdNumber = Number(partieId);
   const [partie, setPartie] = useState<any>(null);
+  const [cartes, setCartes] = useState<any>(null);
 
   const [motIndice, setMotIndice] = useState('');
   const [nombreMots, setNombreMots] = useState(1);
@@ -32,6 +34,7 @@ const Game = () => {
       if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
       const data = await res.json();
       setPartie(data);
+      setCartes(data.cartes);
       localStorage.setItem('partie', JSON.stringify(data));
     } catch (err) {
       console.error('erreur chargement partie :', err);
@@ -48,6 +51,7 @@ const Game = () => {
       });
       if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
       const data = await res.json();
+      if (!data) return;
       setIndice(data);
       localStorage.setItem('indice', JSON.stringify(data));
     } catch (err) {
@@ -102,6 +106,9 @@ const Game = () => {
     const equipe = getEquipeUtilisateur();
     socket.emit('validerCarte', { partieId : partieIdNumber, carteId, equipe, utilisateurId: utilisateur.id });
   };
+  const renitPartie = () => {
+    socket.emit('renitPartie', partieIdNumber);
+  };
   const getEquipeUtilisateur = () => {
     return partie?.membres.find((m: any) => m.utilisateurId === utilisateur.id)?.equipe;
   };
@@ -137,12 +144,15 @@ const Game = () => {
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
         <div className="text-lg font-bold">Joueurs : 👤 {partie.membres.length}</div>
         <div className="flex gap-2 flex-wrap">
-          <button className="bg-yellow-400 px-4 py-2 rounded" >🔄 Réinitialiser</button>
-          <button className="bg-yellow-400 px-4 py-2 rounded">📰 Actualités</button>
-          <button className="bg-yellow-400 px-4 py-2 rounded">📜 Règles</button>
+        <Button onClick={renitPartie}  variant="solid" color="yellow">🔄 Réinitialiser</Button>    
+        <Button   variant="solid" color="yellow">📜 Règles</Button>    
           <div className="bg-blue-500 px-4 py-2 rounded">{utilisateur.pseudo}</div>
         </div>
       </div>
+      <h1 className="text-2xl  bg-[#2c1a15] font-bold text-center  text-gray-400">
+        L'espion adverse est en train de jouer, veuillez attendre votre tour...
+      </h1>
+      
 
       {/* Grille des mots */}
       {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
@@ -191,7 +201,7 @@ const Game = () => {
     </div>
 
     <div className="grid grid-cols-5 gap-2 bg-gray-800 p-6 rounded-lg flex-1 h-full flex flex-wra  justify-center items-center">
-      {partie.cartes.map((carte: any) => {
+      {cartes.map((carte: any) => {
 
         return <Cellule
         key={carte.id}

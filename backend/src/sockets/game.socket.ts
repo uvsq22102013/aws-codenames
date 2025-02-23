@@ -1,5 +1,7 @@
 import { Server, Socket } from 'socket.io';
-import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner} from '../services/game.service';
+// import { JSEncrypt } from 'jsencrypt';
+import {renitPartie} from '../utils/creationPartie';
+import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie} from '../services/game.service';
 import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload } from '../types/game.types';
 
 // const crypterData = (data: any, publicKey: string) => {
@@ -10,7 +12,6 @@ import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePa
 
 export default function gameSocket(io: Server, socket: Socket) {
   console.log(`User connecté : ${socket.id}`);
-
   socket.on('rejoindrePartie', (data: RejoindrePartie_Payload) => {
     console.log(`Joueur a rejoint la partie ${data.partieId}`);
     socket.join(`partie-${data.partieId}`);
@@ -18,7 +19,15 @@ export default function gameSocket(io: Server, socket: Socket) {
   
   socket.on('quitterPartie', (data: RejoindrePartie_Payload) => {
     console.log(`Joueur a quitté la partie ${data.partieId}`);
+    quitterPartie(data.partieId, data.utilisateurId);
     socket.leave(`partie-${data.partieId}`);
+  });
+
+  socket.on('renitPartie', async (data: number) => {
+    console.log(`Renitialisation de la partie ${data}`);
+    const partie = await renitPartie(data);
+    console.log(`Partie ${JSON.stringify(partie)} renitialisée`);
+    io.to(`partie-${data}`).emit('majPartie', { partieId: partie.id });
   });
   
   socket.on('donnerIndice', async (data: Indice_Payload) => {
@@ -44,6 +53,7 @@ export default function gameSocket(io: Server, socket: Socket) {
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
     console.log(`Back socket: majPartie apres carte sélectionnée`);
   });
+
   socket.on('validerCarte', async (data: SelectionCarte_Payload) => {
     console.log(`Back socket: validerCarte ${data.carteId} pour partie ${data.partieId} par utilisateur ${data.utilisateurId}`);
     await validerCarte(data);

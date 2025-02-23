@@ -40,11 +40,11 @@ router.get('/:id/indice', verifierToken , async (req, res) => {
   try {
     const indice = await recupererDernierIndice(partieId);
 
-    if (!indice) {
-      console.log(`Back: fetch indice de la partie  ${partieId} not found`);
-      res.status(404).json({ message: 'indice non trouvée' });
-      return ;
-    }
+    // if (!indice) {
+    //   console.log(`Back: fetch indice de la partie  ${partieId} not found`);
+    //   res.status(404).json({ message: 'indice non trouvée' });
+    //   return ;
+    // }
     console.log(`Back: fetch indice de la partie ${partieId} done`);
     res.json(indice);
   } catch (error) {

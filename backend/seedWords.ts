@@ -34,8 +34,11 @@ const importWords = async (filePath: string, lang: string) => {
 
 const seedDatabase = async () => {
     console.log("Importation des mots...");
+    await prisma.mot.deleteMany({});
     await importWords(path.join(__dirname, 'data/mots_fr.txt'), 'fr');
     await importWords(path.join(__dirname, 'data/mots_en.txt'), 'en');
+    await importWords(path.join(__dirname, 'data/mots_ar.txt'), 'ar');
+    await importWords(path.join(__dirname, 'data/mots_tn.txt'), 'tn');
     console.log("Importation terminée !");
     await prisma.$disconnect();
 };

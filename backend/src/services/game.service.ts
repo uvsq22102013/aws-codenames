@@ -17,8 +17,19 @@ export async function lancerPartie(partieId:number) {
         data:{
             statut : StatutPartie.EN_COURS,
         },
-
     });
+}
+
+export async function quitterPartie(partieId : number,utilisateurId : number ) {
+    await prisma.membreEquipe.delete({
+        where : {utilisateurId_partieId: { utilisateurId: utilisateurId, partieId: partieId }},
+    });
+}
+export async function gameOver(partieId:number) {
+    const partie = await prisma.partie.findUnique({
+        where: {id:partieId},
+    });
+    return partie?.statut === StatutPartie.TERMINEE;
 }
 
 export async function getPartiePourUtilisateur(partieId: number, utilisateurId: number) {
@@ -86,7 +97,7 @@ export async function donnerIndice(payload: {partieId : number, utilisateurId:nu
             nombreMots: payload.nombreMots,
         },
     });
-    const membreequipe = await trouverMembreEquipe({partieId:payload.partieId, utilisateurId:payload.utilisateurId});
+const membreequipe = await trouverMembreEquipe({partieId:payload.partieId, utilisateurId:payload.utilisateurId});
     if ( membreequipe){
         const indiceconst = await prisma.indice.create({
             data: {
