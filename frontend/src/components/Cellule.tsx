@@ -71,7 +71,7 @@ const Cellule = ({
 
   return (
     <div
-      className={`relative w-[55px] h-[45px] sm:w-[70px] sm:h-[55px] text-[8px] sm:text-[10px] flex items-center justify-center rounded border ${
+      className={`relative w-[80px] h-[60px] sm:w-[140px] sm:h-[75px] text-[20px] sm:text-[15px] flex items-center justify-center rounded border ${
         estSelectionnee ? 'border-yellow-400 border-4' : 'border-gray-400'
       } transition-all duration-300 ease-in-out`}
     >
