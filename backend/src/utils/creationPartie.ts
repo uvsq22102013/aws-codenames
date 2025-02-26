@@ -35,12 +35,13 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
     await Promise.all(cartesPromises);
     return cartesPromises;
   }
-  export async function creerPartieAvecCartes(createurId: number, langue: string) {
+  export async function creerPartieAvecCartes(createurId: number, langue: string, hashedPin: string) {
     const partie = await prisma.partie.create({
       data: {
         createurId,
         statut: StatutPartie.EN_ATTENTE,
         langue,
+        pinHash : hashedPin,
         membres: {
           create: {
             utilisateurId: createurId,

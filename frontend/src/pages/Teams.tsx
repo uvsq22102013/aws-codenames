@@ -27,6 +27,10 @@ export default function Teams() {
   const storedCreatorId = localStorage.getItem("createurId");
   const createurId = storedCreatorId ? parseInt(storedCreatorId, 10) : null;
 
+  //On récupère le code pin de la partie
+  const storedGamePin = localStorage.getItem("gamePin");
+  const gamePin = storedGamePin ? parseInt(storedGamePin, 10) : null;
+
   // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
     try {  
@@ -182,6 +186,11 @@ export default function Teams() {
           Lancer la partie
         </button>
       )}
+      {utilisateur.id === createurId && (
+        <div className="absolute top-4 left-4 bg-gray-800 text-white p-2 rounded">
+          <span className="text-xl">Game PIN: {gamePin ? gamePin : "PIN non défini"}</span>
+        </div>
+        )}
     </div>
   );
 }

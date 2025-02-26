@@ -10,10 +10,11 @@ export default function HomePage() {
 
 
   const [roomCode, setRoomCode] = useState("");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  //langue du jeu
+  const [language, setLanguage] = useState<"fr" | "en">("fr"); 
+  const [gamePin, setGamePin] = useState("");
 
-    //langue du jeu
-    const [language, setLanguage] = useState<"fr" | "en">("fr"); 
 
 
     //dictionnaire des langues (anglais ou francais)
@@ -39,11 +40,15 @@ export default function HomePage() {
         errorJoin: "Error joining the game",
       },
     };
+  
+  function generatePin() {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+  }
 
   //fonction pour créer une nouvelle partie
-
   const handleCreateRoom = async () => {
     const utilisateur = getUtilisateur();
+    const gamePin = generatePin();
 
     try {
 
@@ -51,12 +56,14 @@ export default function HomePage() {
       const response = await axios.post("http://localhost:3000/api/join/create", {
 
         createurId: utilisateur.id,
+        gamePin: gamePin,
 
       });
 
       //message qui confirme que la partie a bien été créée
        alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
       localStorage.setItem("createurId", response.data.createurId);
+      localStorage.setItem("gamePin", gamePin);
       //on renvoi le joueur vers le lien de la partie
       navigate(`/teams/${response.data.id}`);
 
@@ -98,7 +105,7 @@ const utilisateur = getUtilisateur();
 
       const response = await axios.post("http://localhost:3000/api/join/join-game", {
         roomCode,
-        playerId: utilisateur.id,
+        gamePin, 
       });
 
       //message dde confirmation qu'on a bien rejoint la partie
@@ -156,6 +163,14 @@ const utilisateur = getUtilisateur();
           className="px-3 py-2 border border-gray-600 rounded mb-2 text-black"
           value={roomCode}
           onChange={(e) => setRoomCode(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder={"Code PIN"}
+          className="px-3 py-2 border border-gray-600 rounded mb-2 text-black"
+          value={gamePin}
+          onChange={(e) => setGamePin(e.target.value)}
         />
 
         <button

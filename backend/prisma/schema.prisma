@@ -60,6 +60,7 @@ model Partie {
   roleEncours    Role           @default(MAITRE_ESPION)
   langue         String         @default("fr")
   indice         Indice?        @relation(fields: [indiceId], references: [id])
+  pinHash        String         @default("")
   equipeGagnante Equipe?
   createur       Utilisateur    @relation(fields: [createurId], references: [id], onDelete: Cascade, name: "UtilisateurParties")
   messages       Message[]
