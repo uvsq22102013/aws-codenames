@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import logo from '../assets/Logo_CodeNames_blanc.svg';
+import "../index.css"
+
 export default function Home() {
   //HTML utilisant Tailwind css de la page d'Accueil  
   return (

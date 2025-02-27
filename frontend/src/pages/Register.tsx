@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/Logo_CodeNames_blanc.svg';
 import axios from "axios";
+import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
 
 export default function Register() {
   const [pseudo, setPseudo] = useState("");//Pseudo
@@ -95,45 +99,53 @@ export default function Register() {
   };
   //HTML utilisant Tailwind css de la page de Inscription
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
-      {/*Pour placer le logo en haut a gauche*/}
-      <div className="absolute top-4 left-4">
-        <img src={logo} alt="Codenames Logo" className="w-20 h-20" /> {/* Ajustez la taille ici */}
-      </div>
-      <div className="grid grid-cols-2 gap-8 p-8 w-full max-w-7xl">
-        {/*Partie qui se trouve a gauche*/}
-        <div className="p-6 flex flex-col justify-center">
-          <h1 className="text-gray-400 text-6xl font-bold mt-2">Rejoignez nous!!</h1>
-          <p className="text-gray-600 text-3xl font-bold mt-2">En rejoignant CodeNames, vous pourrez défier vos amis dans un jeu de mots et de stratégie où chaque indice compte. Formez des équipes, trouvez vos agents secrets avant l'adversaire et évitez l'assassin pour mener votre équipe à la victoire !</p>
-        </div>
+    <section className={styles.section}> 
+      <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> 
+      <div className={styles.signin}>
+      <div className={styles.content}>
 
-        {/*Partie qui se trouve a droite*/}
-        <div className="flex flex-col items-center bg-gray-800 p-6 rounded-lg shadow-md justify-center">
-        {/*Partie Inscription*/}
-        <h2 className="text-gray-600 text-5xl font-bold mb-2">Inscription</h2>
+          <h2>Sign Up</h2> 
+
+          <div className={styles.form}>
+  
+
           {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
-          <input type="text" placeholder="Pseudo" className="border p-2 mt-2 w-full bg-gray-700 text-white rounded" onChange={(e) => setPseudo(e.target.value)} />
-          <input type="email" placeholder="Email" className="border p-2 mt-2 w-full bg-gray-700 text-white rounded" onChange={handleEmailChange} />
+          <div className={styles.inputBox}>
+            <input type="text"  onChange={(e) => setPseudo(e.target.value)} required/><i>Pseudo</i> 
+          </div> 
+
           {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-          <div className="relative mt-2 w-full">
-            <input type={showPassword ? "text" : "password"} placeholder="Mot de passe" className="border p-2 w-full bg-gray-700 text-white rounded pr-10" onChange={handlePasswordChange} />
-            <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "🙈" : "👁️"}</button>
-            {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+          <div className={styles.inputBox}>
+            <input type="email"  onChange={handleEmailChange} required/><i>Email</i> 
           </div>
-          <div className="relative mt-2 w-full">
-            <input type={showPassword2 ? "text" : "password"} placeholder="Confirmez le mot de passe" className="border p-2 w-full bg-gray-700 text-white rounded pr-10" onChange={handlePassword2Change} />
+
+          {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+          <div className={styles.inputBox}>
+            <input type={showPassword ? "text" : "password"} onChange={handlePasswordChange} required/> <i>Password</i> 
+            <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword(!showPassword)}> {showPassword ? "🙈" : "👁️"}</button>
+          </div> 
+
+          {passwordMatchError && <p className="text-red-500 text-sm mt-1">{passwordMatchError}</p>}
+          <div className={styles.inputBox}>
+            <input type={showPassword2 ? "text" : "password"}  onChange={handlePassword2Change} required/><i>Password</i> 
             <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword2(!showPassword2)}>{showPassword2 ? "🙈" : "👁️"}</button>
-            {passwordMatchError && <p className="text-red-500 text-sm mt-1">{passwordMatchError}</p>}
           </div>
-          <button onClick={handleRegister} className="bg-green-500 text-white p-2 mt-4 w-full disabled:bg-gray-400" disabled={!pseudo || !email || !password || !password2 || emailError !== "" || passwordError !== "" || passwordMatchError !== ""}>S'inscrire</button>
-          {/*Partie redirigeant vers l'inscription*/}
-          <div className="w-full border-t border-gray-700 mt-4 pt-4">
-            <p className="text-gray-600 text-2xl font-bold text-center"> Vous avez déjà un compte ? </p>
-            <p className="text-gray-600 text-2xl font-bold text-center mb-6"> Connectez-vous! </p> 
-            <button onClick={() => { window.location.href = "/login";}} className="bg-blue-500 text-white p-2 w-full rounded hover:bg-blue-600" > Se Connecter </button>
-          </div>
-        </div>
-      </div>
-    </div>
+
+          <div className={styles.links}><a href=""></a><a href="/login">Signin</a> 
+          </div> 
+            <div className={styles.inputBox}>
+
+              <input onClick={handleRegister} disabled={!pseudo || !email || !password || !password2 || emailError !== "" || passwordError !== "" || passwordMatchError !== ""} type="submit" value="Login"/> 
+
+            </div> 
+
+          </div> 
+
+        </div> 
+
+      </div> 
+
+    </section>
+    
   );
 }

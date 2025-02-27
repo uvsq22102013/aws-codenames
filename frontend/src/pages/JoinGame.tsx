@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
 import { getToken } from "../../utils/token";
+import "../index.css"
 // import { io } from 'socket.io-client';
 
 // const socket = io('http://localhost:3000');
@@ -134,6 +135,7 @@ export default function HomePage() {
   //les lignes qui suive concernent l'interface utilisateiur sur la page d'accueil
 
   return (
+
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
 
 
@@ -170,5 +172,6 @@ export default function HomePage() {
         </button>
       </div>
     </div>
+
   );
 }

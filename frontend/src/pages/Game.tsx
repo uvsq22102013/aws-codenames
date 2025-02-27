@@ -7,6 +7,7 @@ import { getToken, removeToken } from '../../utils/token';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cellule from '../components/Cellule';
 import Button from '../components/Buttons';
+import "../index.css"
 
 const socket = io('http://localhost:3000');
 
