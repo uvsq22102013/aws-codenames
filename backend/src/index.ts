@@ -22,7 +22,12 @@ const io = new Server(server, {
   allowEIO3: true,
 });
 
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"],
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.use("/words", wordsRoutes);
