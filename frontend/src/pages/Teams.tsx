@@ -5,8 +5,11 @@ import { getUtilisateur } from '../../utils/utilisateurs';
 import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-const backendUrl = import.meta.env.BACKEND_URL || 'http://localhost:3000';
-const socket = io(backendUrl);
+const backendUrl = import.meta.env.BACKEND_URL || "http://localhost:3000";
+const socket = io(backendUrl, {
+  transports: ["websocket"],  
+  withCredentials: true,
+});
 
 interface Joueur {
   utilisateur: {

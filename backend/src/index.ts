@@ -14,7 +14,12 @@ import teamsRoutes from "./routes/teams";
 const app = express();
 const server = http.createServer(app); // Permet de brancher socket.io
 const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: { 
+    origin: "*" ,
+    methods : ["GET", "POST"],
+    credentials : true,
+  },
+  allowEIO3: true,
 });
 
 app.use(cors());

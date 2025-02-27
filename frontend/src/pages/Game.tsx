@@ -8,8 +8,11 @@ import { useParams } from 'react-router-dom';
 import Cellule from '../components/Cellule';
 import Button from '../components/Buttons';
 
-const backendUrl = import.meta.env.BACKEND_URL || 'http://localhost:3000';
-const socket = io(backendUrl);
+const backendUrl = import.meta.env.BACKEND_URL || "http://localhost:3000";
+const socket = io(backendUrl, {
+  transports: ["websocket"],  
+  withCredentials: true, 
+});
 
 const Game = () => {
   const { partieId } = useParams();
