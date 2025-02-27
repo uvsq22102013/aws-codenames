@@ -13,8 +13,12 @@ export default defineConfig({
         ws: true,
       },
     },
-    allowedHosts: [
-      process.env.VITE_FRONTEND_URL || "https://aws-codenames-frontend.onrender.com"
-    ],
+    cors: {
+      origin: process.env.VITE_FRONTEND_URL || "https://aws-codenames-frontend.onrender.com",
+      credentials: true,   
+    },
+    hmr: {
+      clientPort: 443, 
+    },
   },
 });
