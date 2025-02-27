@@ -13,8 +13,8 @@ export default defineConfig({
         ws: true,
       },
     },
-    cors: {
-      origin: process.env.FRONTEND_URL || "https://aws-codenames-frontend.onrender.com",
-    },
+    allowedHosts: [
+      process.env.VITE_FRONTEND_URL || "https://aws-codenames-frontend.onrender.com"
+    ],
   },
 });
