@@ -5,7 +5,8 @@ import { getUtilisateur } from '../../utils/utilisateurs';
 import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3000');
+const backendUrl = import.meta.env.BACKEND_URL || 'http://localhost:3000';
+const socket = io(backendUrl);
 
 interface Joueur {
   utilisateur: {
@@ -30,7 +31,7 @@ export default function Teams() {
   // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
     try {  
-      const res = await axios.get(`http://localhost:3000/api/teams/${gameId}`, {
+      const res = await axios.get(`/api/teams/${gameId}`, {
       });
       
       setJoueurs(res.data);

@@ -39,6 +39,7 @@
         "jsencrypt": "^3.3.2",
         "jsonwebtoken": "^9.0.2",
         "node-rsa": "^1.1.1",
+        "postgres": "^3.4.5",
         "socket.io": "^4.8.1",
         "sqlite3": "^5.1.7"
     }

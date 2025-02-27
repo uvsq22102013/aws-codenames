@@ -2,9 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
-import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:3000');
 
 export default function HomePage() {
 
@@ -48,7 +45,7 @@ export default function HomePage() {
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create", {
+      const response = await axios.post("/api/join/create", {
 
         createurId: utilisateur.id,
 

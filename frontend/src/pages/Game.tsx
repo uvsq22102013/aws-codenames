@@ -8,7 +8,8 @@ import { useParams } from 'react-router-dom';
 import Cellule from '../components/Cellule';
 import Button from '../components/Buttons';
 
-const socket = io('http://localhost:3000');
+const backendUrl = import.meta.env.BACKEND_URL || 'http://localhost:3000';
+const socket = io(backendUrl);
 
 const Game = () => {
   const { partieId } = useParams();
@@ -26,7 +27,7 @@ const Game = () => {
     try {
       const token = getToken();
 
-      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, {
+      const res = await fetch(`/api/parties/${partieIdNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,7 +45,7 @@ const Game = () => {
     try {
       const token = getToken();
 
-      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}/indice`, {
+      const res = await fetch(`/api/parties/${partieIdNumber}/indice`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -18,7 +18,7 @@ export default function Login() {
 
     //Essaye de faire un POST sur back pour gerer la connexion 
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         pseudo: login,
         email: login,
         mdp: password,
