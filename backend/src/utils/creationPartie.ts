@@ -55,7 +55,6 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
     });
   
     await genererCartesPourPartie(partie.id, langue);
-  
     return partie;
   }
   export async function renitPartie(partieId: number) {

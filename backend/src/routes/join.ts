@@ -1,17 +1,15 @@
 import express, { Request, Response } from "express";
 import prisma from "../prismaClient";
-import { Partie , TypeAction,TypeCarte,StatutPartie, Equipe, Role } from "@prisma/client";
 import { creerPartieAvecCartes } from "../utils/creationPartie";
-import { RejoindrePartie_Payload } from "../types/game.types";
-import e from "express";
-import { rejoindrePartie } from "../services/game.service";
+import verifierToken, { RequestAvecUtilisateur } from "../utils/verifierToken";
+import { StatutPartie } from "@prisma/client";
 
 const router = express.Router();
 
 
 // Route pour créer une partie
-router.post("/create", async (req: Request, res: Response): Promise<void>  => {
-    const { createurId } = req.body;
+router.post("/create", verifierToken , async (req, res) => {
+    const createurId = (req as RequestAvecUtilisateur).user!.id;
 
     // Vérifier si createurId est bien fourni et valide
     if (!createurId || typeof createurId !== "number") {
@@ -33,7 +31,7 @@ router.post("/create", async (req: Request, res: Response): Promise<void>  => {
         // Création de la partie avec Prisma
         const partie = await creerPartieAvecCartes(createurId, "fr");
 
-        res.status(201).json(partie); // 201 = Création réussie
+        res.json(partie); // 201 = Création réussie
     } catch (error: any) {
         console.error("Erreur lors de la création de la partie :", error);
         res.status(500).json({ error: error.message || "Erreur serveur" });

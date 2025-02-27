@@ -2,9 +2,10 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
-import { io } from 'socket.io-client';
+import { getToken } from "../../utils/token";
+// import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3000');
+// const socket = io('http://localhost:3000');
 
 export default function HomePage() {
 
@@ -43,35 +44,37 @@ export default function HomePage() {
   //fonction pour créer une nouvelle partie
 
   const handleCreateRoom = async () => {
-    const utilisateur = getUtilisateur();
-
+    const token = getToken();
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create", {
-
-        createurId: utilisateur.id,
-
+      const response = await axios.post("http://localhost:3000/api/join/create",{}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-
+    
+      if (response.status !== 200) {
+        throw new Error(`Erreur HTTP : ${response.status}`);
+      }
       //message qui confirme que la partie a bien été créée
-       alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
-      localStorage.setItem("createurId", response.data.createurId);
+      alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
+      const data = JSON.stringify(response.data);
+      localStorage.setItem("createurId", response.data);
+
+      localStorage.setItem("partie", data);
       //on renvoi le joueur vers le lien de la partie
       navigate(`/teams/${response.data.id}`);
-
-      
     } catch (error) {
 
-//si l'erreur vient d'axios on génère un message d'erreur 
+    //si l'erreur vient d'axios on génère un message d'erreur 
       if (axios.isAxiosError(error)) {
-
 
         alert(error.response?.data?.error || " Erreur lors de la création de la partie (Axios)");
       } else {
 
-//dans le cas contraire 
-        alert("Erreur lors de la création de la partie");
+      //dans le cas contraire 
+        alert(`front Erreur lors de la création de la partie: ${error}`);
 
       }
     }
@@ -83,7 +86,7 @@ export default function HomePage() {
   const handleJoinRoom = async () => {
 
 // verifie si l'utilisateur entre quelque chose
-const utilisateur = getUtilisateur();
+    const utilisateur = getUtilisateur();
 
     if (roomCode.trim() === "") {
 
@@ -104,6 +107,7 @@ const utilisateur = getUtilisateur();
       //message dde confirmation qu'on a bien rejoint la partie
       alert(`Vous avez rejoint la partie ${response.data.game.id}`);
       localStorage.setItem("createurId", response.data.createurId);
+      localStorage.setItem("partie", response.data);
       navigate(`/teams/${response.data.game.id}`);
 
     } catch (error) {

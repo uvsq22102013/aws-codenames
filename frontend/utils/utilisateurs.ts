@@ -1,6 +1,11 @@
-export const getUtilisateur = () => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+  export const getUtilisateur = () => {
     const utilisateurJSON = localStorage.getItem('utilisateur');
-    return utilisateurJSON ? JSON.parse(utilisateurJSON) : null;
+    if (!utilisateurJSON) {
+      return null;
+    }
+    const utilisateur = JSON.parse(utilisateurJSON);
+    return utilisateur;
   };
   
   

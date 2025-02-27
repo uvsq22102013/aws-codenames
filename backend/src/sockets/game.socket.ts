@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import {renitPartie} from '../utils/creationPartie';
 import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte} from '../services/game.service';
 import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload } from '../types/game.types';
+import { verifierTokenSocket } from '../utils/verifierToken';
 
 // const crypterData = (data: any, publicKey: string) => {
 //   const encryptor = new JSEncrypt();
@@ -107,7 +108,6 @@ export default function gameSocket(io: Server, socket: Socket) {
   });
 
   socket.on('choixEquipe', async (data) => {
-    console.log("EMIT rcezucvhgzv");
     await changerRole(data);
     io.to(`partie-${data.partieId}`).emit('majEquipe');
   });
@@ -133,6 +133,11 @@ export default function gameSocket(io: Server, socket: Socket) {
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
   });
 
+  socket.on('verifToken',async (data : string) => {
+    verifierTokenSocket(data);
+    console.log('Token vérifié');
+    socket.emit('tokenVerifie');
+  });
   
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);

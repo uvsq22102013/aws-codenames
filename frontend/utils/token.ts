@@ -3,7 +3,8 @@ export const setToken = (token: string) => {
   };
   
   export const getToken = () => {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    return token;
   };
   
   export const removeToken = () => {

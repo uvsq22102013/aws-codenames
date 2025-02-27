@@ -305,6 +305,13 @@ export async function roleEnCours(payload:{partieId : number}) {
     return partie?.roleEncours;
 }
 
+export async function utilisateurExist(utilisateurId: number, pseudo: string) {
+    const utilisateur = await prisma.utilisateur.findUnique({
+        where: {id :utilisateurId },
+    });
+    return utilisateur?.pseudo === pseudo;
+}
+
 export async function getroleUtilisateur(partieId: number, utilisateurId: number) {
     const membre = await prisma.membreEquipe.findUnique({
         where: {utilisateurId_partieId: {utilisateurId, partieId}},

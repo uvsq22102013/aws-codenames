@@ -21,6 +21,7 @@ export default function Teams() {
   const { partieId } = useParams();
   const gameId = Number(partieId);
   const utilisateur = getUtilisateur();
+
   const navigate = useNavigate();
 
   // On récupère l'id du créateur de la partie dans le localStorage.
@@ -38,8 +39,8 @@ export default function Teams() {
       console.error('Erreur chargement des membres :', err);
     }
   };
-
   useEffect(() => {
+
     if (gameId) {
       // On rejoint la room socket io pour recevoir les maj
       socket.emit('rejoindrePartie', { partieId: gameId });
