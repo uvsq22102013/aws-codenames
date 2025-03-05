@@ -71,7 +71,7 @@ const Cellule = ({
 
   return (
     <div
-      className={`relative w-[80px] h-[60px] sm:w-[140px] sm:h-[75px] text-[20px] sm:text-[15px] flex items-center justify-center rounded border ${
+      className={`relative px-[22%] py-[22%] sm:px-[20%] sm:py-[20%] md:px-[20%] md:py-[20%] text-[55%] sm:text-[70%] md:text-[100%] flex items-center justify-center rounded border ${
         estSelectionnee ? 'border-yellow-400 border-4' : 'border-gray-400'
       } transition-all duration-300 ease-in-out`}
     >
@@ -100,7 +100,7 @@ const Cellule = ({
           <div className="absolute inset-0 bg-black bg-opacity-30 rounded" />
         )}
 
-        <span className="relative font-bold">{carte.mot.mot}</span>
+        <p className="relative font-bold">{carte.mot.mot}</p>
       </div>
 
       {/* BOUTON JAUNE POUR VALIDER */}

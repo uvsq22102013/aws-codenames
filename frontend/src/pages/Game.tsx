@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { getUtilisateur, removeUtilisateur } from '../../utils/utilisateurs';
-import { getToken, removeToken } from '../../utils/token';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { getUtilisateur} from '../../utils/utilisateurs';
+import { getToken } from '../../utils/token';
+import { useParams } from 'react-router-dom';
+import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
-import Button from '../components/Buttons';
-import "../index.css"
 
 const socket = io('http://localhost:3000');
 
@@ -20,85 +20,98 @@ const Game = () => {
   const [motIndice, setMotIndice] = useState('');
   const [nombreMots, setNombreMots] = useState(1);
   const [indice, setIndice] = useState<any>(null);
+  const [joueurSelectionne, setJoueurSelectionne] = useState<string | null>(null);
   const [montrerOptions, setMontrerOption] = useState(false);
   const [montrerJoueurs, setMontrerJoueurs] = useState(false);
   const [montrerBouttonAgentRouge, setmontrerBouttonAgentRouge] = useState(false);
   const [montrerBouttonAgentBleu, setmontrerBouttonAgentBleu] = useState(false);
   const [montrerBouttonEspionRouge, setmontrerBouttonEspionRouge] = useState(false);
   const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
+  const [confirmerReinit, setConfirmerReinit] = useState(false);
+  const navigate = useNavigate();
 
-  const [montrerOptions, setMontrerOption] = useState(false);
-  const [montrerJoueurs, setMontrerJoueurs] = useState(false);
-  const [montrerBouttonAgentRouge, setmontrerBouttonAgentRouge] = useState(false);
-  const [montrerBouttonAgentBleu, setmontrerBouttonAgentBleu] = useState(false);
-  const [montrerBouttonEspionRouge, setmontrerBouttonEspionRouge] = useState(false);
-  const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
+  // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
+  const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT") => {
+    setmontrerBouttonAgentBleu(false);
+    setmontrerBouttonAgentRouge(false);
+    setmontrerBouttonEspionBleu(false);
+    setmontrerBouttonEspionRouge(false);
+
+    // Emission du choix avec socket io pour mettre à jour la BDD et informer les autres joueurs.
+    if(partieIdNumber) {
+      socket.emit('changerEquipe', {
+        team,
+        type,
+        utilisateurId : utilisateur.id,
+        partieId: partieIdNumber,
+      });
+    }
+  } 
+
+  const handleBlueEspionClick = () => {
+    handleChoice("BLEU", "MAITRE_ESPION");
+  };
+
+  const handleBlueAgentClick = () => {
+    handleChoice("BLEU", "AGENT");
+  };
+
+  const handleRedEspionClick = () => {
+    handleChoice("ROUGE", "MAITRE_ESPION");
+  };
+
+  const handleRedAgentClick = () => {
+    handleChoice("ROUGE", "AGENT");
+  };
 
   const handleClickChangeTeam = () => {
-    setMontrerOption(!montrerOptions);
+    setMontrerOption(false);
     if (equipeUtilisateur === 'ROUGE') {
       if (roleUtilisateur === 'AGENT') {
-        setmontrerBouttonAgentBleu(!montrerBouttonAgentBleu);
-        setmontrerBouttonEspionBleu(!montrerBouttonEspionBleu);
+        setmontrerBouttonAgentBleu(true);
+        setmontrerBouttonEspionBleu(true);
       }
       else if (roleUtilisateur === 'MAITRE_ESPION') {
-        setmontrerBouttonEspionBleu(!montrerBouttonEspionBleu);
+        handleBlueEspionClick();
       }
       
     }
     else if (equipeUtilisateur === 'BLEU') {
       if (roleUtilisateur === 'AGENT') {
-        setmontrerBouttonAgentRouge(!montrerBouttonAgentRouge);
-        setmontrerBouttonEspionRouge(!montrerBouttonEspionRouge);
+        setmontrerBouttonAgentRouge(true);
+        setmontrerBouttonEspionRouge(true);
       }
       else if (roleUtilisateur === 'MAITRE_ESPION') {
-        setmontrerBouttonEspionRouge(!montrerBouttonEspionRouge);
+        handleRedEspionClick();
       }
       
     }
   }
   const bouttonJoueurs = () => {
     setMontrerJoueurs(!montrerJoueurs);
+    setMontrerOption(false);
+    setConfirmerReinit(false)
+    if (montrerJoueurs === false) {
+      setJoueurSelectionne(null)
+    }
+  };
+  const afficherConfirmer = () => {
+    setConfirmerReinit(!confirmerReinit);
+    setMontrerJoueurs(false);
+    setMontrerOption(false);
   };
   const bouttonUtilisateur = () => {
     setMontrerOption(!montrerOptions);
+    setMontrerJoueurs(false);
+    setConfirmerReinit(false);
   };
   const utilisateur = getUtilisateur();
-  const token = getToken();
-  const navigate = useNavigate();
-  const handleClickChangeTeam = () => {
-    setMontrerOption(!montrerOptions);
-    if (equipeUtilisateur === 'ROUGE') {
-      if (roleUtilisateur === 'AGENT') {
-        setmontrerBouttonAgentBleu(!montrerBouttonAgentBleu);
-        setmontrerBouttonEspionBleu(!montrerBouttonEspionBleu);
-      }
-      else if (roleUtilisateur === 'MAITRE_ESPION') {
-        setmontrerBouttonEspionBleu(!montrerBouttonEspionBleu);
-      }
-      
-    }
-    else if (equipeUtilisateur === 'BLEU') {
-      if (roleUtilisateur === 'AGENT') {
-        setmontrerBouttonAgentRouge(!montrerBouttonAgentRouge);
-        setmontrerBouttonEspionRouge(!montrerBouttonEspionRouge);
-      }
-      else if (roleUtilisateur === 'MAITRE_ESPION') {
-        setmontrerBouttonEspionRouge(!montrerBouttonEspionRouge);
-      }
-      
-    }
-  }
-  const bouttonJoueurs = () => {
-    setMontrerJoueurs(!montrerJoueurs);
-  };
-  const bouttonUtilisateur = () => {
-    setMontrerOption(!montrerOptions);
-  };
        
 
    const chargerPartie = async () => {
     try {
+      const token = getToken();
+
       const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -115,6 +128,8 @@ const Game = () => {
   };
   const chargerIndice = async () => {
     try {
+      const token = getToken();
+
       const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}/indice`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -131,6 +146,12 @@ const Game = () => {
   };
 
   useEffect(() => {
+    if (!utilisateur) {
+      console.error('Utilisateur non connecté');
+      navigate('/login');
+      return;
+    }
+  
     socket.emit('rejoindrePartie', { partieId });
   
     const majHandler = () => {
@@ -140,9 +161,15 @@ const Game = () => {
     };
   
     socket.on('majPartie', majHandler);
+    socket.on('joueurVire', (data: { joueurId: number }) => {
+      if (data.joueurId === utilisateur.id) {
+        navigate('/join');
+      }
+    });
   
     return () => {
       socket.off('majPartie', majHandler);
+      socket.off('joueurVire');
     };
   }, [partieId, utilisateur]);
   
@@ -172,9 +199,34 @@ const Game = () => {
     const equipe = getEquipeUtilisateur();
     socket.emit('validerCarte', { partieId : partieIdNumber, carteId, equipe, utilisateurId: utilisateur.id });
   };
-
   const renitPartie = () => {
-    socket.emit('renitPartie', partieIdNumber);
+    socket.emit('renitPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
+  };
+
+  const devenirSpec = () => {
+    socket.emit('devenirSpectateur', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
+    setMontrerOption(false);
+  };
+
+  const quitterPartie = () => {
+    socket.emit('quitterPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
+    navigate('/join');
+  };
+
+  const getJoueurIdByPseudo = (pseudo: string) => {
+    const joueur = partie?.membres.find((m: any) => m.utilisateur.pseudo === pseudo);
+    return joueur.utilisateur.id ? joueur.utilisateur.id : null;
+  };
+
+  const expulser = () => {
+    socket.emit('virerJoueur', {partieId : partieIdNumber, utilisateurId: utilisateur.id, joueurId: getJoueurIdByPseudo(joueurSelectionne as string)});
+    setJoueurSelectionne(null);
+    setMontrerJoueurs(false);
+  };
+  const mettreHote = () => {
+    socket.emit('changerHost', {partieId : partieIdNumber, utilisateurId: utilisateur.id, newHostId: getJoueurIdByPseudo(joueurSelectionne as string)});
+    setJoueurSelectionne(null);
+    setMontrerJoueurs(false);
   };
 
   const getEquipeUtilisateur = () => {
@@ -193,213 +245,249 @@ const Game = () => {
   const getIndiceEnCours = () => {
     return partie?.indice;
   };
+  const isHost = () => {
+    return partie?.createurId === utilisateur.id;
+  };
 
 
-  if (!partie)  { 
-
-    chargerPartie(); 
+  if (!partie)  { chargerPartie(); 
     chargerIndice();
     return <p>Chargement...</p>;
   }
 
   const equipeUtilisateur = getEquipeUtilisateur();
   const roleUtilisateur = getRoleUtilisateur();
+  //const host = getHost();
   const roleEncours = getRoleEnCours();
   const equipeEnCours = getEquipeEnCours();
   const indiceEnCours = getIndiceEnCours();
 
   return (
-    <div className="min-h-screen bg-[#8C2F25] text-white p-4">
+    <section className={styles.section}>
+       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
       {/* Barre de navigation */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-        <div className='relative'>
-          <Button onClick={bouttonJoueurs} variant='solid' color='yellow'className='relative'>
-          <Button onClick={bouttonJoueurs} variant='solid' color='yellow'className="text-lg font-bold">Joueurs : 👤 {partie.membres.length}</Button>
-          {montrerJoueurs && (
-            <div className="absolute left-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10 flex flex-col p-2">
-              <p className='text-[12px]'>Joueurs dans la partie:</p>
-              {/* Liste des joueurs */}
-              <div className="flex flex-wrap gap-x-1 gap-y-1">
-                {partie.membres.map((m: any) => (
-                  <button key={m.utilisateur.id} className="text-[10px] font-medium text-white bg-blue-700 rounded-sm hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 px-1 py-0.5 w-auto">{m.utilisateur.pseudo}</button>
-                ))}
-              </div>
+      <div className={styles.container}>
+        <div className={styles.nav}>
+          <div className='relative'>
+            <button onClick={bouttonJoueurs} className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">Joueurs : 👤 {partie.membres.length}</button>
+            {montrerJoueurs && (
+              <div className="absolute left-0 mt-1 w-{100%} bg-[#222] shadow-xl border border-yellow-400 text-white rounded shadow-lg z-10 flex flex-col p-1 ">
+                <p className='text-[10px]'>Joueurs dans la partie:</p>
+                {/* Liste des joueurs */}
+                <div className="flex flex-wrap gap-x-1 gap-y-1">
+                  {partie.membres.map((m: any) => (
+                    <div className="flex sm:flex-row justify-between items-center mb-1 gap-2 relative">
+                      <button onClick={() => setJoueurSelectionne(joueurSelectionne === m.utilisateur.pseudo ? null : m.utilisateur.pseudo)} key={m.utilisateur.id} className="text-[10px] text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-1 py-1 text-center mb-1 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 w-auto disabled " disabled={!isHost() || getJoueurIdByPseudo(m.utilisateur.pseudo)==partie?.createurId}>{m.utilisateur.pseudo}</button>
+                      {/* Bulle d'options */}
+                      {joueurSelectionne === m.utilisateur.pseudo && (
+                        <div className="absolute left-[50%]  -translate-x-1/2 mt-1 top-full w-[330%] bg-[#222] text-black rounded shadow-xl z-10 flex flex-col p-1 text-[10px] border border-blue-500 items-center">
+                          <p className="text-center text-white">{m.utilisateur.pseudo}</p>
+                          <button onClick={expulser} className="w-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Expulser</button>
+                          <button onClick={mettreHote} className="w-full text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">Mettre Hôte</button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
 
-              {/* Ligne de séparation */}
-              <div className="border-t border-gray-300 mt-2"></div>
-
-              {/* Bouton de copie */}
-              <Button onClick={() => navigator.clipboard.writeText(partie.id)} variant='solid' color='purple' className='"w-auto px-2 text-[12px] mt-2 self-center"' >Copier le code de la partie</Button>
-
-            </div>
-          )}
-        </Button>
-          {montrerJoueurs && (
-            <div className="absolute left-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10 flex flex-col p-2">
-              <p className='text-[12px]'>Joueurs dans la partie:</p>
-              {/* Liste des joueurs */}
-              <div className="flex flex-wrap gap-x-1 gap-y-1">
-                {partie.membres.map((m: any) => (
-                  <button key={m.utilisateur.id} className="text-[10px] font-medium text-white bg-blue-700 rounded-sm hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 px-1 py-0.5 w-auto">{m.utilisateur.pseudo}</button>
-                ))}
-              </div>
-
-              {/* Ligne de séparation */}
-              <div className="border-t border-gray-300 mt-2"></div>
-
-              {/* Bouton de copie */}
-              <Button onClick={() => navigator.clipboard.writeText(partie.id)} variant='solid' color='purple' className='"w-auto px-2 text-[12px] mt-2 self-center"' >Copier le code de la partie</Button>
-
-            </div>
-          )}
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button onClick={renitPartie}  variant="solid" color="yellow">🔄 Réinitialiser</Button>    
-          <Button   variant="solid" color="yellow">📜 Règles</Button>    
-          <div className="relative">
-            <Button onClick={bouttonUtilisateur} variant="solid" color="yellow">{utilisateur.pseudo}</Button>
-            {montrerOptions && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10 flex flex-col gap-2 p-2">
-                <Button  variant="solid" color='dark' className="w-full ">Devenir Spectateur</Button>
-                <Button  onClick={handleClickChangeTeam} variant="solid" color="yellow" className="w-full">Changer d'équipe</Button>
-                <Button  variant="solid" color="red" className="w-full">Quitter la Partie</Button>
+                {/* Ligne de séparation */}
+                <div className="border-t border-gray-800 w-[90%] mx-auto mb-1"></div>
+                <p className='text-[10px] text-center'>Copiez le code de la partie et partagez le avec vos amis!</p>
+                {/* Bouton de copie */}
+                <button onClick={() => navigator.clipboard.writeText(partie.id)} className="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900" >Copier le code</button>
               </div>
             )}
           </div>
+          <div className="flex gap-2 flex-wrap justify-center">
+            {isHost() && (
+            <div className="relative inline-block">
+              <button onClick={afficherConfirmer}  className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">🔄 Réinitialiser</button>
+              {confirmerReinit && (
+                <div className="absolute left-1/2 -translate-x-1/2 mt-1 w-[100%] bg-[#222] border border-yellow-400 rounded shadow-lg z-10 flex flex-col gap-2 p-2 items-center">
+                  <p className="text-[10px] text-red-500 text-center">Êtes-vous sûr de vouloir réinitialiser la partie ?</p>
+                  <button onClick={renitPartie} className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">Confirmer Réinitialisation</button>
+                </div>
+              )}
+            </div>
+            )}    
+            <button className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">📜 Règles</button>    
+            <div className="relative">
+              <button onClick={bouttonUtilisateur} className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">{utilisateur.pseudo}</button>
+              {montrerOptions && (
+                <div className="absolute right-0 mt-2 sm:w-[150%] md:w-[150%] bg-[#222] border border-yellow-400 rounded shadow-xl z-10 flex flex-col gap-2 p-2">
+                  <button  onClick={devenirSpec} className="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Devenir Spectateur</button>
+                  {getEquipeUtilisateur() === "ROUGE" &&(<button  onClick={handleClickChangeTeam} className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">↔️ Changer d'équipe</button>)}
+                  {getEquipeUtilisateur() === "BLEU" &&(<button  onClick={handleClickChangeTeam} className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">↔️ Changer d'équipe</button>)}
+                  <button  onClick={quitterPartie} className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Quitter la Partie</button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-      {/*Messages changeant selon le tour */}
-      {equipeEnCours!= equipeUtilisateur && roleEncours ==="MAITRE_ESPION" &&(<h1 className="text-2xl font-bold text-center mb-4">Les Espions adverses sont en train de jouer, veuillez attendre votre tour...</h1>)}
-      {equipeEnCours!= equipeUtilisateur && roleEncours ==="AGENT" &&(<h1 className="text-2xl font-bold text-center mb-4">Les Agents adverses sont en train de jouer, veuillez attendre votre tour...</h1>)}
-      {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours != roleUtilisateur &&(<h1 className="text-2xl font-bold text-center mb-4">Vos espions sont en train de jouer, veuillez attendre votre indice...</h1>)}
-      {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours != roleUtilisateur &&(<h1 className="text-2xl font-bold text-center mb-4">Vos Agents font de leur mieux pour trouver vos mots !</h1>)}
-      {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours === roleUtilisateur &&(<h1 className="text-2xl font-bold text-center mb-4">Utilisez les indices donnés par vos Espions pour trouver vos mots !</h1>)}
-      {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours === roleUtilisateur &&(<h1 className="text-2xl font-bold text-center mb-4">Trouvez le meilleur indice pour que vos Agents puissent trouver vos mots !</h1>)}
-      
-      {/* Grille des mots */}
-      {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
-        {partie.cartes.map((carte: any) => {
-          const couleur =
-            carte.revelee || roleUtilisateur === 'MAITRE_ESPION'
-              ? {
-                  ROUGE: 'bg-red-500',
-                  BLEU: 'bg-blue-500',
-                  NEUTRE: 'bg-gray-400',
-                  ASSASSIN: 'bg-black text-white',
-                }[carte.type as 'ROUGE' | 'BLEU' | 'NEUTRE' | 'ASSASSIN']
-              : 'bg-gray-700';
-
-          return (
-            <button
-              key={carte.id}
-              onClick={() => validerCarte(carte.id)}
-              disabled={carte.revelee || roleUtilisateur !== 'AGENT'}
-              className={`p-4 rounded ${couleur} ${
-                carte.revelee ? 'opacity-50' : 'hover:opacity-80'
-              }`}
-            >
-              {carte.mot.mot}
-            </button>
-          );
-        })}
-      </div> */}
-          
-          <div className="w-full h-full flex">
-
-        <div className="bg-red-700 text-white p-4 w-1/5 h-full flex flex-col items-center">
-         {montrerBouttonAgentRouge && (<Button variant='solid' color='yellow' className='mt-2'>Devenir agent</Button>)}
-          <h3 className="font-bold">Agents</h3>
-          {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
-            <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
-          ))}
-          {montrerBouttonEspionRouge && (<Button variant='solid' color='yellow' className='mt-2'>Devenir espion</Button>)}
-          <h3 className="font-bold mt-2">Espions</h3>
-          {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
-            <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
-          ))}
+        <div className={styles.message}>
+        {/*Messages changeant selon le tour */}
+          {equipeEnCours!= equipeUtilisateur && roleEncours ==="MAITRE_ESPION" &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Les Espions adverses sont en train de jouer, veuillez attendre votre tour...</h1>)}
+          {equipeEnCours!= equipeUtilisateur && roleEncours ==="AGENT" &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Les Agents adverses sont en train de jouer, veuillez attendre votre tour...</h1>)}
+          {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours != roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Vos espions sont en train de jouer, veuillez attendre votre indice...</h1>)}
+          {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours != roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Vos Agents font de leur mieux pour trouver vos mots !</h1>)}
+          {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Utilisez les indices donnés par vos Espions pour trouver vos mots !</h1>)}
+          {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Trouvez le meilleur indice pour que vos Agents puissent trouver vos mots !</h1>)}
         </div>
+        {/* Grille des mots */}
+        {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
+          {partie.cartes.map((carte: any) => {
+            const couleur =
+              carte.revelee || roleUtilisateur === 'MAITRE_ESPION'
+                ? {
+                    ROUGE: 'bg-red-500',
+                    BLEU: 'bg-blue-500',
+                    NEUTRE: 'bg-gray-400',
+                    ASSASSIN: 'bg-black text-white',
+                  }[carte.type as 'ROUGE' | 'BLEU' | 'NEUTRE' | 'ASSASSIN']
+                : 'bg-gray-700';
 
-      <div className="grid grid-cols-5 gap-2 p-6 rounded-lg flex-1 h-full flex flex-wrap  justify-center items-center">
-        {cartes.map((carte: any) => {
+            return (
+              <button
+                key={carte.id}
+                onClick={() => validerCarte(carte.id)}
+                disabled={carte.revelee || roleUtilisateur !== 'AGENT'}
+                className={`p-4 rounded ${couleur} ${
+                  carte.revelee ? 'opacity-50' : 'hover:opacity-80'
+                }`}
+              >
+                {carte.mot.mot}
+              </button>
+            );
+          })}
+        </div> */}
+            
+        <div className="w-full h-full flex">
+          <div className={styles.rouge}>
+            <div className="bg-red-500 rounded w-full">
+              <p className='text-center font-bold text-xl mt-2'>9</p>
+              <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
+              {montrerBouttonAgentRouge && (
+                <div className="flex justify-center mb-1">
+                  <button onClick={handleRedAgentClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir agent</button>
+                </div>
+              )}
+                <h3 className="font-bold text-center mb-1">Agents</h3>
+              {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
+                <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+              ))}
+              {montrerBouttonEspionRouge && (
+                <div className="flex justify-center mb-1">
+                  <button onClick={handleRedEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
+                </div>
+              )}
+                <h3 className="font-bold text-center mb-1">Espions</h3>
+              {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
+                <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+              ))}
+            </div>
+          </div>
+          <div className={styles.cartes}>
+            <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
+              {cartes.map((carte: any) => {
 
-          return <Cellule
-          key={carte.id}
-          carte={carte}
-          roleUtilisateur={roleUtilisateur}
-          roleEncours={roleEncours}
-          equipeUtilisateur={equipeUtilisateur}
-          equipeEnCours={equipeEnCours}
-          onSelectionner={selectionnerCarte}
-          onValiderCarte={validerCarte}
-          estSelectionnee={carte.selectionId}
-          />
-      
-        })}
-      </div>
-      {/*Cote bleu et historique*/}
-      <div className="w-1/5 flex flex-col">
-        <div className="bg-blue-700 text-white p-8 w-full  flex flex-col items-center">
-          {montrerBouttonAgentBleu && (<Button variant='solid' color='yellow' className='mt-2'>Devenir agent</Button>)}
-          <h3 className="font-bold">Agents</h3>   
-          {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
-          <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
-          ))}
-          {montrerBouttonEspionBleu && (<Button variant='solid' color='yellow' className='mt-2'>Devenir espion</Button>)}     
-          <h3 className="font-bold mt-2">Espions</h3>    
-          {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
-          <p className="bg-yellow-400 px-4 py-1 rounded" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
-          ))}  
+                return <Cellule
+                key={carte.id}
+                carte={carte}
+                roleUtilisateur={roleUtilisateur}
+                roleEncours={roleEncours}
+                equipeUtilisateur={equipeUtilisateur}
+                equipeEnCours={equipeEnCours}
+                onSelectionner={selectionnerCarte}
+                onValiderCarte={validerCarte}
+                estSelectionnee={carte.selectionId}
+                />
+            
+              })}
+            </div>
+          </div>
+          <div className={styles.bleu}>
+            {/*Cote bleu et historique*/}
+            <div className="w-1/5 flex flex-col w-full">
+              <div className="bg-blue-700 text-black rounded w-full">
+                <p className='text-center font-bold text-xl mt-2'>9</p>
+                <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
+                {montrerBouttonAgentBleu && (
+                  <div className="flex justify-center mb-1">
+                    <button onClick={handleBlueAgentClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir agent</button>
+                  </div>
+                )}
+                  <h3 className="font-bold text-center">Agents</h3>   
+                {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
+                  <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+                ))}
+                {montrerBouttonEspionBleu && (
+                  <div className="flex justify-center mb-1">
+                    <button onClick={handleBlueEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
+                  </div>
+                )}     
+                  <h3 className="font-bold text-center mt-2">Espions</h3>    
+                {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
+                  <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+                ))}  
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className={styles.historique}>
+              <div className="bg-gray-800 p-2 rounded mt-4 h-[30vh] sm:h-[24vh] md:h-[30vh] lg:h-[60vh] flex flex-col w-full">     
+                <p className="text-xs text-center">Historique</p>
+                {/* Ligne de séparation */}
+                <div className="border-t border-gray-300 mt-2 mb-2"></div>
+                <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600">
+                  {partie.actions.map((action: any) => (    
+                    <p key={action.id} className="text-xs py-1">
+                      {action.utilisateur?.pseudo} {action.motDonne && `a donné l'indice : ${action.motDonne}`}
+                      {action.carte && `a sélectionné : ${action.carte.mot.mot}`}
+                    </p>            
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="bg-gray-800 p-4 rounded mt-4">     
-          <h3 className="text-lg text-center">Historique</h3>
-          {/* Ligne de séparation */}
-          <div className="border-t border-gray-300 mt-2 mb-2"></div>
-          {partie.actions.map((action: any) => (    
-            <p key={action.id}>
-              {action.utilisateur?.pseudo} {action.motDonne && `a donné l'indice : ${action.motDonne}`}
-              {action.carte && `a sélectionné : ${action.carte.mot.mot}`}
-            </p>            
-          ))}
-      </div>
-      </div>
-
-  
-
-
+        {/* Zone indices - Seulement pour maître espion */}
+        <div className={styles.indice}>
+          {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
+            <div className="p-4 rounded text-center w-full">
+              <h2 className="text-l text-white sm:text-xl">Donner un indice</h2>
+              <input
+                type="text"
+                value={motIndice}
+                onChange={(e) => setMotIndice(e.target.value)}
+                placeholder="Mot indice"
+                className="p-2 rounded bg-gray-700 text-white mr-2"
+              />
+              <input
+                type="number"
+                value={nombreMots}
+                onChange={(e) => setNombreMots(Number(e.target.value))}
+                className="p-2 rounded bg-gray-700 text-white w-16"
+              />
+              <button onClick={donnerIndice} className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-2.5 py-2 ml-2 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+                Valider
+              </button>
+            </div>
+          )}
         </div>
-      {/* Zone indices - Seulement pour maître espion */}
-      {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
-        <div className="mb-4 bg-gray-800 p-4 rounded">
-          <h2 className="text-lg mb-2">Donner un indice</h2>
-          <input
-            type="text"
-            value={motIndice}
-            onChange={(e) => setMotIndice(e.target.value)}
-            placeholder="Mot indice"
-            className="p-2 rounded bg-gray-700 text-white mr-2"
-          />
-          <input
-            type="number"
-            value={nombreMots}
-            onChange={(e) => setNombreMots(Number(e.target.value))}
-            className="p-2 rounded bg-gray-700 text-white w-16"
-          />
-          <button onClick={donnerIndice} className="bg-green-500 px-4 py-2 ml-2 rounded">
-            Valider
-          </button>
-        </div>
-      )}
-      {roleEncours === 'AGENT' ? (
-        <div className="mb-4 mt-4 p-4 rounded text-center">
-          <h2 className="text-lg mb-2">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
-          {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
-          <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded">
-            Valider
-          </button>
+        <div className={styles.indice}>
+          {roleEncours === 'AGENT' ? (
+            <div className=" w-full rounded text-white text-center">
+              <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
+              {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
+              <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded">
+                Valider
+              </button>
+              ) : null}
+            </div>
           ) : null}
         </div>
-      ) : null}         
-    </div>
+      </div>        
+    </section>
   );
 };
 
