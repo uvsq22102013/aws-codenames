@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
 import { getToken } from "../../utils/token";
 import "../index.css"
+import styles from "../styles/login.module.css";
+
+
 // import { io } from 'socket.io-client';
 
 // const socket = io('http://localhost:3000');
@@ -15,32 +18,45 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     //langue du jeu
-    const [language, setLanguage] = useState<"fr" | "en">("fr"); 
+    const [language, setLanguage] = useState<"fr" | "en" | "ar">("fr"); 
 
 
-    //dictionnaire des langues (anglais ou francais)
-    const texts: { [key in "fr" | "en"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; } } = {
-      fr: {
-        title: "CodeNames",
-        createGame: "Créer une nouvelle partie",
-        joinGame: "Intégrer une partie existante",
-        enterRoomCode: "Numéro de la partie",
-        createdSuccess: "Nouvelle partie créée avec succès ! ID: ",
-        joinedSuccess: "Vous avez rejoint la partie ",
-        errorCreate: "Erreur lors de la création de la partie",
-        errorJoin: "Erreur lors de la connexion à la partie",
-      },
-      en: {
-        title: "CodeNames",
-        createGame: "Create a new game",
-        joinGame: "Join an existing game",
-        enterRoomCode: "Game Room Number",
-        createdSuccess: "New game created successfully! ID: ",
-        joinedSuccess: "You have joined the game ",
-        errorCreate: "Error creating the game",
-        errorJoin: "Error joining the game",
-      },
-    };
+
+//dictionnaire des langues (anglais ou francais)
+const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; } } = {
+  fr: {
+    title: "CodeNames",
+    createGame: "Créer une nouvelle partie",
+    joinGame: "Intégrer une partie existante",
+    enterRoomCode: "Numéro de la partie",
+    createdSuccess: "Nouvelle partie créée avec succès ! ID: ",
+    joinedSuccess: "Vous avez rejoint la partie ",
+    errorCreate: "Erreur lors de la création de la partie",
+    errorJoin: "Erreur lors de la connexion à la partie",
+  },
+  en: {
+    title: "CodeNames",
+    createGame: "Create a new game",
+    joinGame: "Join an existing game",
+    enterRoomCode: "Game Room Number",
+    createdSuccess: "New game created successfully! ID: ",
+    joinedSuccess: "You have joined the game ",
+    errorCreate: "Error creating the game",
+    errorJoin: "Error joining the game",
+  },
+  ar: {
+    title: "CodeNames",
+    createGame: "إنشاء لعبة جديدة",
+    joinGame: "الانضمام إلى لعبة موجودة",
+    enterRoomCode: "رقم غرفة اللعبة",
+    createdSuccess: "تم إنشاء لعبة جديدة بنجاح! الرقم: ",
+    joinedSuccess: "لقد انضممت إلى اللعبة ",
+    errorCreate: "خطأ في إنشاء اللعبة",
+    errorJoin: "خطأ في الانضمام إلى اللعبة",
+  },
+};
+
+
 
   //fonction pour créer une nouvelle partie
 
@@ -102,7 +118,7 @@ export default function HomePage() {
 
       const response = await axios.post("http://localhost:3000/api/join/join-game", {
         roomCode,
-        playerId: utilisateur.id,
+      playerId: utilisateur.id,
       });
 
       //message dde confirmation qu'on a bien rejoint la partie
@@ -128,6 +144,11 @@ export default function HomePage() {
 
     }
   };
+  const handleChangeLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLanguage(e.target.value as "fr" | "en" | "ar");
+  };
+
+
 
 
 
@@ -135,43 +156,122 @@ export default function HomePage() {
   //les lignes qui suive concernent l'interface utilisateiur sur la page d'accueil
 
   return (
-
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
-
-
-<button
-        className="absolute top-4 right-4 w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition"
-        onClick={() => setLanguage(language === "fr" ? "en" : "fr")}
-      >
-        {language === "fr" ? "EN" : "FR"}
-      </button>
-
-      <h1 className="text-3xl font-bold mb-6">{texts[language].title}</h1>
-
-      <button
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-4"
-        onClick={handleCreateRoom}
-      >
-        {texts[language].createGame}
-      </button>
-
-      <div className="flex flex-col items-center bg-gray-800 p-4 rounded-lg shadow-md">
-        <input
-          type="text"
-          placeholder={texts[language].enterRoomCode}
-          className="px-3 py-2 border border-gray-600 rounded mb-2 text-black"
-          value={roomCode}
-          onChange={(e) => setRoomCode(e.target.value)}
-        />
-
+    <section className={styles.section}>
+      {/* Carrés avec fond animé */}
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        
+        {/* Bouton de changement de langue */}
         <button
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          onClick={handleJoinRoom}
-        >
-          {texts[language].joinGame}
-        </button>
-      </div>
-    </div>
-
+              className="z-[10] absolute top-4 right-4 w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition"
+              onClick={() => {
+                if(language === "fr") {
+                setLanguage("en")
+                } else if(language === "en") {
+                setLanguage("ar")
+                } else {
+                setLanguage("fr")
+                }
+              }}
+              style={{
+                backgroundImage: `url(${"public/images/" + language + ".png"})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                clipPath: "circle(50% at center)",
+              }}
+            ></button>
+  
+  
+            {/* Logo */}
+            <img
+              src="src/assets/Logo_CodeNames_blanc.svg"
+              alt="Logo"
+              className="z-[10] absolute top-0 left-0 w-20 h-auto"
+            />
+  
+  
+        
+        
+  
+  
+        
+        
+  <div className={styles.signin}>
+  <div className={styles.content}>
+  
+  
+  
+            {/* Titre */}
+            <h1 className="z-[20] text-3xl font-bold text-blue-500 mb-6">
+                {texts[language].title}
+              </h1>
+  
+  
+              {/* Sélecteur de langue */}
+              <div className="flex items-center mb-4">
+              <select
+                value={language}
+                onChange={handleChangeLanguage}
+                className="bg-gray-700 text-white px-3 py-2 rounded-md shadow-md w-40 flex items-center"
+              >
+                <option value="fr" className="flex items-center">
+                  {/* Drapeau France */}
+                  <span className="fi fi-fr mr-2"></span>Français
+                </option>
+                <option value="en" className="flex items-center">
+                  {/* Drapeau UK */}
+                  <span className="fi fi-gb mr-2"></span>English
+                </option>
+                <option value="ar" className="flex items-center">
+                  {/* Drapeau Arabie Saoudite */}
+                  <span className="fi fi-sa mr-2"></span>العربية
+                </option>
+              </select>
+            </div>
+              
+  
+  
+  
+              <div className={styles.form}>
+  
+  
+            
+      
+            
+        
+  
+            {/* Code de la salle */}
+              <input
+                type="text"
+                placeholder={texts[language].enterRoomCode}
+                className="z-[20] px-2 py-2 border border-gray-600 rounded-lg mb-2 text-black w-full"
+                value={roomCode}
+                onChange={(e) => setRoomCode(e.target.value)}
+              />
+  
+              <button
+                className="z-[20] bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+                onClick={handleJoinRoom}
+              >
+                {texts[language].joinGame}
+              </button>
+  
+              
+  
+            {/* Bouton pour créer une salle */}
+            <button
+              className="z-[10] bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+              onClick={handleCreateRoom}
+  >
+              {texts[language].createGame}
+            </button>
+  
+            
+            </div>
+            </div>
+            </div>
+          
+            
+            
+    </section>
   );
-}
+  }
