@@ -33,7 +33,7 @@ export default function Teams() {
   // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
     try {  
-      const res = await axios.get(`http://localhost:3000/api/teams/${gameId}`, {
+      const res = await axios.get(`/api/teams/${gameId}`, {
       });
       
       setJoueurs(res.data);
