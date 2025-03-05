@@ -27,6 +27,42 @@ const Game = () => {
   const [montrerBouttonEspionRouge, setmontrerBouttonEspionRouge] = useState(false);
   const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
 
+  const [montrerOptions, setMontrerOption] = useState(false);
+  const [montrerJoueurs, setMontrerJoueurs] = useState(false);
+  const [montrerBouttonAgentRouge, setmontrerBouttonAgentRouge] = useState(false);
+  const [montrerBouttonAgentBleu, setmontrerBouttonAgentBleu] = useState(false);
+  const [montrerBouttonEspionRouge, setmontrerBouttonEspionRouge] = useState(false);
+  const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
+
+  const handleClickChangeTeam = () => {
+    setMontrerOption(!montrerOptions);
+    if (equipeUtilisateur === 'ROUGE') {
+      if (roleUtilisateur === 'AGENT') {
+        setmontrerBouttonAgentBleu(!montrerBouttonAgentBleu);
+        setmontrerBouttonEspionBleu(!montrerBouttonEspionBleu);
+      }
+      else if (roleUtilisateur === 'MAITRE_ESPION') {
+        setmontrerBouttonEspionBleu(!montrerBouttonEspionBleu);
+      }
+      
+    }
+    else if (equipeUtilisateur === 'BLEU') {
+      if (roleUtilisateur === 'AGENT') {
+        setmontrerBouttonAgentRouge(!montrerBouttonAgentRouge);
+        setmontrerBouttonEspionRouge(!montrerBouttonEspionRouge);
+      }
+      else if (roleUtilisateur === 'MAITRE_ESPION') {
+        setmontrerBouttonEspionRouge(!montrerBouttonEspionRouge);
+      }
+      
+    }
+  }
+  const bouttonJoueurs = () => {
+    setMontrerJoueurs(!montrerJoueurs);
+  };
+  const bouttonUtilisateur = () => {
+    setMontrerOption(!montrerOptions);
+  };
   const utilisateur = getUtilisateur();
   const token = getToken();
   const navigate = useNavigate();
@@ -177,7 +213,27 @@ const Game = () => {
       {/* Barre de navigation */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
         <div className='relative'>
+          <Button onClick={bouttonJoueurs} variant='solid' color='yellow'className='relative'>
           <Button onClick={bouttonJoueurs} variant='solid' color='yellow'className="text-lg font-bold">Joueurs : 👤 {partie.membres.length}</Button>
+          {montrerJoueurs && (
+            <div className="absolute left-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10 flex flex-col p-2">
+              <p className='text-[12px]'>Joueurs dans la partie:</p>
+              {/* Liste des joueurs */}
+              <div className="flex flex-wrap gap-x-1 gap-y-1">
+                {partie.membres.map((m: any) => (
+                  <button key={m.utilisateur.id} className="text-[10px] font-medium text-white bg-blue-700 rounded-sm hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 px-1 py-0.5 w-auto">{m.utilisateur.pseudo}</button>
+                ))}
+              </div>
+
+              {/* Ligne de séparation */}
+              <div className="border-t border-gray-300 mt-2"></div>
+
+              {/* Bouton de copie */}
+              <Button onClick={() => navigator.clipboard.writeText(partie.id)} variant='solid' color='purple' className='"w-auto px-2 text-[12px] mt-2 self-center"' >Copier le code de la partie</Button>
+
+            </div>
+          )}
+        </Button>
           {montrerJoueurs && (
             <div className="absolute left-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10 flex flex-col p-2">
               <p className='text-[12px]'>Joueurs dans la partie:</p>
@@ -248,7 +304,7 @@ const Game = () => {
         })}
       </div> */}
           
-      <div className="w-full h-full flex">
+          <div className="w-full h-full flex">
 
         <div className="bg-red-700 text-white p-4 w-1/5 h-full flex flex-col items-center">
          {montrerBouttonAgentRouge && (<Button variant='solid' color='yellow' className='mt-2'>Devenir agent</Button>)}
@@ -310,7 +366,7 @@ const Game = () => {
   
 
 
-    </div>
+        </div>
       {/* Zone indices - Seulement pour maître espion */}
       {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
         <div className="mb-4 bg-gray-800 p-4 rounded">
