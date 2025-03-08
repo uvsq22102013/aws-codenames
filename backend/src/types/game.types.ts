@@ -20,6 +20,12 @@ export type Indice_Payload = {
     equipe: Equipe
   };
 
+  export type DeselectionCarte_Payload = {
+    partieId:number,
+    carteId:number,
+    utilisateurId:number
+  };
+
   export type RejoindrePartie_Payload = {
     partieId: number,
     utilisateurId: number

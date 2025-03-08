@@ -49,6 +49,7 @@ model Utilisateur {
   MembreEquipe MembreEquipe[]
   ActionJeu    ActionJeu[]
   Message      Message[]
+  Selection    Selection[]
 }
 
 model Partie {
@@ -104,9 +105,14 @@ model Mot {
 }
 
 model Selection {
-  id            Int     @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   utilisateurId Int
-  Carte         Carte[]
+  carteId       Int
+  partieId      Int
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  carte         Carte       @relation(fields: [carteId], references: [id], onDelete: Cascade, name: "SelectionCarte") // Ajout d'un nom
+
+  @@unique([utilisateurId, carteId])
 }
 
 model Carte {
@@ -116,12 +122,11 @@ model Carte {
   type             TypeCarte
   revelee          Boolean   @default(false)
   trouveeParEquipe Equipe? // ROUGE | BLEU -> Pour savoir si l'agent a trouvé ce mot
-  selectionId      Int?
 
-  partie    Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
-  mot       Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
-  actions   ActionJeu[] @relation("CarteActions")
-  Selection Selection?  @relation(fields: [selectionId], references: [id])
+  partie     Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  mot        Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
+  actions    ActionJeu[] @relation("CarteActions")
+  selections Selection[] @relation("SelectionCarte")
 }
 
 model ActionJeu {

@@ -66,7 +66,14 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
     const partie = await prisma.partie.findUnique({
     where: { id: partieId },
     include: {
-    cartes: { include: { mot: true } },
+    cartes: { include: { 
+        mot: true,
+        selections : {
+            include : {
+                utilisateur : true
+            }
+        }
+     } },
     membres: { include: { utilisateur: true } },
     actions: { include: { carte: { include: { mot: true } }, utilisateur: true }},
     },
@@ -80,25 +87,23 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
     const monRole = monMembre?.role;
     const monEquipe = monMembre?.equipe;
   
-    const cartesFiltrees = partie.cartes.map((carte) => {
-    if (carte.revelee || monRole === Role.MAITRE_ESPION) {
-    return carte;
-    }
-    // Cache uniquement le type, mais garde le mot
-    return {
-    ...carte,
-    type: 'INCONNU', // Cache le type
-    mot: carte.mot,  // Laisse le mot visible
-    };
-    });
-  
+    const cartesFiltrees = partie.cartes.map((carte) => ({
+        ...carte,
+        type: carte.revelee || monRole === Role.MAITRE_ESPION ? carte.type : 'INCONNU',
+        mot: carte.mot,
+        joueursSelection: carte.selections? carte.selections
+            .filter((sel) => partie.membres.find((m) => m.utilisateurId === sel.utilisateurId)?.equipe === monEquipe)
+            .map((sel) => sel.utilisateur.pseudo)
+            : [],
+      }));
+
     const membresFiltres = partie.membres.map((membre) => {
     ///   if (membre.equipe === monEquipe) {
     return membre;
     ///   }
     ///   return { ...membre, role: Role.INCONNU };
     });
-  
+
     return {
     ...partie,
     cartes: cartesFiltrees,
@@ -160,7 +165,7 @@ const membreequipe = await trouverMembreEquipe({partieId:payload.partieId, utili
     
 }
 
-export async function selectionnerCarte(payload:{carteId:number ,partieId : number,utilisateurId:number, equipe: Equipe}) {
+export async function selectionnerCarte(payload: { carteId: number; partieId: number; utilisateurId: number; equipe: Equipe }) {
     await prisma.actionJeu.create({
         data: {
             partieId: Number(payload.partieId),
@@ -170,29 +175,26 @@ export async function selectionnerCarte(payload:{carteId:number ,partieId : numb
             carteId: payload.carteId,
         },
     });
-    const constselection = await prisma.selection.create({
+
+    await prisma.selection.create({
         data: {
+            utilisateurId: payload.utilisateurId,
+            carteId: payload.carteId,
+            partieId: Number(payload.partieId),
+        },
+    });
+}
+
+
+export async function deselectionnerCarte(payload: {partieId:number, carteId: number; utilisateurId: number }) {
+    await prisma.selection.deleteMany({
+        where: {
+            carteId: payload.carteId,
             utilisateurId: payload.utilisateurId,
         },
     });
-
-    await prisma.carte.update({
-        where: {id:payload.carteId},
-        data: {
-            selectionId: constselection.id,
-        }
-    });
 }
 
-export async function deselectionnerCarte(payload:{carteId:number ,partieId : number,utilisateurId:number, equipe: Equipe}) {
-
-    await prisma.carte.update({
-        where: {id:payload.carteId},
-        data: {
-            selectionId: undefined,
-        }
-    });
-}
 
 export async function validerCarte(payload:{carteId:number ,partieId : number,utilisateurId:number, equipe: Equipe}) {
     const equipeEnCoursconst = await prisma.partie.findUnique({
@@ -340,7 +342,7 @@ export async function finDeviner(payload:{partieId : number,utilisateurId:number
                 equipe: payload.equipe,
                 typeAction: TypeAction.PASSER,
             }
-        })
+        });
         await prisma.partie.update({
             where: {id:payload.partieId
             },
@@ -350,6 +352,12 @@ export async function finDeviner(payload:{partieId : number,utilisateurId:number
                 indice : undefined,
             },
         });
+
+        await prisma.selection.deleteMany({
+            where: {partieId: payload.partieId}
+        });
+
+        
     } else {
         console.log('Tentative interdite : Pas le tour de l equipe');
     }

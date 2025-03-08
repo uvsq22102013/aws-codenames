@@ -27,7 +27,6 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
           partieId,
           motId: mot.id,
           type: typesMelanges[index],
-          selectionId: null,
         },
       })
     );

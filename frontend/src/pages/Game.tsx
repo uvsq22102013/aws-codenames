@@ -195,6 +195,11 @@ const Game = () => {
     const equipe = getEquipeUtilisateur();
     socket.emit('selectionnerCarte', { partieId, carteId, equipe, utilisateurId: utilisateur.id });
   };
+
+  const deselectionnerCarte = (carteId: number) => {
+    socket.emit('deselectionnerCarte', {partieId, carteId, utilisateurId: utilisateur.id})
+  }
+
   const validerCarte = (carteId: number) => {
     const equipe = getEquipeUtilisateur();
     socket.emit('validerCarte', { partieId : partieIdNumber, carteId, equipe, utilisateurId: utilisateur.id });
@@ -390,6 +395,9 @@ const Game = () => {
             <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
               {cartes.map((carte: any) => {
 
+                const estSelectionnee = carte.joueursSelection && carte.joueursSelection.length > 0;
+                const estSelectionneeParJoueur = carte.joueursSelection && carte.joueursSelection.includes(utilisateur.pseudo);
+                
                 return <Cellule
                 key={carte.id}
                 carte={carte}
@@ -398,8 +406,11 @@ const Game = () => {
                 equipeUtilisateur={equipeUtilisateur}
                 equipeEnCours={equipeEnCours}
                 onSelectionner={selectionnerCarte}
+                onDeselectionner={deselectionnerCarte}
                 onValiderCarte={validerCarte}
-                estSelectionnee={carte.selectionId}
+                estSelectionnee={estSelectionnee}
+                pseudosSelections={carte.joueursSelection}
+                estSelectionneeParJoueur={estSelectionneeParJoueur}
                 />
             
               })}
@@ -475,7 +486,7 @@ const Game = () => {
           )}
         </div>
         <div className={styles.indice}>
-          {roleEncours === 'AGENT' ? (
+          {roleEncours === 'AGENT' && indice ? (
             <div className=" w-full rounded text-white text-center">
               <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (

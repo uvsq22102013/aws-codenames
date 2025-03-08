@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 // import { JSEncrypt } from 'jsencrypt';
 import {renitPartie} from '../utils/creationPartie';
 import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte} from '../services/game.service';
-import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload } from '../types/game.types';
+import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload, DeselectionCarte_Payload } from '../types/game.types';
 import { verifierTokenSocket } from '../utils/verifierToken';
 
 // const crypterData = (data: any, publicKey: string) => {
@@ -92,7 +92,7 @@ export default function gameSocket(io: Server, socket: Socket) {
     console.log(`Back socket: majPartie apres carte sélectionnée`);
   });
 
-  socket.on('deselectionnerCarte', async (data: SelectionCarte_Payload) => {
+  socket.on('deselectionnerCarte', async (data: DeselectionCarte_Payload) => {
     console.log(`Back socket: deselectionnerCarte ${data.carteId} pour partie ${data.partieId} par utilisateur ${data.utilisateurId}`);
     await deselectionnerCarte(data);
     console.log(`Back socket: Carte deselectionner : ${data.carteId}`);
