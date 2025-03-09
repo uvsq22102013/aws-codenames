@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
 import { io } from 'socket.io-client';
-import styles from "../styles/Login.module.css"; 
+import styles from "../styles/Login.module.css";
 
 
 const socket = io('http://localhost:3000');
@@ -23,7 +23,6 @@ export default function Teams() {
 
   const navigate = useNavigate();
 
-  // On récupère l'id de partie et le createur id.
   const storedPartie = localStorage.getItem("partie");
   let gameId: number | undefined, createurId: number | undefined, codePartie: string | undefined;
 
@@ -61,7 +60,7 @@ export default function Teams() {
     // On écoute si le créateur de la partie a lancé le jeu.
     socket.on('partieLancee', (data) => {
       console.log(`Partie ${data.partieId} lancée`);
-      navigate(`/game/${data.partieId}`);
+      navigate(`/game/${gameId}`);
     });
 
     return () => {

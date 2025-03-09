@@ -82,7 +82,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
       localStorage.setItem("partie", data);
 
       //on renvoi le joueur vers le lien de la partie
-      navigate(`/teams/${response.data.codePartie}`);
+      navigate(`/teams/${response.data.id}`);
     } catch (error) {
       setErrorMessage(texts[language].errorCreate);
     }
@@ -114,7 +114,7 @@ const handleJoinRoom = async () => {
       const data = response.data;
       localStorage.setItem("partie", JSON.stringify(data.game));
   
-      navigate(`/teams/${response.data.game.codePartie}`);
+      navigate(`/teams/${response.data.game.id}`);
 
     } catch (error) {
         setErrorMessage(texts[language].wrongGameCode);

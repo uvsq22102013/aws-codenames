@@ -39,9 +39,11 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
 export async function creerPartieAvecCartes(createurId: number, langue: string) {
 
   const codePartie = genererCodePartie(12);
+  const partieId = generateId();
 
   const partie = await prisma.partie.create({
     data: {
+      id: partieId,
       createurId,
       statut: StatutPartie.EN_ATTENTE,
       langue,
@@ -93,4 +95,8 @@ function genererCodePartie(longueur: number): string {
     code += caracteres[index];
   }
   return code;
+}
+
+function generateId(): number {
+  return Math.floor(Math.random() * 2 ** 31);
 }
