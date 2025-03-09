@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
-import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import styles from "../styles/Login.module.css"; 
 
@@ -20,15 +19,21 @@ interface Joueur {
 export default function Teams() {
   const [clickedButton, setClickedButton] = useState(""); // Variable qui nous servira pour l'affichage.
   const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
-  const { partieId } = useParams();
-  const gameId = Number(partieId);
   const utilisateur = getUtilisateur();
 
   const navigate = useNavigate();
 
-  // On récupère l'id du créateur de la partie dans le localStorage.
-  const storedCreatorId = localStorage.getItem("createurId");
-  const createurId = storedCreatorId ? parseInt(storedCreatorId, 10) : null;
+  // On récupère l'id de partie et le createur id.
+  const storedPartie = localStorage.getItem("partie");
+  let gameId: number | undefined, createurId: number | undefined, codePartie: string | undefined;
+
+  if (storedPartie) {
+    const partie = JSON.parse(storedPartie);
+    gameId = partie.id;
+    createurId = partie.createurId;
+    codePartie = partie.codePartie;
+  }
+
 
   // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
@@ -123,6 +128,15 @@ export default function Teams() {
     <section className={styles.section}>
       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
       <div className="absolute left-0 w-1/2 h-full flex flex-col items-center justify-center gap-10">
+      <div className="absolute top-8 left-4 z-[10] flex items-center space-x-2">
+        <p className="text-white text-xl bg-gray-600 font-bold">Code Partie: {codePartie}</p>
+        <button
+          className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
+          onClick={() => navigator.clipboard.writeText(codePartie || '')}
+        >
+          Copier
+        </button>
+      </div>
         <h1 className="z-[10] text-blue-500 text-6xl font-bold absolute top-40">Equipe bleue</h1>
         <button className={`w-60 z-[10] px-10 py-5 text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueEspion" ? "bg-blue-800 cursor-not-allowed" : ""}`}
         onClick={clickedButton === "blueEspion" ? undefined : handleBlueEspionClick}
@@ -174,12 +188,14 @@ export default function Teams() {
           </ul>
         </div>
       </div>
-      <button 
+      {utilisateur.id === createurId && (
+        <button 
           className="absolute z-[10] top-10 bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-60"
           onClick={handleStartGame}
         >
           Lancer la partie
         </button>
+      )}
     </section>
   );
 }

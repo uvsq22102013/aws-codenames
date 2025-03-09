@@ -68,6 +68,7 @@ model Partie {
   actions        ActionJeu[]
   membres        MembreEquipe[]
   indiceId       Int?
+  codePartie     String         @unique
 }
 
 model Indice {

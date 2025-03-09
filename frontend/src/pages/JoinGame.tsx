@@ -15,34 +15,36 @@ export default function HomePage() {
 
 
   const [roomCode, setRoomCode] = useState("");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    //langue du jeu
-    const [language, setLanguage] = useState<"fr" | "en" | "ar">("fr"); 
-
+  //langue du jeu
+  const [language, setLanguage] = useState<"fr" | "en" | "ar">("fr"); 
+  const [errorMessage, setErrorMessage] = useState(""); 
 
 
 //dictionnaire des langues (anglais ou francais)
-const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; } } = {
+const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; wrongGameCode: string; } } = {
   fr: {
     title: "CodeNames",
     createGame: "Créer une nouvelle partie",
     joinGame: "Intégrer une partie existante",
-    enterRoomCode: "Numéro de la partie",
+    enterRoomCode: "Code Partie",
     createdSuccess: "Nouvelle partie créée avec succès ! ID: ",
     joinedSuccess: "Vous avez rejoint la partie ",
     errorCreate: "Erreur lors de la création de la partie",
     errorJoin: "Erreur lors de la connexion à la partie",
+    wrongGameCode: "Muavais Code Partie",
   },
   en: {
     title: "CodeNames",
     createGame: "Create a new game",
     joinGame: "Join an existing game",
-    enterRoomCode: "Game Room Number",
+    enterRoomCode: "Game Code",
     createdSuccess: "New game created successfully! ID: ",
     joinedSuccess: "You have joined the game ",
     errorCreate: "Error creating the game",
     errorJoin: "Error joining the game",
+    wrongGameCode: "Wrong Game Code",
   },
   ar: {
     title: "CodeNames",
@@ -53,6 +55,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     joinedSuccess: "لقد انضممت إلى اللعبة ",
     errorCreate: "خطأ في إنشاء اللعبة",
     errorJoin: "خطأ في الانضمام إلى اللعبة",
+    wrongGameCode: "ok",
   },
 };
 
@@ -75,32 +78,20 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
         throw new Error(`Erreur HTTP : ${response.status}`);
       }
       //message qui confirme que la partie a bien été créée
-      alert(`Nouvelle partie créée avec succès ! ID: ${response.data.id}`);
       const data = JSON.stringify(response.data);
-      localStorage.setItem("createurId", response.data);
-
       localStorage.setItem("partie", data);
+
       //on renvoi le joueur vers le lien de la partie
-      navigate(`/teams/${response.data.id}`);
+      navigate(`/teams/${response.data.codePartie}`);
     } catch (error) {
-
-    //si l'erreur vient d'axios on génère un message d'erreur 
-      if (axios.isAxiosError(error)) {
-
-        alert(error.response?.data?.error || " Erreur lors de la création de la partie (Axios)");
-      } else {
-
-      //dans le cas contraire 
-        alert(`front Erreur lors de la création de la partie: ${error}`);
-
-      }
+      setErrorMessage(texts[language].errorCreate);
     }
 
 
   };
 
-  // Fonction pour rejoindre une partie existante
-  const handleJoinRoom = async () => {
+// Fonction pour rejoindre une partie existante
+const handleJoinRoom = async () => {
 
 // verifie si l'utilisateur entre quelque chose
     const utilisateur = getUtilisateur();
@@ -118,39 +109,21 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
 
       const response = await axios.post("http://localhost:3000/api/join/join-game", {
         roomCode,
-      playerId: utilisateur.id,
       });
 
-      //message dde confirmation qu'on a bien rejoint la partie
-      alert(`Vous avez rejoint la partie ${response.data.game.id}`);
-      localStorage.setItem("createurId", response.data.createurId);
-      localStorage.setItem("partie", response.data);
-      navigate(`/teams/${response.data.game.id}`);
+      const data = response.data;
+      localStorage.setItem("partie", JSON.stringify(data.game));
+  
+      navigate(`/teams/${response.data.game.codePartie}`);
 
     } catch (error) {
-
-
-//on vérifie également si l'erreur vient d'axios
-      if (axios.isAxiosError(error)) {
-
-        alert(error.response?.data?.error || "Erreur lors de la connexion à la partie (Axios)");
-
-      } else {
-
-
-        alert("Erreur lors de la connexion à la partie front");
-
+        setErrorMessage(texts[language].wrongGameCode);
       }
-
-    }
   };
+
   const handleChangeLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value as "fr" | "en" | "ar");
   };
-
-
-
-
 
 
   //les lignes qui suive concernent l'interface utilisateiur sur la page d'accueil
@@ -187,18 +160,11 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
               alt="Logo"
               className="z-[10] absolute top-0 left-0 w-20 h-auto"
             />
-  
-  
-        
-        
-  
-  
         
         
   <div className={styles.signin}>
   <div className={styles.content}>
-  
-  
+
   
             {/* Titre */}
             <h1 className="z-[20] text-3xl font-bold text-blue-500 mb-6">
@@ -227,18 +193,13 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
                 </option>
               </select>
             </div>
-              
-  
-  
-  
+
               <div className={styles.form}>
-  
-  
-            
-      
-            
-        
-  
+    
+            {/* Affichage du message d'erreur */}
+            {errorMessage && (
+              <p className="z-[20] text-red-500 font-bold mb-2 text-center mx-auto">{errorMessage}</p>
+            )}
             {/* Code de la salle */}
               <input
                 type="text"
@@ -248,9 +209,14 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
                 onChange={(e) => setRoomCode(e.target.value)}
               />
   
-              <button
-                className="z-[20] bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+            <button
+                className={`z-[20] font-bold py-2 px-4 rounded-lg shadow-lg transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
+                  roomCode.trim() === ""
+                    ? "bg-blue-800 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-400"
+                }`}
                 onClick={handleJoinRoom}
+                disabled={roomCode.trim() === ""}
               >
                 {texts[language].joinGame}
               </button>
