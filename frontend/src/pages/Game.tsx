@@ -8,6 +8,7 @@ import { getToken } from '../../utils/token';
 import { useParams } from 'react-router-dom';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
+import {motion, AnimatePresence} from 'framer-motion';
 
 const socket = io('http://localhost:3000');
 
@@ -28,6 +29,7 @@ const Game = () => {
   const [montrerBouttonEspionRouge, setmontrerBouttonEspionRouge] = useState(false);
   const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
   const [confirmerReinit, setConfirmerReinit] = useState(false);
+  const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
@@ -161,12 +163,19 @@ const Game = () => {
     };
   
     socket.on('majPartie', majHandler);
+
     socket.on('joueurVire', (data: { joueurId: number }) => {
       if (data.joueurId === utilisateur.id) {
         navigate('/join');
       }
     });
-  
+
+    socket.on('gagnant', (data: { equipeGagnante: string }) => {
+      console.log(`L'équipe gagnante est : ${data.equipeGagnante}`);
+      setEquipeGagnante(data.equipeGagnante);
+      setTimeout(() => setEquipeGagnante(null), 8000);
+    });
+    
     return () => {
       socket.off('majPartie', majHandler);
       socket.off('joueurVire');
@@ -392,6 +401,23 @@ const Game = () => {
             </div>
           </div>
           <div className={styles.cartes}>
+            <AnimatePresence>
+              {equipeGagnante && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.5 }}
+                  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                >
+                  <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h2 className="text-2xl font-bold mb-4">
+                    {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
+                    </h2>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
               {cartes.map((carte: any) => {
 
@@ -411,6 +437,7 @@ const Game = () => {
                 estSelectionnee={estSelectionnee}
                 pseudosSelections={carte.joueursSelection}
                 estSelectionneeParJoueur={estSelectionneeParJoueur}
+                trouvee={carte.trouvee}
                 />
             
               })}

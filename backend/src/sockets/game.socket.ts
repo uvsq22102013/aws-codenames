@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 // import { JSEncrypt } from 'jsencrypt';
 import {renitPartie} from '../utils/creationPartie';
-import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte} from '../services/game.service';
+import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte, verifierGagnant} from '../services/game.service';
 import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload, DeselectionCarte_Payload } from '../types/game.types';
 import { verifierTokenSocket } from '../utils/verifierToken';
 
@@ -105,6 +105,12 @@ export default function gameSocket(io: Server, socket: Socket) {
     console.log(`Back socket: Carte validee : ${data.carteId}`);
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
     console.log(`Back socket: majPartie apres carte valider`);
+
+    const gagnant = await verifierGagnant({ partieId: data.partieId });
+    if (gagnant) {
+      io.to(`partie-${data.partieId}`).emit('gagnant', { equipeGagnante: gagnant });
+      console.log(`Back socket: gagnant detecté : ${gagnant}`);
+    }
   });
 
   socket.on('choixEquipe', async (data) => {

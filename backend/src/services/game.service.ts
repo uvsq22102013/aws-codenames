@@ -95,6 +95,7 @@ export async function getPartiePourUtilisateur(partieId: number, utilisateurId: 
             .filter((sel) => partie.membres.find((m) => m.utilisateurId === sel.utilisateurId)?.equipe === monEquipe)
             .map((sel) => sel.utilisateur.pseudo)
             : [],
+        trouvee: carte.trouveeParEquipe !== null
       }));
 
     const membresFiltres = partie.membres.map((membre) => {
@@ -226,6 +227,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : number,ut
                 where: {id:payload.partieId},
                 data: {
                     statut: StatutPartie.TERMINEE,
+                    equipeGagnante: payload.equipe === Equipe.BLEU ? Equipe.ROUGE : Equipe.BLEU,
                 },
             });
         } else if (carte.type === TypeCarte.NEUTRE || carte.type === TypeCarte.BLEU && equipeEnCoursconst?.equipeEnCours === Equipe.ROUGE || carte.type === TypeCarte.ROUGE && equipeEnCoursconst?.equipeEnCours === Equipe.BLEU) {
@@ -273,6 +275,22 @@ export async function validerCarte(payload:{carteId:number ,partieId : number,ut
         }
     }
     
+}
+
+export async function verifierGagnant(payload: { partieId: number }) {
+    const partie = await prisma.partie.findUnique({
+      where: { id: payload.partieId },
+      select: { 
+        statut: true, 
+        equipeGagnante: true,  
+      }, 
+    });
+  
+    if (partie?.statut === StatutPartie.TERMINEE) {  
+      return partie.equipeGagnante; 
+    }
+  
+    return null;
 }
 
 export async function rejoindrePartie(payload:{partieId : number,utilisateurId:number}) {

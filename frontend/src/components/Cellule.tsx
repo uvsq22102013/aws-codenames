@@ -13,6 +13,7 @@ interface CelluleProps {
   estSelectionnee?: boolean;
   pseudosSelections: string[];
   estSelectionneeParJoueur?: boolean;
+  trouvee: boolean;
 }
 
 const Cellule = ({
@@ -27,6 +28,7 @@ const Cellule = ({
   estSelectionnee = false,
   pseudosSelections,
   estSelectionneeParJoueur = false,
+  trouvee,
 }: CelluleProps) => {
   const [flipped, setFlipped] = useState(carte.revelee);
   const carteRevelee = carte.revelee || roleUtilisateur === 'MAITRE_ESPION';
@@ -42,11 +44,23 @@ const Cellule = ({
     if (!carteRevelee) return '';
     switch (carte.type) {
       case 'ROUGE':
-        return 'url(/images/rouge.png)';
+        if (trouvee && roleUtilisateur === 'MAITRE_ESPION' ) {
+          return 'url(/images/rouge_sombre.png)'
+        } else {
+          return 'url(/images/rouge.png)';
+        }
       case 'BLEU':
-        return 'url(/images/bleu.png)';
+        if (trouvee && roleUtilisateur === 'MAITRE_ESPION' ) {
+          return 'url(/images/bleu_sombre.png)'
+        } else {
+          return 'url(/images/bleu.png)';
+        }
       case 'NEUTRE':
-        return 'url(/images/neutre.png)';
+        if (trouvee && roleUtilisateur === 'MAITRE_ESPION' ) {
+          return 'url(/images/neutre_sombre.png)'
+        } else {
+          return 'url(/images/neutre.png)';
+        }
       case 'ASSASSIN':
         return 'url(/images/assassin.png)';
       default:
