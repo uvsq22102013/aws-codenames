@@ -49,8 +49,8 @@ const Game = () => {
     }
   } 
 
-
-  const [messages, setMessages] = useState<any[]>([]);  // Pour stocker les messages du chat
+{/*
+  const [messages, setMessages] = useState<any[]>([])   // Pour stocker les messages du chat
   const [messageInput, setMessageInput] = useState('');  // Pour stocker le texte saisi dans l'input
 
 
@@ -83,20 +83,66 @@ const Game = () => {
     }
 
   };
+  */}
 
 
-  {/*useEffect(() => {
-    localStorage.setItem("messages", JSON.stringify(messages));
-  }, [messages]); // Dès que messages change, on stock les modifs
+
+  // Charger les messages depuis le localStorage au démarrage
+const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+
+const [messages, setMessages] = useState<any[]>(savedMessages); // Pour stocker les messages du chat
+const [messageInput, setMessageInput] = useState(''); // Pour stocker le texte saisi dans l'input
+
+useEffect(() => {
+  // Quand un message est reçu via Socket.io
+  socket.on("chatmessage", (data: any) => {
+    setMessages((prevMessages) => {
+      // Ajouter le message seulement s'il n'existe pas déjà par son ID unique
+      if (!prevMessages.some(msg => msg.id === data.id)) {
+        const updatedMessages = [...prevMessages, data];
+        
+        // Sauvegarder les messages dans le localStorage
+        localStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
+
+        return updatedMessages;
+      }
+      return prevMessages; // Ne pas ajouter si le message a déjà un ID existant
+    });
+  });
+
+  // Nettoyage de l'écouteur lors du démontage du composant
+  return () => {
+    socket.off("chatmessage");
+  };
+}, []);
+
+// Fonction pour envoyer un message
+const handleSendMessage = () => {
+  if (messageInput.trim() !== '') {
+    const pseudo = utilisateur.pseudo;  // pour récupérer le pseudo
+    const newMessage = {
+      id: Date.now(),  // Ajoute un identifiant unique basé sur le timestamp
+      message: messageInput,
+      pseudo,
+    };
+
+    // Émettre le message via socket
+    socket.emit("chatmessage", newMessage);
+
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages, newMessage];
+      
+      // Sauvegarder dans le localStorage après ajout du message
+      localStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
+
+      return updatedMessages;
+    });
+
+    setMessageInput("");  // Effacer le champ input après l'envoi du message
+  }
+};
 
 
-//charge les messages enregistrés au chargement de la page
-  useEffect(() => {
-    const savedMessages = localStorage.getItem("messages");
-    if (savedMessages) {
-      setMessages(JSON.parse(savedMessages));
-    }
-  }, []);*/}
 
 
 
@@ -471,10 +517,9 @@ const Game = () => {
                     onChange={(e) => setMessageInput(e.target.value)}
                     className="w-full bg-gray-800 flex-1 p-2 border border-gray-600 rounded-l-lg text-white"
                     placeholder="Écrire un message..."
-                    //quand on appui sur entrer sa envoi le message
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSendMessage();
+                      if (e.key === 'Enter') {
+                        handleSendMessage(); // Appelle la fonction pour envoyer le message
                       }
                     }}
                   />
