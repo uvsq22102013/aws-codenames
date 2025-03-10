@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur} from '../../utils/utilisateurs';
@@ -8,6 +8,7 @@ import { getToken } from '../../utils/token';
 import { useParams } from 'react-router-dom';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
+
 
 const socket = io('http://localhost:3000');
 
@@ -47,6 +48,59 @@ const Game = () => {
       });
     }
   } 
+
+
+  const [messages, setMessages] = useState<any[]>([]);  // Pour stocker les messages du chat
+  const [messageInput, setMessageInput] = useState('');  // Pour stocker le texte saisi dans l'input
+
+
+  useEffect(() => {
+    // quand un message est reçu via Socket.io
+    socket.on("chatmessage", (data: any) => {
+      setMessages((prevMessages) => [...prevMessages, data]);
+    });
+  
+    // Nettoyage de l'écouteur lors du démontage du composant
+    return () => {
+      socket.off("chatmessage");
+    };
+  }, []);
+
+
+  const handleSendMessage = () => {
+
+    if (messageInput.trim() !== '') {
+
+      const pseudo = utilisateur.pseudo;  //pour récupérer le pseudo  
+      socket.emit("chatmessage", {
+
+        message: messageInput,
+        pseudo,
+
+      });
+
+      setMessageInput("");  //effacer le champs input après envoi du message
+    }
+
+  };
+
+
+  {/*useEffect(() => {
+    localStorage.setItem("messages", JSON.stringify(messages));
+  }, [messages]); // Dès que messages change, on stock les modifs
+
+
+//charge les messages enregistrés au chargement de la page
+  useEffect(() => {
+    const savedMessages = localStorage.getItem("messages");
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
+  }, []);*/}
+
+
+
+
 
   const handleBlueEspionClick = () => {
     handleChoice("BLEU", "MAITRE_ESPION");
@@ -229,6 +283,8 @@ const Game = () => {
     setMontrerJoueurs(false);
   };
 
+
+
   const getEquipeUtilisateur = () => {
     return partie?.membres.find((m: any) => m.utilisateurId === utilisateur.id)?.equipe;
   };
@@ -261,6 +317,7 @@ const Game = () => {
   const roleEncours = getRoleEnCours();
   const equipeEnCours = getEquipeEnCours();
   const indiceEnCours = getIndiceEnCours();
+
 
   return (
     <section className={styles.section}>
@@ -333,6 +390,9 @@ const Game = () => {
           {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Utilisez les indices donnés par vos Espions pour trouver vos mots !</h1>)}
           {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Trouvez le meilleur indice pour que vos Agents puissent trouver vos mots !</h1>)}
         </div>
+
+
+
         {/* Grille des mots */}
         {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
           {partie.cartes.map((carte: any) => {
@@ -360,10 +420,10 @@ const Game = () => {
             );
           })}
         </div> */}
-            
-        <div className="w-full h-full flex">
+      
+        <div className="w-full flex flex-col gap-4">
           <div className={styles.rouge}>
-            <div className="bg-red-500 rounded w-full">
+            <div className="bg-red-500 rounded w-full flex flex-col mb-4">
               <p className='text-center font-bold text-xl mt-2'>9</p>
               <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
               {montrerBouttonAgentRouge && (
@@ -384,6 +444,55 @@ const Game = () => {
               {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
                 <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
               ))}
+
+
+{roleUtilisateur === "AGENT" && (
+    <>
+              
+              {/*Div contenant le chat*/}
+              <div className="bg-gray-800 p-2 rounded mt-4 h-[30vh] sm:h-[24vh] md:h-[30vh] lg:h-[60vh] flex flex-col w-full">
+                <p className="text-xs text-center">Chat</p>
+                  <div className="border-t border-gray-300 mt-2 mb-2">
+                    <div className=" chat-history overflow-auto h-[400px] bg-gray-700 p-4 rounded-lg mb-4 border border-gray-600">
+                    <div className="flex flex-col">
+                        {messages.map((msg, index) => (
+                          <div key={index} className="mb-2 text-white">
+                            <strong>{msg.pseudo}:</strong> {msg.message}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="chat-input flex">
+                    <input
+                    type="text"
+                    id="messageInput"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    className="w-full bg-gray-800 flex-1 p-2 border border-gray-600 rounded-l-lg text-white"
+                    placeholder="Écrire un message..."
+                    //quand on appui sur entrer sa envoi le message
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSendMessage();
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    className="px-4 bg-blue-500 text-white rounded-r-lg"
+                  >
+                    Envoyer
+                  </button>
+                </div>
+              </div>
+        
+              
+</>
+)}
+
+
+
             </div>
           </div>
           <div className={styles.cartes}>
@@ -407,7 +516,7 @@ const Game = () => {
           </div>
           <div className={styles.bleu}>
             {/*Cote bleu et historique*/}
-            <div className="w-1/5 flex flex-col w-full">
+            <div className="flex flex-col w-full">
               <div className="bg-blue-700 text-black rounded w-full">
                 <p className='text-center font-bold text-xl mt-2'>9</p>
                 <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
@@ -486,7 +595,7 @@ const Game = () => {
             </div>
           ) : null}
         </div>
-      </div>        
+      </div>  
     </section>
   );
 };

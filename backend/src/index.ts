@@ -30,10 +30,21 @@ app.use("/api/teams", teamsRoutes);
 io.on("connection", (socket) => {
   console.log(`Nouvelle connexion : ${socket.id}`);
   gameSocket(io, socket);
+
+
+  // Recevoir un message du client
+  socket.on("chatmessage", (data) => {
+    io.emit("chatmessage", data);
+  });
+
+
 });
+
+
 
 const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Serveur en écoute sur http://localhost:${PORT}`);
   
-});
+}
+);
