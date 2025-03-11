@@ -58,7 +58,7 @@ section .container {
     position: absolute;
     width: 95%;
     height: 95%;
-    background: #222;
+    background: rgba(34, 34, 34, 0.7);
     z-index: 1000;
     display: flex;
     justify-content: center;

@@ -112,6 +112,12 @@ export default function gameSocket(io: Server, socket: Socket) {
     io.to(`partie-${data.partieId}`).emit('majEquipe');
   });
 
+  socket.on('changerEquipe', async (data) => {
+    await changerRole(data);
+    io.to(`partie-${data.partieId}`).emit('majPartie', {partieId : data.partieId});
+  });
+
+
   socket.on('lancerPartie', (data) => {
     const { partieId } = data;
     lancerPartie(partieId);
