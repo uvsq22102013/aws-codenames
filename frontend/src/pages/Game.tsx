@@ -5,7 +5,6 @@ import { io } from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur} from '../../utils/utilisateurs';
 import { getToken } from '../../utils/token';
-import { useParams } from 'react-router-dom';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
@@ -13,8 +12,6 @@ import {motion, AnimatePresence} from 'framer-motion';
 const socket = io('http://localhost:3000');
 
 const Game = () => {
-  const { partieId } = useParams();
-  const partieIdNumber = Number(partieId);
   const [partie, setPartie] = useState<any>(null);
   const [cartes, setCartes] = useState<any>(null);
 
@@ -31,6 +28,15 @@ const Game = () => {
   const [confirmerReinit, setConfirmerReinit] = useState(false);
   const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const storedPartie = localStorage.getItem("partie");
+  let partieId: string | undefined, partieIdNumber: string | undefined;
+
+  if (storedPartie) {
+    const partie = JSON.parse(storedPartie);
+    partieId = partie.id;
+    partieIdNumber = partie.id;
+  }
 
   // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT") => {
@@ -407,7 +413,7 @@ const Game = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.8 }}
                   className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
                 >
                   <div className="bg-white p-8 rounded-lg shadow-lg text-center">

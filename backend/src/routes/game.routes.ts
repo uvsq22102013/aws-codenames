@@ -11,7 +11,7 @@ const router = Router();
 
 
 router.get('/:id', verifierToken , async (req, res) => {
-  const partieId = parseInt(req.params.id);
+  const partieId = req.params.id;
   const utilisateurId = (req as RequestAvecUtilisateur).user!.id;
 
 
@@ -34,7 +34,7 @@ router.get('/:id', verifierToken , async (req, res) => {
 });
 
 router.get('/:id/indice', verifierToken , async (req, res) => {
-  const partieId = parseInt(req.params.id);
+  const partieId = req.params.id;
 
   console.log(`Back: fetch indice de la partie  ${partieId}`);
   try {

@@ -4,6 +4,7 @@ import { creerPartieAvecCartes } from "../utils/creationPartie";
 import verifierToken, { RequestAvecUtilisateur } from "../utils/verifierToken";
 import { StatutPartie } from "@prisma/client";
 
+
 const router = express.Router();
 
 
@@ -48,7 +49,7 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
 
       // On regarde si l'ID de la partie qui est fournie existe dans la base de donnée
       const game = await prisma.partie.findUnique({
-        where: { codePartie: roomCode },
+        where: { id: roomCode },
 
       });
   

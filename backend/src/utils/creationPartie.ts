@@ -1,7 +1,8 @@
 import prisma from "../prismaClient";
 import { Partie , TypeAction,TypeCarte,StatutPartie, Equipe, Role } from "@prisma/client";
+import bcrypt from "bcrypt";
 
-async function genererCartesPourPartie(partieId: number, langue: string) {
+async function genererCartesPourPartie(partieId: string, langue: string) {
     const mots = await prisma.mot.findMany({
       where: { langue  },
     });
@@ -38,8 +39,7 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
 
 export async function creerPartieAvecCartes(createurId: number, langue: string) {
 
-  const codePartie = genererCodePartie(12);
-  const partieId = generateId();
+  const partieId = genererIdPartie(12);
 
   const partie = await prisma.partie.create({
     data: {
@@ -47,16 +47,8 @@ export async function creerPartieAvecCartes(createurId: number, langue: string) 
       createurId,
       statut: StatutPartie.EN_ATTENTE,
       langue,
-      membres: {
-        create: {
-          utilisateurId: createurId,
-          equipe: Equipe.ROUGE,
-          role: Role.MAITRE_ESPION,
-        },
-      },
       roleEncours : Role.MAITRE_ESPION,
       equipeEnCours : Equipe.ROUGE,
-      codePartie : codePartie,
     },
     include: { createur: true, membres: true },
   });
@@ -65,7 +57,7 @@ export async function creerPartieAvecCartes(createurId: number, langue: string) 
     return partie;
 }
 
-export async function renitPartie(partieId: number) {
+export async function renitPartie(partieId: string) {
   try {
     const partie = await prisma.partie.update({
       where: { id: partieId },
@@ -87,7 +79,7 @@ export async function renitPartie(partieId: number) {
     }
   }
 
-function genererCodePartie(longueur: number): string {
+function genererIdPartie(longueur: number): string {
   const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let code = '';
   for (let i = 0; i < longueur; i++) {
@@ -95,8 +87,4 @@ function genererCodePartie(longueur: number): string {
     code += caracteres[index];
   }
   return code;
-}
-
-function generateId(): number {
-  return Math.floor(Math.random() * 2 ** 31);
 }

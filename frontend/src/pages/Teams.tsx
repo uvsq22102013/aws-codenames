@@ -24,13 +24,12 @@ export default function Teams() {
   const navigate = useNavigate();
 
   const storedPartie = localStorage.getItem("partie");
-  let gameId: number | undefined, createurId: number | undefined, codePartie: string | undefined;
+  let gameId: string | undefined, createurId: number | undefined;
 
   if (storedPartie) {
     const partie = JSON.parse(storedPartie);
     gameId = partie.id;
     createurId = partie.createurId;
-    codePartie = partie.codePartie;
   }
 
 
@@ -66,7 +65,7 @@ export default function Teams() {
     return () => {
       socket.off('majEquipe');
     };
-  }, [gameId]);
+  }, []);
 
   // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT", buttonName: string) => {
@@ -87,11 +86,11 @@ export default function Teams() {
 
   const handleBlueEspionClick = () => {
     // On vérifie si il existe déjà un joueur espion dans l'équipe bleue avant de valider le choix d'équipe.
-    const blueEspionExists = joueurs.some(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION");
-    if (!blueEspionExists) {
+    const blueEspionCount = joueurs.filter(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION").length;
+    if (blueEspionCount < 2) {
       handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
     } else {
-      alert("Il ne peut y avoir qu'un seul maître espion dans l'équipe bleue.");
+      alert("Il peut y avoir au maximum deux maître espions dans l'équipe bleue.");
     }
   };
 
@@ -101,11 +100,11 @@ export default function Teams() {
 
   const handleRedEspionClick = () => {
     // On vérifie si il existe déjà un joueur espion dans l'équipe rouge avant de valider le choix d'équipe.
-    const redEspionExists = joueurs.some(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION");
-    if (!redEspionExists) {
+    const redEspionCount = joueurs.filter(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION").length;
+    if (redEspionCount < 2) {
       handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
     } else {
-      alert("Il ne peut y avoir qu'un seul maître espion dans l'équipe rouge.");
+      alert("Il peut y avoir au maximum deux maître espions dans l'équipe rouge.");
     }
   };
 
@@ -128,10 +127,10 @@ export default function Teams() {
       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
       <div className="absolute left-0 w-1/2 h-full flex flex-col items-center justify-center gap-10">
       <div className="absolute top-8 left-4 z-[10] flex items-center space-x-2">
-        <p className="text-white text-xl bg-gray-600 font-bold">Code Partie: {codePartie}</p>
+        <p className="text-white text-xl bg-gray-600 font-bold">Code Partie: {gameId}</p>
         <button
           className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
-          onClick={() => navigator.clipboard.writeText(codePartie || '')}
+          onClick={() => navigator.clipboard.writeText(gameId || '')}
         >
           Copier
         </button>

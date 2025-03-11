@@ -53,7 +53,7 @@ model Utilisateur {
 }
 
 model Partie {
-  id             Int            @id
+  id             String         @id
   statut         StatutPartie   @default(EN_ATTENTE)
   createurId     Int
   dateCreation   DateTime       @default(now())
@@ -68,7 +68,6 @@ model Partie {
   actions        ActionJeu[]
   membres        MembreEquipe[]
   indiceId       Int?
-  codePartie     String         @unique
 }
 
 model Indice {
@@ -77,14 +76,14 @@ model Indice {
   mot                       String
   nbmots                    Int
   membreEquipeUtilisateurId Int
-  membreEquipePartieId      Int
+  membreEquipePartieId      String
 
   Partie Partie[]
 }
 
 model MembreEquipe {
   utilisateurId Int
-  partieId      Int
+  partieId      String
   equipe        Equipe
   role          Role   @default(AGENT)
 
@@ -109,7 +108,7 @@ model Selection {
   id            Int         @id @default(autoincrement())
   utilisateurId Int
   carteId       Int
-  partieId      Int
+  partieId      String
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   carte         Carte       @relation(fields: [carteId], references: [id], onDelete: Cascade, name: "SelectionCarte") // Ajout d'un nom
 
@@ -118,7 +117,7 @@ model Selection {
 
 model Carte {
   id               Int       @id @default(autoincrement())
-  partieId         Int
+  partieId         String
   motId            Int
   type             TypeCarte
   revelee          Boolean   @default(false)
@@ -132,7 +131,7 @@ model Carte {
 
 model ActionJeu {
   id            Int        @id @default(autoincrement())
-  partieId      Int
+  partieId      String
   utilisateurId Int
   equipe        Equipe
   typeAction    TypeAction
@@ -149,7 +148,7 @@ model ActionJeu {
 
 model Message {
   id            Int      @id @default(autoincrement())
-  partieId      Int
+  partieId      String
   utilisateurId Int
   contenu       String
   dateMessage   DateTime @default(now())

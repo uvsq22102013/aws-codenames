@@ -69,7 +69,7 @@ export default function gameSocket(io: Server, socket: Socket) {
   });
   
   socket.on('donnerIndice', async (data: Indice_Payload) => {
-    const partID = Number(data.partieId);
+    const partID = data.partieId;
     const membre = await trouverMembreEquipe({partieId:partID, utilisateurId:data.utilisateurId});
   
     if (!membre || membre.role !== 'MAITRE_ESPION') {
