@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import logo from '../assets/Logo_CodeNames_blanc.svg';
 import axios from "axios";
 import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
+import ReCAPTCHA from "react-google-recaptcha";
+
 
 export default function Register() {
   const [pseudo, setPseudo] = useState("");//Pseudo
@@ -19,6 +21,7 @@ export default function Register() {
   const [passwordError, setPasswordError] = useState("");// Erreur du mot de passe invalide
   const [passwordMatchError, setPasswordMatchError] = useState("");// Erreur du mot de passe invalide
   const navigate = useNavigate();//Pour aller vers la page suivante
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
 
   //Fonction de validation du mot de passe 
   const validatePassword = (password: string) => {
@@ -81,6 +84,10 @@ export default function Register() {
   //Gerer l'inscription
   const handleRegister = async () => {
     setError(""); // Reset de l'erreur 
+
+    console.log("Captcha value:", captchaValue);
+
+
     //Essaye de faire un POST sur le back pour gerer une inscription 
     try {
       await axios.post("http://localhost:3000/api/auth/register", {
@@ -88,6 +95,7 @@ export default function Register() {
         email,
         mdp: password,
         mdp2: password2,
+        recaptchaResponse: captchaValue,
       });
       alert("Inscription réussie !");
       //Renvoi vers la page de connexion 
@@ -131,6 +139,15 @@ export default function Register() {
             <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword2(!showPassword2)}>{showPassword2 ? "🙈" : "👁️"}</button>
           </div>
 
+          {/* CAPTCHA */}
+          <div className={styles.inputBox}>
+              <ReCAPTCHA
+                sitekey="6LeRKfAqAAAAANl6lP90-DZXmIfV15yNBy9U_E_1"  //clé publique
+                onChange={(value) => setCaptchaValue(value)}  //pou enregistrer la réponse du CAPTCHA
+              />
+            </div>
+
+
           <div className={styles.links}><a href=""></a><a href="/login">Signin</a> 
           </div> 
             <div className={styles.inputBox}>
@@ -140,6 +157,9 @@ export default function Register() {
             </div> 
 
           </div> 
+
+
+
 
         </div> 
 

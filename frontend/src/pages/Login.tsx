@@ -5,6 +5,8 @@ import axios from "axios";
 import { setUtilisateur } from '../../utils/utilisateurs';
 import { link } from "fs";
 import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
+import ReCAPTCHA from 'react-google-recaptcha';
+
 
 
 export default function Login() {
@@ -13,10 +15,22 @@ export default function Login() {
   const [error, setError] = useState(""); // Stocke l'erreur à afficher
   const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
   const navigate = useNavigate();//Permet de changer de page  
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null); // État pour stocker la réponse du reCAPTCHA
 
-  //Gere la connexion
+
+    // Gère la connexion
   const handleLogin = async () => {
     setError(""); // Reset de l'erreur
+
+
+    console.log("Captcha value:", captchaValue);
+
+    //si le captchan'est pas validé
+    if (!captchaValue) {
+
+       setError("Veuillez vérifier le CAPTCHA.");
+      return;
+    }
 
     //Essaye de faire un POST sur back pour gerer la connexion 
     try {
@@ -24,6 +38,7 @@ export default function Login() {
         pseudo: login,
         email: login,
         mdp: password,
+        recaptchaResponse: captchaValue, // Ajout de la réponse reCAPTCHA
       });
       //Genere un token contenant les données de l'utilisateur connecté 
       localStorage.setItem("token", response.data.token);
@@ -75,6 +90,15 @@ export default function Login() {
 
             </div>
 
+
+
+            <div className={styles.recaptcha}>
+            <ReCAPTCHA
+              sitekey="6LeRKfAqAAAAANl6lP90-DZXmIfV15yNBy9U_E_1"  //clé publique
+              onChange={(value: string | null) => setCaptchaValue(value)}
+            />
+          </div>
+
           </div>
 
         </div>
@@ -84,4 +108,4 @@ export default function Login() {
     </section>
     
   );
-}
+  }
