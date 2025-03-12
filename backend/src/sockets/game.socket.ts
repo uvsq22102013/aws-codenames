@@ -113,6 +113,12 @@ export default function gameSocket(io: Server, socket: Socket) {
     }
   });
 
+  socket.on('changerEquipe', async (data) => {
+    console.log("EMIT rcezucvhgzv");
+    await changerRole(data);
+    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
+  });
+
   socket.on('choixEquipe', async (data) => {
     await changerRole(data);
     io.to(`partie-${data.partieId}`).emit('majEquipe');

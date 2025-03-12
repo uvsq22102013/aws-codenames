@@ -107,7 +107,7 @@ const handleJoinRoom = async () => {
     try {
       // Envoi d'une requête POST au backend avec axios
 
-      const response = await axios.post("http://localhost:3000/api/join/join-game", {
+      const response = await axios.post("/api/join/join-game", {
         roomCode,
       });
 

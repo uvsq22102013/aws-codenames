@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-wrapper-object-types */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from '../assets/Logo_CodeNames_blanc.svg';
 import axios from "axios";
 import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
 
@@ -83,7 +82,7 @@ export default function Register() {
     setError(""); // Reset de l'erreur 
     //Essaye de faire un POST sur le back pour gerer une inscription 
     try {
-      await axios.post("http://localhost:3000/api/auth/register", {
+      await axios.post("/api/auth/register", {
         pseudo,
         email,
         mdp: password,

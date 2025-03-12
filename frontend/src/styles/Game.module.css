@@ -131,7 +131,7 @@ section .container .cartes {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 1000;
 }
 
 section .container .indice {
@@ -210,7 +210,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 1000;
     }
     section .container .indice {
         width: 90%;
@@ -280,7 +280,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 1000;
     }
     section .container .indice {
         width: 90%;
@@ -350,7 +350,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 1000;
     }
     section .container .indice {
         width: 90%;
