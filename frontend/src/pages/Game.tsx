@@ -203,7 +203,7 @@ const Game = () => {
   };
 
   const passerTour = () => {
-    socket.emit('finDeviner', { partieId : Number (partieId) , utilisateurId: utilisateur.id , equipe : getEquipeUtilisateur() });
+    socket.emit('finDeviner', { partieId : partieId , utilisateurId: utilisateur.id , equipe : getEquipeUtilisateur() });
   };
 
   const selectionnerCarte = (carteId: number) => {
@@ -414,11 +414,16 @@ const Game = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.8 }}
-                  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                  className="fixed inset-0 flex items-center justify-center z-50 rounded-lg"
+                  style={{
+                    backgroundImage: "url(/images/win.png)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
                 >
-                  <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-                    <h2 className="text-2xl font-bold mb-4">
-                    {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
+                  <div className="text-center">
+                    <h2 className="text-4xl font-bold mb-4">
+                      {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
                     </h2>
                   </div>
                 </motion.div>

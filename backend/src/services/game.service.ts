@@ -239,6 +239,10 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                     indice: undefined,
                 },
             });
+            await prisma.selection.deleteMany({
+                where: {partieId: payload.partieId}
+            });
+            
         }
         const equipeBleuCartes = await prisma.carte.findMany({
             where: {

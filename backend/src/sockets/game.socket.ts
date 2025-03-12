@@ -134,7 +134,6 @@ export default function gameSocket(io: Server, socket: Socket) {
   });
 
   socket.on('finDeviner', async (data : FinDeviner_Payload) => {
-    const { partieId } = data;
     finDeviner(data);
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
   });
