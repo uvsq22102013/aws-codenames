@@ -9,8 +9,12 @@ interface CelluleProps {
   equipeUtilisateur: string | undefined
   equipeEnCours: string | undefined;
   onSelectionner: (carteId: number) => void;
+  onDeselectionner: (carteId: number) => void;
   onValiderCarte: (carteId: number) => void;
   estSelectionnee?: boolean;
+  pseudosSelections: string[];
+  estSelectionneeParJoueur?: boolean;
+  trouvee: boolean;
 }
 
 const Cellule = ({
@@ -20,8 +24,12 @@ const Cellule = ({
   equipeUtilisateur,
   equipeEnCours,
   onSelectionner,
+  onDeselectionner,
   onValiderCarte,
   estSelectionnee = false,
+  pseudosSelections,
+  estSelectionneeParJoueur = false,
+  trouvee,
 }: CelluleProps) => {
   const [flipped, setFlipped] = useState(carte.revelee);
   const carteRevelee = carte.revelee || roleUtilisateur === 'MAITRE_ESPION';
@@ -37,11 +45,23 @@ const Cellule = ({
     if (!carteRevelee) return '';
     switch (carte.type) {
       case 'ROUGE':
-        return 'url(/images/rouge.png)';
+        if (trouvee && roleUtilisateur === 'MAITRE_ESPION' ) {
+          return 'url(/images/rouge_sombre.png)'
+        } else {
+          return 'url(/images/rouge.png)';
+        }
       case 'BLEU':
-        return 'url(/images/bleu.png)';
+        if (trouvee && roleUtilisateur === 'MAITRE_ESPION' ) {
+          return 'url(/images/bleu_sombre.png)'
+        } else {
+          return 'url(/images/bleu.png)';
+        }
       case 'NEUTRE':
-        return 'url(/images/neutre.png)';
+        if (trouvee && roleUtilisateur === 'MAITRE_ESPION' ) {
+          return 'url(/images/neutre_sombre.png)'
+        } else {
+          return 'url(/images/neutre.png)';
+        }
       case 'ASSASSIN':
         return 'url(/images/assassin.png)';
       default:
@@ -72,11 +92,8 @@ const Cellule = ({
 
   return (
     <motion.div
-      className={`relative px-[22%] py-[22%] sm:px-[20%] sm:py-[20%] md:px-[20%] md:py-[20%] text-[55%] sm:text-[70%] md:text-[100%] flex items-center justify-center rounded border ${
-        estSelectionnee ? 'border-yellow-400 border-4' : 'border-gray-400'
-      } transition-all duration-300 ease-in-out`}
+      className={`relative px-[22%] py-[22%] sm:px-[20%] sm:py-[20%] md:px-[20%] md:py-[20%] text-[55%] sm:text-[70%] md:text-[100%] flex items-center justify-center rounded border border-gray-400 transition-all duration-300 ease-in-out`}
       whileHover={{ scale: 1.05 }}
-
     >
       {/* FACE CACHEE */}
       <motion.div
@@ -121,10 +138,38 @@ const Cellule = ({
         </button>
       )}
 
-      {/* ZONE CLIQUABLE POUR SELECTIONNER */}
+      {/* Liste des pseudos des joueurs qui ont sélectionné la carte */}
+      {estSelectionnee && (
+      <div className="absolute inset-0 bg-transparent text-yellow text-xs p-1 rounded-t flex items-center justify-center">
+        <ul className="list-none p-0 m-0 grid grid-cols-2 grid-rows-2 gap-1 w-full h-full">
+          {pseudosSelections.map((pseudo, index) => (
+            <li
+              key={index}
+              className={`
+                bg-yellow-400 text-black p-1 rounded
+                ${index === 0 ? 'justify-self-start self-start' : ''}
+                ${index === 1 ? 'justify-self-end self-start' : ''}
+                ${index === 2 ? 'justify-self-start self-end' : ''}
+                ${index === 3 ? 'justify-self-end self-end' : ''}
+              `}
+            >
+              {pseudo}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+      {/* ZONE CLIQUABLE POUR SELECTIONNER OU DESELECTIONNER */}
       {estCliquable && (
         <button
-          onClick={() => onSelectionner(carte.id)}
+          onClick={() => {
+            if (estSelectionneeParJoueur) {
+              onDeselectionner(carte.id);
+            } else {
+              onSelectionner(carte.id);
+            }
+          }}
           className="absolute inset-0 opacity-0"
         />
       )}

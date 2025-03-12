@@ -5,15 +5,13 @@ import { io } from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur} from '../../utils/utilisateurs';
 import { getToken } from '../../utils/token';
-import { useParams } from 'react-router-dom';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
+import {motion, AnimatePresence} from 'framer-motion';
 
 const socket = io('http://localhost:3000');
 
 const Game = () => {
-  const { partieId } = useParams();
-  const partieIdNumber = Number(partieId);
   const [partie, setPartie] = useState<any>(null);
   const [cartes, setCartes] = useState<any>(null);
 
@@ -28,7 +26,17 @@ const Game = () => {
   const [montrerBouttonEspionRouge, setmontrerBouttonEspionRouge] = useState(false);
   const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
   const [confirmerReinit, setConfirmerReinit] = useState(false);
+  const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const storedPartie = localStorage.getItem("partie");
+  let partieId: string | undefined, partieIdNumber: string | undefined;
+
+  if (storedPartie) {
+    const partie = JSON.parse(storedPartie);
+    partieId = partie.id;
+    partieIdNumber = partie.id;
+  }
 
   // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT") => {
@@ -112,7 +120,7 @@ const Game = () => {
     try {
       const token = getToken();
 
-      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}`, {
+      const res = await fetch(`/api/parties/${partieIdNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -130,7 +138,7 @@ const Game = () => {
     try {
       const token = getToken();
 
-      const res = await fetch(`http://localhost:3000/api/parties/${partieIdNumber}/indice`, {
+      const res = await fetch(`/api/parties/${partieIdNumber}/indice`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -161,12 +169,19 @@ const Game = () => {
     };
   
     socket.on('majPartie', majHandler);
+
     socket.on('joueurVire', (data: { joueurId: number }) => {
       if (data.joueurId === utilisateur.id) {
         navigate('/join');
       }
     });
-  
+
+    socket.on('gagnant', (data: { equipeGagnante: string }) => {
+      console.log(`L'équipe gagnante est : ${data.equipeGagnante}`);
+      setEquipeGagnante(data.equipeGagnante);
+      setTimeout(() => setEquipeGagnante(null), 8000);
+    });
+    
     return () => {
       socket.off('majPartie', majHandler);
       socket.off('joueurVire');
@@ -188,13 +203,18 @@ const Game = () => {
   };
 
   const passerTour = () => {
-    socket.emit('finDeviner', { partieId : Number (partieId) , utilisateurId: utilisateur.id , equipe : getEquipeUtilisateur() });
+    socket.emit('finDeviner', { partieId : partieId , utilisateurId: utilisateur.id , equipe : getEquipeUtilisateur() });
   };
 
   const selectionnerCarte = (carteId: number) => {
     const equipe = getEquipeUtilisateur();
     socket.emit('selectionnerCarte', { partieId, carteId, equipe, utilisateurId: utilisateur.id });
   };
+
+  const deselectionnerCarte = (carteId: number) => {
+    socket.emit('deselectionnerCarte', {partieId, carteId, utilisateurId: utilisateur.id})
+  }
+
   const validerCarte = (carteId: number) => {
     const equipe = getEquipeUtilisateur();
     socket.emit('validerCarte', { partieId : partieIdNumber, carteId, equipe, utilisateurId: utilisateur.id });
@@ -360,99 +380,122 @@ const Game = () => {
             );
           })}
         </div> */}
-            
-        <div className="w-full h-full flex">
-          <div className={styles.rouge}>
-            <div className="bg-red-500 rounded w-full">
-              <p className='text-center font-bold text-xl mt-2'>9</p>
-              <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
-              {montrerBouttonAgentRouge && (
-                <div className="flex justify-center mb-1">
-                  <button onClick={handleRedAgentClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir agent</button>
-                </div>
-              )}
-                <h3 className="font-bold text-center mb-1">Agents</h3>
-              {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
-                <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
-              ))}
-              {montrerBouttonEspionRouge && (
-                <div className="flex justify-center mb-1">
-                  <button onClick={handleRedEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
-                </div>
-              )}
-                <h3 className="font-bold text-center mb-1">Espions</h3>
-              {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
-                <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
-              ))}
-            </div>
-          </div>
-          <div className={styles.cartes}>
-            <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
-              {cartes.map((carte: any) => {
-
-                return <Cellule
-                key={carte.id}
-                carte={carte}
-                roleUtilisateur={roleUtilisateur}
-                roleEncours={roleEncours}
-                equipeUtilisateur={equipeUtilisateur}
-                equipeEnCours={equipeEnCours}
-                onSelectionner={selectionnerCarte}
-                onValiderCarte={validerCarte}
-                estSelectionnee={carte.selectionId}
-                />
-            
-              })}
-            </div>
-          </div>
-          <div className={styles.bleu}>
-            {/*Cote bleu et historique*/}
-            <div className="w-1/5 flex flex-col w-full">
-              <div className="bg-blue-700 text-black rounded w-full">
-                <p className='text-center font-bold text-xl mt-2'>9</p>
-                <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
-                {montrerBouttonAgentBleu && (
-                  <div className="flex justify-center mb-1">
-                    <button onClick={handleBlueAgentClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir agent</button>
-                  </div>
-                )}
-                  <h3 className="font-bold text-center">Agents</h3>   
-                {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
-                  <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
-                ))}
-                {montrerBouttonEspionBleu && (
-                  <div className="flex justify-center mb-1">
-                    <button onClick={handleBlueEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
-                  </div>
-                )}     
-                  <h3 className="font-bold text-center mt-2">Espions</h3>    
-                {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
-                  <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
-                ))}  
+          
+        <div className={styles.rouge}>
+          <div className="bg-red-500 rounded w-full">
+            <p className='text-center font-bold text-xl mt-2'>9</p>
+            <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
+            {montrerBouttonAgentRouge && (
+              <div className="flex justify-center mb-1">
+                <button onClick={handleRedAgentClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir agent</button>
               </div>
+            )}
+              <h3 className="font-bold text-center mb-1">Agents</h3>
+            {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
+              <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+            ))}
+            {montrerBouttonEspionRouge && (
+              <div className="flex justify-center mb-1">
+                <button onClick={handleRedEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
+              </div>
+            )}
+              <h3 className="font-bold text-center mb-1">Espions</h3>
+            {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
+              <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
+            ))}
+          </div>
+        </div>
+        <div className={styles.cartes}>
+          <AnimatePresence>
+            {equipeGagnante && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.8 }}
+                className="fixed inset-0 flex items-center justify-center z-50 rounded-lg before:content-[''] before:absolute before:inset-0 before:bg-cover before:bg-center before:bg-[url('/images/win.png')] before:opacity-90"
+              >
+                <div className="relative text-center z-10">
+                  <h2 className="text-6xl font-bold mb-4 text-yellow-700">
+                    {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
+                  </h2>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
+            {cartes.map((carte: any) => {
+
+              const estSelectionnee = carte.joueursSelection && carte.joueursSelection.length > 0;
+              const estSelectionneeParJoueur = carte.joueursSelection && carte.joueursSelection.includes(utilisateur.pseudo);
+              
+              return <Cellule
+              key={carte.id}
+              carte={carte}
+              roleUtilisateur={roleUtilisateur}
+              roleEncours={roleEncours}
+              equipeUtilisateur={equipeUtilisateur}
+              equipeEnCours={equipeEnCours}
+              onSelectionner={selectionnerCarte}
+              onDeselectionner={deselectionnerCarte}
+              onValiderCarte={validerCarte}
+              estSelectionnee={estSelectionnee}
+              pseudosSelections={carte.joueursSelection}
+              estSelectionneeParJoueur={estSelectionneeParJoueur}
+              trouvee={carte.trouvee}
+              />
+          
+            })}
+          </div>
+        </div>
+        <div className={styles.bleu}>
+          {/*Cote bleu et historique*/}
+          <div className="w-1/5 flex flex-col w-full">
+            <div className="bg-blue-700 text-black rounded w-full">
+              <p className='text-center font-bold text-xl mt-2'>9</p>
+              <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
+              {montrerBouttonAgentBleu && (
+                <div className="flex justify-center mb-1">
+                  <button onClick={handleBlueAgentClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir agent</button>
+                </div>
+              )}
+                <h3 className="font-bold text-center">Agents</h3>   
+              {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
+                <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+              ))}
+              {montrerBouttonEspionBleu && (
+                <div className="flex justify-center mb-1">
+                  <button onClick={handleBlueEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
+                </div>
+              )}     
+                <h3 className="font-bold text-center mt-2">Espions</h3>    
+              {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
+                <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
+              ))}  
             </div>
           </div>
-          <div>
-            <div className={styles.historique}>
-              <div className="bg-gray-800 p-2 rounded mt-4 h-[30vh] sm:h-[24vh] md:h-[30vh] lg:h-[60vh] flex flex-col w-full">     
-                <p className="text-xs text-center">Historique</p>
-                {/* Ligne de séparation */}
-                <div className="border-t border-gray-300 mt-2 mb-2"></div>
-                <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600">
-                  {partie.actions.map((action: any) => (    
-                    <p key={action.id} className="text-xs py-1">
-                      {action.utilisateur?.pseudo} {action.motDonne && `a donné l'indice : ${action.motDonne}`}
-                      {action.carte && `a sélectionné : ${action.carte.mot.mot}`}
-                    </p>            
-                  ))}
-                </div>
+        </div>
+        <div>
+          <div className={styles.historique}>
+            <div className="bg-gray-800 p-2 rounded mt-4 h-[30vh] sm:h-[24vh] md:h-[30vh] lg:h-[60vh] flex flex-col w-full">     
+              <p className="text-xs text-center">Historique</p>
+              {/* Ligne de séparation */}
+              <div className="border-t border-gray-300 mt-2 mb-2"></div>
+              <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600">
+                {partie.actions.map((action: any) => (    
+                  <p key={action.id} className="text-xs py-1">
+                    {action.utilisateur?.pseudo} {action.motDonne && `a donné l'indice : ${action.motDonne}`}
+                    {action.carte && `a sélectionné : ${action.carte.mot.mot}`}
+                  </p>            
+                ))}
               </div>
             </div>
           </div>
         </div>
+        
         {/* Zone indices - Seulement pour maître espion */}
-        <div className={styles.indice}>
-          {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
+        {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
+          <div className={styles.indice}>
             <div className="p-4 rounded text-center w-full">
               <h2 className="text-l text-white sm:text-xl">Donner un indice</h2>
               <input
@@ -472,21 +515,21 @@ const Game = () => {
                 Valider
               </button>
             </div>
-          )}
-        </div>
-        <div className={styles.indice}>
-          {roleEncours === 'AGENT' ? (
+          </div>
+        )}
+        {roleEncours === 'AGENT' && indice ? (
+          <div className={styles.indice}>
             <div className=" w-full rounded text-white text-center">
               <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
-              <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded">
+              <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded mt-2">
                 Valider
               </button>
               ) : null}
             </div>
-          ) : null}
-        </div>
-      </div>        
+          </div>
+        ) : null}
+      </div>
     </section>
   );
 };

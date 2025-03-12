@@ -5,7 +5,7 @@ import { getMembres } from '../services/game.service';
 const router = express.Router();
 
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
-    const partieId = parseInt(req.params.id);
+    const partieId = req.params.id;
     try {
         const membres = await getMembres(partieId);
         res.status(200).json(membres);

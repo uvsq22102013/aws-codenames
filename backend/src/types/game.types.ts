@@ -5,7 +5,7 @@ import { Equipe, TypeCarte, Role, TypeAction, StatutPartie } from '@prisma/clien
 
 // Type indice ce que l'espion donne comme indice avec le nombre de mots
 export type Indice_Payload = {
-  partieId : number, 
+  partieId : string, 
   utilisateurId:number,
   motDonne:string, 
   nombreMots:number, 
@@ -15,40 +15,46 @@ export type Indice_Payload = {
 // Type pour la sélection d'une carte
   export type SelectionCarte_Payload = {
     carteId:number ,
-    partieId : number,
+    partieId : string,
     utilisateurId:number, 
     equipe: Equipe
   };
 
+  export type DeselectionCarte_Payload = {
+    partieId:string,
+    carteId:number,
+    utilisateurId:number
+  };
+
   export type RejoindrePartie_Payload = {
-    partieId: number,
+    partieId: string,
     utilisateurId: number
   };
 
 
   export type FinDeviner_Payload = {
-    partieId : number,
+    partieId : string,
     utilisateurId:number, 
     equipe: Equipe
   };
 
   export type changerHost_Payload = {
-    partieId: number,
+    partieId: string,
     utilisateurId: number
     newHostId: number
   };
 
   export type virerJoueur_Payload = {
-    partieId: number,
+    partieId: string,
     utilisateurId: number
     joueurId: number
   };
 
   export type renitPartie_Payload = {
-    partieId: number,
+    partieId: string,
     utilisateurId: number
   };
  export type devenirSpectateur_Payload = {
-    partieId: number,
+    partieId: string,
     utilisateurId: number
   };

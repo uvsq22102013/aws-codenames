@@ -1,8 +1,8 @@
 import { Server, Socket } from 'socket.io';
 // import { JSEncrypt } from 'jsencrypt';
 import {renitPartie} from '../utils/creationPartie';
-import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte} from '../services/game.service';
-import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload } from '../types/game.types';
+import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte, verifierGagnant} from '../services/game.service';
+import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload, DeselectionCarte_Payload } from '../types/game.types';
 import { verifierTokenSocket } from '../utils/verifierToken';
 
 // const crypterData = (data: any, publicKey: string) => {
@@ -69,7 +69,7 @@ export default function gameSocket(io: Server, socket: Socket) {
   });
   
   socket.on('donnerIndice', async (data: Indice_Payload) => {
-    const partID = Number(data.partieId);
+    const partID = data.partieId;
     const membre = await trouverMembreEquipe({partieId:partID, utilisateurId:data.utilisateurId});
   
     if (!membre || membre.role !== 'MAITRE_ESPION') {
@@ -92,7 +92,7 @@ export default function gameSocket(io: Server, socket: Socket) {
     console.log(`Back socket: majPartie apres carte sélectionnée`);
   });
 
-  socket.on('deselectionnerCarte', async (data: SelectionCarte_Payload) => {
+  socket.on('deselectionnerCarte', async (data: DeselectionCarte_Payload) => {
     console.log(`Back socket: deselectionnerCarte ${data.carteId} pour partie ${data.partieId} par utilisateur ${data.utilisateurId}`);
     await deselectionnerCarte(data);
     console.log(`Back socket: Carte deselectionner : ${data.carteId}`);
@@ -105,6 +105,18 @@ export default function gameSocket(io: Server, socket: Socket) {
     console.log(`Back socket: Carte validee : ${data.carteId}`);
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
     console.log(`Back socket: majPartie apres carte valider`);
+
+    const gagnant = await verifierGagnant({ partieId: data.partieId });
+    if (gagnant) {
+      io.to(`partie-${data.partieId}`).emit('gagnant', { equipeGagnante: gagnant });
+      console.log(`Back socket: gagnant detecté : ${gagnant}`);
+    }
+  });
+
+  socket.on('changerEquipe', async (data) => {
+    console.log("EMIT rcezucvhgzv");
+    await changerRole(data);
+    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
   });
 
   socket.on('choixEquipe', async (data) => {
@@ -134,7 +146,6 @@ export default function gameSocket(io: Server, socket: Socket) {
   });
 
   socket.on('finDeviner', async (data : FinDeviner_Payload) => {
-    const { partieId } = data;
     finDeviner(data);
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
   });

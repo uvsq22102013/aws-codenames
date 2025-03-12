@@ -4,6 +4,7 @@ import { creerPartieAvecCartes } from "../utils/creationPartie";
 import verifierToken, { RequestAvecUtilisateur } from "../utils/verifierToken";
 import { StatutPartie } from "@prisma/client";
 
+
 const router = express.Router();
 
 
@@ -43,26 +44,19 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
 
     //on récupère le code de la partie envoyé par le front
     const { roomCode } = req.body;
-
-    //on vérifie que le code de la partie est bien valide
-    if (!roomCode) {
-      res.status(400).json({ error: "Veuillez entrer un code de partie valide." });
-      return;
-    }
   
     try {
 
-
       // On regarde si l'ID de la partie qui est fournie existe dans la base de donnée
       const game = await prisma.partie.findUnique({
-        where: { id: parseInt(roomCode) }, //ici on convertis le roomcode en int
+        where: { id: roomCode },
 
       });
   
       if (!game) {
 
-        // si on trouve pas de partie avec cette ID, on renvoit un message d'erreure 
-        res.status(404).json({ error: "La partie n'existe pas." });
+        // si on trouve pas de partie avec cette ID, on renvoit un message d'erreur 
+        res.status(400).json({ error: "Mauvaise Code Partie" });
         return;
       }
   
@@ -73,14 +67,10 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
           return;
         } else {
           // dans le cas contraire si la partie existe on renvoit l'ID de la partie créée
-          res.json({ message: `Vous avez rejoint la partie ${game.id}.`, game });
+          res.json({game});
         }
       } catch (error) {
 
-
-    //erreur si il ya un pb avec le serveur
-      console.error("Erreur lors de la tentative de rejoindre la partie", error);
-      res.status(500).json({ error: "Erreur serveur" }); 
     }  
     
   });

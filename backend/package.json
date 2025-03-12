@@ -11,7 +11,9 @@
         "format": "npx prisma format",
         "generate": "npx prisma generate",
         "update_bd": "npx prisma migrate dev --name \"update\"",
-        "seed": "npx ts-node seedWords.ts"
+        "seed": "npx ts-node seedWords.ts",
+        "clear-db": "ts-node scripts/clearDB.ts"
+
     },
     "keywords": [],
     "author": "",

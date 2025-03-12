@@ -49,10 +49,11 @@ model Utilisateur {
   MembreEquipe MembreEquipe[]
   ActionJeu    ActionJeu[]
   Message      Message[]
+  Selection    Selection[]
 }
 
 model Partie {
-  id             Int            @id @default(autoincrement())
+  id             String         @id
   statut         StatutPartie   @default(EN_ATTENTE)
   createurId     Int
   dateCreation   DateTime       @default(now())
@@ -75,14 +76,14 @@ model Indice {
   mot                       String
   nbmots                    Int
   membreEquipeUtilisateurId Int
-  membreEquipePartieId      Int
+  membreEquipePartieId      String
 
   Partie Partie[]
 }
 
 model MembreEquipe {
   utilisateurId Int
-  partieId      Int
+  partieId      String
   equipe        Equipe
   role          Role   @default(AGENT)
 
@@ -104,29 +105,33 @@ model Mot {
 }
 
 model Selection {
-  id            Int     @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   utilisateurId Int
-  Carte         Carte[]
+  carteId       Int
+  partieId      String
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  carte         Carte       @relation(fields: [carteId], references: [id], onDelete: Cascade, name: "SelectionCarte") // Ajout d'un nom
+
+  @@unique([utilisateurId, carteId])
 }
 
 model Carte {
   id               Int       @id @default(autoincrement())
-  partieId         Int
+  partieId         String
   motId            Int
   type             TypeCarte
   revelee          Boolean   @default(false)
   trouveeParEquipe Equipe? // ROUGE | BLEU -> Pour savoir si l'agent a trouvé ce mot
-  selectionId      Int?
 
-  partie    Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
-  mot       Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
-  actions   ActionJeu[] @relation("CarteActions")
-  Selection Selection?  @relation(fields: [selectionId], references: [id])
+  partie     Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
+  mot        Mot         @relation(fields: [motId], references: [id], onDelete: Cascade)
+  actions    ActionJeu[] @relation("CarteActions")
+  selections Selection[] @relation("SelectionCarte")
 }
 
 model ActionJeu {
   id            Int        @id @default(autoincrement())
-  partieId      Int
+  partieId      String
   utilisateurId Int
   equipe        Equipe
   typeAction    TypeAction
@@ -143,7 +148,7 @@ model ActionJeu {
 
 model Message {
   id            Int      @id @default(autoincrement())
-  partieId      Int
+  partieId      String
   utilisateurId Int
   contenu       String
   dateMessage   DateTime @default(now())

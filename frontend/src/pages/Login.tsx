@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from '../assets/Logo_CodeNames_blanc.svg';
 import axios from "axios";
 import { setUtilisateur } from '../../utils/utilisateurs';
-import { link } from "fs";
 import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
 
 
@@ -20,7 +18,7 @@ export default function Login() {
 
     //Essaye de faire un POST sur back pour gerer la connexion 
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         pseudo: login,
         email: login,
         mdp: password,
@@ -65,7 +63,7 @@ export default function Login() {
 
             </div>
 
-            <div className={styles.links}> <a href="#">Forgot Password</a> <a href="/register">Signup</a>
+            <div className={styles.links}> <a href="/register">Signup</a>
 
             </div>
 

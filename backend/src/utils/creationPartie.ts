@@ -1,6 +1,8 @@
 import prisma from "../prismaClient";
 import { Partie , TypeAction,TypeCarte,StatutPartie, Equipe, Role } from "@prisma/client";
-async function genererCartesPourPartie(partieId: number, langue: string) {
+import bcrypt from "bcrypt";
+
+async function genererCartesPourPartie(partieId: string, langue: string) {
     const mots = await prisma.mot.findMany({
       where: { langue  },
     });
@@ -27,47 +29,45 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
           partieId,
           motId: mot.id,
           type: typesMelanges[index],
-          selectionId: null,
         },
       })
     );
   
     await Promise.all(cartesPromises);
     return cartesPromises;
-  }
-  export async function creerPartieAvecCartes(createurId: number, langue: string) {
-    const partie = await prisma.partie.create({
-      data: {
-        createurId,
-        statut: StatutPartie.EN_ATTENTE,
-        langue,
-        membres: {
-          create: {
-            utilisateurId: createurId,
-            equipe: Equipe.ROUGE,
-            role: Role.MAITRE_ESPION,
-          },
-        },
-        roleEncours : Role.MAITRE_ESPION,
-        equipeEnCours : Equipe.ROUGE,
-      },
-      include: { createur: true, membres: true },
-    });
+}
+
+export async function creerPartieAvecCartes(createurId: number, langue: string) {
+
+  const partieId = genererIdPartie(12);
+
+  const partie = await prisma.partie.create({
+    data: {
+      id: partieId,
+      createurId,
+      statut: StatutPartie.EN_ATTENTE,
+      langue,
+      roleEncours : Role.MAITRE_ESPION,
+      equipeEnCours : Equipe.ROUGE,
+    },
+    include: { createur: true, membres: true },
+  });
   
     await genererCartesPourPartie(partie.id, langue);
     return partie;
-  }
-  export async function renitPartie(partieId: number) {
-    try {
-      const partie = await prisma.partie.update({
-        where: { id: partieId },
-        data: {
-          statut: StatutPartie.EN_COURS,
-          roleEncours: Role.MAITRE_ESPION,
-          equipeEnCours: Equipe.ROUGE,
-          indice: undefined,
-        },
-      });
+}
+
+export async function renitPartie(partieId: string) {
+  try {
+    const partie = await prisma.partie.update({
+      where: { id: partieId },
+      data: {
+        statut: StatutPartie.EN_COURS,
+        roleEncours: Role.MAITRE_ESPION,
+        equipeEnCours: Equipe.ROUGE,
+        indice: undefined,
+      },
+    });
   
       await prisma.carte.deleteMany({ where: { partieId } });
       const cartes = await genererCartesPourPartie(partie.id, partie.langue);
@@ -78,3 +78,13 @@ async function genererCartesPourPartie(partieId: number, langue: string) {
       throw new Error(`Erreur lors de la réinitialisation de la partie.`);
     }
   }
+
+function genererIdPartie(longueur: number): string {
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let code = '';
+  for (let i = 0; i < longueur; i++) {
+    const index = Math.floor(Math.random() * caracteres.length);
+    code += caracteres[index];
+  }
+  return code;
+}

@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
-import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import styles from "../styles/Login.module.css"; 
+import styles from "../styles/Login.module.css";
 
 
 const socket = io('http://localhost:3000');
@@ -20,15 +19,19 @@ interface Joueur {
 export default function Teams() {
   const [clickedButton, setClickedButton] = useState(""); // Variable qui nous servira pour l'affichage.
   const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
-  const { partieId } = useParams();
-  const gameId = Number(partieId);
   const utilisateur = getUtilisateur();
 
   const navigate = useNavigate();
 
-  // On récupère l'id du créateur de la partie dans le localStorage.
-  const storedCreatorId = localStorage.getItem("createurId");
-  const createurId = storedCreatorId ? parseInt(storedCreatorId, 10) : null;
+  const storedPartie = localStorage.getItem("partie");
+  let gameId: string | undefined, createurId: number | undefined;
+
+  if (storedPartie) {
+    const partie = JSON.parse(storedPartie);
+    gameId = partie.id;
+    createurId = partie.createurId;
+  }
+
 
   // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
@@ -56,13 +59,13 @@ export default function Teams() {
     // On écoute si le créateur de la partie a lancé le jeu.
     socket.on('partieLancee', (data) => {
       console.log(`Partie ${data.partieId} lancée`);
-      navigate(`/game/${data.partieId}`);
+      navigate(`/game/${gameId}`);
     });
 
     return () => {
       socket.off('majEquipe');
     };
-  }, [gameId]);
+  }, []);
 
   // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT", buttonName: string) => {
@@ -83,11 +86,11 @@ export default function Teams() {
 
   const handleBlueEspionClick = () => {
     // On vérifie si il existe déjà un joueur espion dans l'équipe bleue avant de valider le choix d'équipe.
-    const blueEspionExists = joueurs.some(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION");
-    if (!blueEspionExists) {
+    const blueEspionCount = joueurs.filter(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION").length;
+    if (blueEspionCount < 2) {
       handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
     } else {
-      alert("Il ne peut y avoir qu'un seul maître espion dans l'équipe bleue.");
+      alert("Il peut y avoir au maximum deux maître espions dans l'équipe bleue.");
     }
   };
 
@@ -97,11 +100,11 @@ export default function Teams() {
 
   const handleRedEspionClick = () => {
     // On vérifie si il existe déjà un joueur espion dans l'équipe rouge avant de valider le choix d'équipe.
-    const redEspionExists = joueurs.some(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION");
-    if (!redEspionExists) {
+    const redEspionCount = joueurs.filter(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION").length;
+    if (redEspionCount < 2) {
       handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
     } else {
-      alert("Il ne peut y avoir qu'un seul maître espion dans l'équipe rouge.");
+      alert("Il peut y avoir au maximum deux maître espions dans l'équipe rouge.");
     }
   };
 
@@ -123,6 +126,15 @@ export default function Teams() {
     <section className={styles.section}>
       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
       <div className="absolute left-0 w-1/2 h-full flex flex-col items-center justify-center gap-10">
+      <div className="absolute top-8 left-4 z-[10] flex items-center space-x-2">
+        <p className="text-white text-xl bg-gray-600 font-bold">Code Partie: {gameId}</p>
+        <button
+          className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
+          onClick={() => navigator.clipboard.writeText(gameId || '')}
+        >
+          Copier
+        </button>
+      </div>
         <h1 className="z-[10] text-blue-500 text-6xl font-bold absolute top-40">Equipe bleue</h1>
         <button className={`w-60 z-[10] px-10 py-5 text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueEspion" ? "bg-blue-800 cursor-not-allowed" : ""}`}
         onClick={clickedButton === "blueEspion" ? undefined : handleBlueEspionClick}
@@ -174,12 +186,14 @@ export default function Teams() {
           </ul>
         </div>
       </div>
-      <button 
+      {utilisateur.id === createurId && (
+        <button 
           className="absolute z-[10] top-10 bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-60"
           onClick={handleStartGame}
         >
           Lancer la partie
         </button>
+      )}
     </section>
   );
 }
