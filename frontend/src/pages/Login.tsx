@@ -63,7 +63,7 @@ export default function Login() {
 
             </div>
 
-            <div className={styles.links}> <a href="#">Forgot Password</a> <a href="/register">Signup</a>
+            <div className={styles.links}> <a href="/register">Signup</a>
 
             </div>
 

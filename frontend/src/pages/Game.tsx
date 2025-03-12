@@ -413,15 +413,10 @@ const Game = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.8 }}
-                className="fixed inset-0 flex items-center justify-center z-50 rounded-lg"
-                style={{
-                  backgroundImage: "url(/images/win.png)",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
+                className="fixed inset-0 flex items-center justify-center z-50 rounded-lg before:content-[''] before:absolute before:inset-0 before:bg-cover before:bg-center before:bg-[url('/images/win.png')] before:opacity-90"
               >
-                <div className="text-center">
-                  <h2 className="text-4xl font-bold mb-4">
+                <div className="relative text-center z-10">
+                  <h2 className="text-6xl font-bold mb-4 text-yellow-700">
                     {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
                   </h2>
                 </div>
@@ -522,7 +517,7 @@ const Game = () => {
             </div>
           </div>
         )}
-        {roleEncours === 'AGENT' ? (
+        {roleEncours === 'AGENT' && indice ? (
           <div className={styles.indice}>
             <div className=" w-full rounded text-white text-center">
               <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
