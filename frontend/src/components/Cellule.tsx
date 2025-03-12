@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 interface CelluleProps {
   carte: any;
@@ -70,25 +71,29 @@ const Cellule = ({
   const estCliquable = !carte.revelee && roleUtilisateur === 'AGENT' && roleEncours === roleUtilisateur && equipeEnCours === equipeUtilisateur;
 
   return (
-    <div
+    <motion.div
       className={`relative px-[22%] py-[22%] sm:px-[20%] sm:py-[20%] md:px-[20%] md:py-[20%] text-[55%] sm:text-[70%] md:text-[100%] flex items-center justify-center rounded border ${
         estSelectionnee ? 'border-yellow-400 border-4' : 'border-gray-400'
       } transition-all duration-300 ease-in-out`}
+      whileHover={{ scale: 1.05 }}
+
     >
       {/* FACE CACHEE */}
-      <div
+      <motion.div
         className={`absolute inset-0 backface-hidden ${
           flipped ? 'opacity-0' : 'opacity-100'
         } transition-opacity duration-300 ease-in-out bg-gray-300 flex justify-center items-center rounded`}
+        whileTap={{ scale: 1.5 }}
       >
         {carte.mot.mot}
-      </div>
+      </motion.div>
 
       {/* FACE REVELEE*/}
-      <div
+      <motion.div
         className={`absolute inset-0 backface-hidden ${
           flipped ? 'opacity-100' : 'opacity-0'
         } transition-opacity duration-500 ease-in-out ${getCouleurCarte()} flex justify-center items-center rounded`}
+
         style={{
           backgroundImage: carteRevelee ? getBackgroundImage() : '',
           backgroundSize: 'cover',
@@ -101,7 +106,7 @@ const Cellule = ({
         )}
 
         <p className="relative font-bold">{carte.mot.mot}</p>
-      </div>
+      </motion.div>
 
       {/* BOUTON JAUNE POUR VALIDER */}
       {estCliquable && (
@@ -123,7 +128,7 @@ const Cellule = ({
           className="absolute inset-0 opacity-0"
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 
