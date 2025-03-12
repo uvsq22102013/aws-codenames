@@ -4,8 +4,10 @@ import jwt from "jsonwebtoken";
 import prisma from "../prismaClient";
 import axios from "axios";
 
+require('dotenv').config();  // Charger les variables du fichier .env
+
 // Clé secrète de Google reCAPTCHA
-const RECAPTCHA_SECRET_KEY = "6LeRKfAqAAAAAJY0TRtZ08JyU4O1TDiioDFbtzrk";
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 // Vérifie la validité du CAPTCHA en faisant une requête à Google
 const verifyRecaptcha = async (captchaResponse: string) => {

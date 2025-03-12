@@ -3,13 +3,14 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import prisma from "../prismaClient";
 import axios from "axios"; 
-//import { register, login } from '../utils/authcontroller';
+
+require('dotenv').config();  // Charger les variables du fichier .env
 
 const router = express.Router();
 
 
 // Clé secrète de Google reCAPTCHA (remplacez par votre clé secrète)
-const RECAPTCHA_SECRET_KEY = "6LeRKfAqAAAAAJY0TRtZ08JyU4O1TDiioDFbtzrk";
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 
 //Partie qui se charge de l'inscription 
