@@ -66,8 +66,15 @@ export async function renitPartie(partieId: string) {
         roleEncours: Role.MAITRE_ESPION,
         equipeEnCours: Equipe.ROUGE,
         indice: undefined,
+        nbMotsBleu : 8,
+        nbMotsRouge : 9,
       },
     });
+    await prisma.membreEquipe.updateMany({
+      where: { partieId },
+      data: { role: Role.AGENT },
+    });
+
   
       await prisma.carte.deleteMany({ where: { partieId } });
       const cartes = await genererCartesPourPartie(partie.id, partie.langue);

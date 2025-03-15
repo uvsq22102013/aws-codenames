@@ -221,7 +221,11 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 trouveeParEquipe: payload.equipe,
             },
         });
-    
+        await prisma.selection.deleteMany({
+            where:{
+                carteId:payload.carteId
+            },
+        });
         if (carte.type === TypeCarte.ASSASSIN){
             await prisma.partie.update({
                 where: {id:payload.partieId},
@@ -230,6 +234,12 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                     equipeGagnante: payload.equipe === Equipe.BLEU ? Equipe.ROUGE : Equipe.BLEU,
                 },
             });
+
+            await prisma.carte.updateMany({
+                where: {partieId: payload.partieId},
+                data: {revelee: true},
+            });
+
         } else if (carte.type === TypeCarte.NEUTRE || carte.type === TypeCarte.BLEU && equipeEnCoursconst?.equipeEnCours === Equipe.ROUGE || carte.type === TypeCarte.ROUGE && equipeEnCoursconst?.equipeEnCours === Equipe.BLEU) {
             await prisma.partie.update({
                 where: { id: payload.partieId },
@@ -243,6 +253,26 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 where: {partieId: payload.partieId}
             });
             
+        }
+        if( carte.type === TypeCarte.BLEU ){
+            await prisma.partie.update({
+                where: {id: payload.partieId},
+                data: {
+                    nbMotsBleu: {
+                        decrement: 1
+                    }
+                },
+            });
+        }
+        if( carte.type === TypeCarte.ROUGE ){
+            await prisma.partie.update({
+                where: {id: payload.partieId},
+                data: {
+                    nbMotsRouge: {
+                        decrement: 1
+                    }
+                },
+            });
         }
         const equipeBleuCartes = await prisma.carte.findMany({
             where: {
@@ -268,6 +298,10 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                     equipeGagnante: Equipe.BLEU,
                 },
             });
+            await prisma.carte.updateMany({
+                where: {partieId: payload.partieId},
+                data: {revelee: true},
+            });
         } else if (equipeRougeCartes.length === 0) {
             await prisma.partie.update({
                 where: { id: payload.partieId },
@@ -275,6 +309,10 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                     statut: StatutPartie.TERMINEE,
                     equipeGagnante: Equipe.ROUGE,
                 },
+            });
+            await prisma.carte.updateMany({
+                where: {partieId: payload.partieId},
+                data: {revelee: true},
             });
         }
     }

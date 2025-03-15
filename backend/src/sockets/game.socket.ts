@@ -55,7 +55,8 @@ export default function gameSocket(io: Server, socket: Socket) {
       const partie = await renitPartie(data.partieId);
       console.log(`Partie ${JSON.stringify(partie)} renitialisée`);
       io.to(`partie-${partie.id}`).emit('majPartie', { partieId: partie.id });
-      
+
+      io.to(`partie-${partie.id}`).emit('partieJoin');
     } else {
       console.log(`Tentative interdite : Not host`);
     }

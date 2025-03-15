@@ -181,6 +181,10 @@ const Game = () => {
       setEquipeGagnante(data.equipeGagnante);
       setTimeout(() => setEquipeGagnante(null), 8000);
     });
+
+    socket.on('partieJoin', () => {
+      navigate(`/teams/${partieId}`);
+    });
     
     return () => {
       socket.off('majPartie', majHandler);
@@ -268,7 +272,12 @@ const Game = () => {
   const isHost = () => {
     return partie?.createurId === utilisateur.id;
   };
-
+  const getnbCarteRouge = () => {
+    return partie?.nbMotsRouge;
+  };
+  const getnbCarteBleu = () => {
+    return partie?.nbMotsBleu;
+  };
 
   if (!partie)  { chargerPartie(); 
     chargerIndice();
@@ -281,6 +290,8 @@ const Game = () => {
   const roleEncours = getRoleEnCours();
   const equipeEnCours = getEquipeEnCours();
   const indiceEnCours = getIndiceEnCours();
+  const nbCarteRouge = getnbCarteRouge();
+  const nbCarteBleu = getnbCarteBleu();
 
   return (
     <section className={styles.section}>
@@ -383,7 +394,7 @@ const Game = () => {
           
         <div className={styles.rouge}>
           <div className="bg-red-500 rounded w-full">
-            <p className='text-center font-bold text-xl mt-2'>9</p>
+            <p className='text-center font-bold text-xl mt-2'>{nbCarteRouge}</p>
             <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
             {montrerBouttonAgentRouge && (
               <div className="flex justify-center mb-1">
@@ -452,7 +463,7 @@ const Game = () => {
           {/*Cote bleu et historique*/}
           <div className="w-1/5 flex flex-col w-full">
             <div className="bg-blue-700 text-black rounded w-full">
-              <p className='text-center font-bold text-xl mt-2'>9</p>
+              <p className='text-center font-bold text-xl mt-2'>{nbCarteBleu}</p>
               <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
               {montrerBouttonAgentBleu && (
                 <div className="flex justify-center mb-1">

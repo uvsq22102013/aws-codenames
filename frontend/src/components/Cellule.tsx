@@ -94,6 +94,7 @@ const Cellule = ({
     <motion.div
       className={`relative px-[22%] py-[22%] sm:px-[20%] sm:py-[20%] md:px-[20%] md:py-[20%] text-[55%] sm:text-[70%] md:text-[100%] flex items-center justify-center rounded border border-gray-400 transition-all duration-300 ease-in-out`}
       whileHover={{ scale: 1.05 }}
+      whileTap={{ rotate : 90 }}
     >
       {/* FACE CACHEE */}
       <motion.div
