@@ -68,7 +68,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create",{}, {
+      const response = await axios.post("/api/join/create",{}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
