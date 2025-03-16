@@ -7,15 +7,15 @@ export default defineConfig({
     host: "0.0.0.0",
     port: Number(process.env.PORT) || 5173,
     proxy: {
-      "/api": process.env.BACKEND_URL || "http://localhost:3000",
+      "/api": process.env.VITE_BACKEND_URL || "http://localhost:3000",
       "/socket.io": {
-        target: process.env.BACKEND_URL || "http://localhost:3000",
+        target: process.env.VITE_BACKEND_URL || "http://localhost:3000",
         ws: true,
       },
     },
     allowedHosts: ["aws-codenames-frontend.onrender.com"],
     cors: {
-      origin: process.env.FRONTEND_URL || "https://aws-codenames-frontend.onrender.com",
+      origin: process.env.VITE_FRONTEND_URL || "https://aws-codenames-frontend.onrender.com",
     },
   },
 });

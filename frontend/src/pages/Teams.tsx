@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 import styles from "../styles/Login.module.css";
 
 
-const socket = io(process.env.BACKEND_URL || 'http://localhost:3000');
+const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000');
 
 interface Joueur {
   utilisateur: {

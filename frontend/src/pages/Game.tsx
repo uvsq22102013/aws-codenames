@@ -9,7 +9,7 @@ import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
 
-const socket = io(process.env.BACKEND_URL || 'http://localhost:3000');
+const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000');
 
 const Game = () => {
   const [partie, setPartie] = useState<any>(null);
