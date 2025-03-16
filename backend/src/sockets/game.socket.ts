@@ -37,12 +37,12 @@ export default function gameSocket(io: Server, socket: Socket) {
   });
 
   socket.on('virerJoueur', async (data: virerJoueur_Payload) => {
-    console.log(`Changement de host pour la partie ${data.partieId}`);
     const host = await getHost(data.partieId);
     if (host === data.utilisateurId) {
       await virerJoueur(data.partieId, data.joueurId);
       console.log(`Joueur vire dans la partie ${data.partieId}`);
       io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
+      io.to(`partie-${data.partieId}`).emit('joueurVire', { partieId: data.partieId });
     } else {
       console.log(`Tentative interdite : Not host`);
     }

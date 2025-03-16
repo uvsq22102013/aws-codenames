@@ -8,6 +8,7 @@ import { getToken } from '../../utils/token';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
+import axios from 'axios';
 
 const socket = io('http://localhost:3000');
 
@@ -114,19 +115,17 @@ const Game = () => {
     setConfirmerReinit(false);
   };
   const utilisateur = getUtilisateur();
-       
 
-   const chargerPartie = async () => {
+  const chargerPartie = async () => {
     try {
       const token = getToken();
-
-      const res = await fetch(`/api/parties/${partieIdNumber}`, {
+  
+      const res = await axios.get(`/api/parties/${partieIdNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-      const data = await res.json();
+      const data = res.data;
       setPartie(data);
       setCartes(data.cartes);
       localStorage.setItem('partie', JSON.stringify(data));
@@ -134,17 +133,17 @@ const Game = () => {
       console.error('erreur chargement partie :', err);
     }
   };
+  
   const chargerIndice = async () => {
     try {
       const token = getToken();
-
-      const res = await fetch(`/api/parties/${partieIdNumber}/indice`, {
+  
+      const res = await axios.get(`/api/parties/${partieIdNumber}/indice`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-      const data = await res.json();
+      const data = res.data;
       if (!data) return;
       setIndice(data);
       localStorage.setItem('indice', JSON.stringify(data));
