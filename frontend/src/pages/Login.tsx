@@ -27,7 +27,6 @@ export default function Login() {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("utilisateur", JSON.stringify(response.data.user));
       setUtilisateur(response.data.user);
-      alert("Connexion réussie !");
       //Renvoi vers la page game
       navigate('/join', { state: { user: response.data.user } });
       //Si le POST echoue, renvoi une erreur

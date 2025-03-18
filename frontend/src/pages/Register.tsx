@@ -88,7 +88,6 @@ export default function Register() {
         mdp: password,
         mdp2: password2,
       });
-      alert("Inscription réussie !");
       //Renvoi vers la page de connexion 
       navigate("/login");
       //Renvoi une erreur si le POST echoue 
