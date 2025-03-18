@@ -83,6 +83,12 @@ section .signin .content h2 {
     text-transform: uppercase;
 }
 
+section .signin .content h3 {
+    font-size: 1.5em;
+    color: #098efb;
+    text-transform: uppercase;
+}
+
 section .signin .content .form {
     width: 100%;
     display: flex;
