@@ -7,14 +7,14 @@ import styles from "../styles/Login.module.css";
 export default function Reset() {
 
   const { code } = useParams<{ code: string }>();  
-  const [password, setPassword] = useState("");//Mot de passe
-  const [password2, setPassword2] = useState("");//Confirmer le mot de passe
-  const [error, setError] = useState(""); // Stocke l'erreur à afficher
-  const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
-  const [showPassword2, setShowPassword2] = useState(false); // État pour afficher/masquer la confirmation du mot de passe
-  const [passwordError, setPasswordError] = useState("");// Erreur du mot de passe invalide
-  const [passwordMatchError, setPasswordMatchError] = useState("");// Erreur du mot de passe invalide
-  const navigate = useNavigate();//Pour aller vers la page suivante
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [error, setError] = useState(""); 
+  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword2, setShowPassword2] = useState(false); 
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordMatchError, setPasswordMatchError] = useState("");
+  const navigate = useNavigate();
 
   //Fonction de validation du mot de passe 
   const validatePassword = (password: string) => {
@@ -55,9 +55,8 @@ export default function Reset() {
     validatePasswordMatch(password,value); //Valide la correspondance entre les 2 mots de passe;
   };
   
-  //Gerer l'inscription
   const handleReset = async () => {
-    setError(""); // Reset de l'erreur 
+    setError(""); 
     try {
       await axios.post(`/api/reset/${code}`, {
         mdp: password,
