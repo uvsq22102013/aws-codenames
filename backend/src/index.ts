@@ -32,12 +32,6 @@ io.on("connection", (socket) => {
   gameSocket(io, socket);
 
 
-  // Recevoir un message du client
-  socket.on("chatmessage", (data) => {
-    io.emit("chatmessage", data);
-  });
-
-
 });
 
 

@@ -49,42 +49,6 @@ const Game = () => {
     }
   } 
 
-{/*
-  const [messages, setMessages] = useState<any[]>([])   // Pour stocker les messages du chat
-  const [messageInput, setMessageInput] = useState('');  // Pour stocker le texte saisi dans l'input
-
-
-  useEffect(() => {
-    // quand un message est reçu via Socket.io
-    socket.on("chatmessage", (data: any) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
-  
-    // Nettoyage de l'écouteur lors du démontage du composant
-    return () => {
-      socket.off("chatmessage");
-    };
-  }, []);
-
-
-  const handleSendMessage = () => {
-
-    if (messageInput.trim() !== '') {
-
-      const pseudo = utilisateur.pseudo;  //pour récupérer le pseudo  
-      socket.emit("chatmessage", {
-
-        message: messageInput,
-        pseudo,
-
-      });
-
-      setMessageInput("");  //effacer le champs input après envoi du message
-    }
-
-  };
-  */}
-
 
 
   // Charger les messages depuis le localStorage au démarrage
@@ -93,21 +57,27 @@ const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
 const [messages, setMessages] = useState<any[]>(savedMessages); // Pour stocker les messages du chat
 const [messageInput, setMessageInput] = useState(''); // Pour stocker le texte saisi dans l'input
 
+
 useEffect(() => {
+
   // Quand un message est reçu via Socket.io
   socket.on("chatmessage", (data: any) => {
+
+    if (data.equipe === equipe) {
     setMessages((prevMessages) => {
+      
       // Ajouter le message seulement s'il n'existe pas déjà par son ID unique
       if (!prevMessages.some(msg => msg.id === data.id)) {
         const updatedMessages = [...prevMessages, data];
         
         // Sauvegarder les messages dans le localStorage
-        localStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
+        localStorage.setItem(`chatMessages-${equipe}`, JSON.stringify(updatedMessages));
 
         return updatedMessages;
       }
       return prevMessages; // Ne pas ajouter si le message a déjà un ID existant
     });
+  }
   });
 
   // Nettoyage de l'écouteur lors du démontage du composant
@@ -124,6 +94,7 @@ const handleSendMessage = () => {
       id: Date.now(),  // Ajoute un identifiant unique basé sur le timestamp
       message: messageInput,
       pseudo,
+      equipe,
     };
 
     // Émettre le message via socket
@@ -133,7 +104,7 @@ const handleSendMessage = () => {
       const updatedMessages = [...prevMessages, newMessage];
       
       // Sauvegarder dans le localStorage après ajout du message
-      localStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
+      localStorage.setItem(`chatMessages-${equipe}`, JSON.stringify(updatedMessages));
 
       return updatedMessages;
     });
@@ -310,6 +281,8 @@ const handleSendMessage = () => {
 
   const quitterPartie = () => {
     socket.emit('quitterPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
+    localStorage.removeItem(`chatMessages-${equipe}`);
+    setMessages([]);
     navigate('/join');
   };
 
@@ -363,6 +336,7 @@ const handleSendMessage = () => {
   const roleEncours = getRoleEnCours();
   const equipeEnCours = getEquipeEnCours();
   const indiceEnCours = getIndiceEnCours();
+  const equipe = getEquipeUtilisateur();
 
 
   return (
@@ -439,33 +413,6 @@ const handleSendMessage = () => {
 
 
 
-        {/* Grille des mots */}
-        {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
-          {partie.cartes.map((carte: any) => {
-            const couleur =
-              carte.revelee || roleUtilisateur === 'MAITRE_ESPION'
-                ? {
-                    ROUGE: 'bg-red-500',
-                    BLEU: 'bg-blue-500',
-                    NEUTRE: 'bg-gray-400',
-                    ASSASSIN: 'bg-black text-white',
-                  }[carte.type as 'ROUGE' | 'BLEU' | 'NEUTRE' | 'ASSASSIN']
-                : 'bg-gray-700';
-
-            return (
-              <button
-                key={carte.id}
-                onClick={() => validerCarte(carte.id)}
-                disabled={carte.revelee || roleUtilisateur !== 'AGENT'}
-                className={`p-4 rounded ${couleur} ${
-                  carte.revelee ? 'opacity-50' : 'hover:opacity-80'
-                }`}
-              >
-                {carte.mot.mot}
-              </button>
-            );
-          })}
-        </div> */}
       
         <div className="w-full flex flex-col gap-4">
           <div className={styles.rouge}>

@@ -142,4 +142,10 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);
   });
+
+
+  // Recevoir un message du client
+  socket.on("chatmessage", (data) => {
+    io.emit("chatmessage", data);
+  });
 }
