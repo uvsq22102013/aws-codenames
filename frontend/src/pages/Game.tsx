@@ -27,6 +27,7 @@ const Game = () => {
   const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
   const [confirmerReinit, setConfirmerReinit] = useState(false);
   const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
+  const [montrerBulleFinDePartie, setMontrerBulleFinDePartie] = useState(false);
   const navigate = useNavigate();
 
   const storedPartie = localStorage.getItem("partie");
@@ -182,6 +183,12 @@ const Game = () => {
       setTimeout(() => setEquipeGagnante(null), 8000);
     });
 
+    if (equipeGagnante) {
+      setTimeout(() => {
+        setMontrerBulleFinDePartie(true);
+      }, 8000); // 8 secondes pour correspondre à la durée de l'animation
+    }
+
     socket.on('partieJoin', () => {
       navigate(`/teams/${partieId}`);
     });
@@ -190,7 +197,7 @@ const Game = () => {
       socket.off('majPartie', majHandler);
       socket.off('joueurVire');
     };
-  }, [partieId, utilisateur]);
+  }, [partieId, utilisateur, equipeGagnante]);
   
 
   const donnerIndice = () => {
@@ -439,6 +446,33 @@ const Game = () => {
               </motion.div>
             )}
           </AnimatePresence>
+          {montrerBulleFinDePartie && isHost() && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
+                <h2 className="text-2xl font-bold mb-4 text-white">Que souhaitez-vous faire ?</h2>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => {
+                      renitPartie();
+                      setMontrerBulleFinDePartie(false);
+                    }}
+                    className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
+                  >
+                    Relancer une partie
+                  </button>
+                  <button
+                    onClick={() => {
+                      quitterPartie();
+                      setMontrerBulleFinDePartie(false);
+                    }}
+                    className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                  >
+                    Terminer la partie
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full">
             {cartes.map((carte: any) => {
 

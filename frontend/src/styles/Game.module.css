@@ -94,7 +94,7 @@ section .container .rouge {
     top: 10%;
     left: 1.5%;
     width: 20%;
-    height: 30%;
+    height: 40%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -106,7 +106,7 @@ section .container .bleu {
     top: 10%;
     right: 1.5%;
     width: 20%;
-    height: 30%;
+    height: 40%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -115,10 +115,10 @@ section .container .bleu {
 
 section .container .historique {
     position: fixed;
-    top: 35%;
+    top: 43%;
     right: 1.5%;
     width: 20%;
-    height: 60%;
+    height: 55%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -177,6 +177,7 @@ section .container .indice {
         top: 55%;
         left: 1.5%;
         width: 30%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -187,6 +188,7 @@ section .container .indice {
         top: 55%;
         right: 1.5%;
         width: 30%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -247,6 +249,7 @@ section .container .indice {
         top: 55%;
         left: 1.5%;
         width: 30%;
+        height: 35%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -257,6 +260,7 @@ section .container .indice {
         top: 55%;
         right: 1.5%;
         width: 30%;
+        height: 35%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -317,6 +321,7 @@ section .container .indice {
         top: 55%;
         left: 1.5%;
         width: 30%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -327,6 +332,7 @@ section .container .indice {
         top: 55%;
         right: 1.5%;
         width: 30%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
