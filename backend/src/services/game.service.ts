@@ -1,6 +1,7 @@
 import { create } from "domain";
 import prisma from "../prismaClient";
 import { Equipe, TypeCarte, Role, TypeAction, StatutPartie } from '@prisma/client'; 
+import e from "express";
 export async function getpartieById(partieId:string) {
     return prisma.partie.findUnique({
         where: {id:partieId},
@@ -118,8 +119,12 @@ export async function getPartiePourUtilisateur(partieId: string, utilisateurId: 
     return await prisma.membreEquipe.findUnique({
         where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
     });
-}
-  
+    }
+    export async function trouverMembreUtilisateur(payload:{utilisateurId:number}) {
+        return await prisma.utilisateur.findUnique({
+            where : {id: payload.utilisateurId},
+        });
+        }
 
 export async function donnerIndice(payload: {partieId : string, utilisateurId:number, motDonne:string, nombreMots:number,equipe : Equipe}) {
 

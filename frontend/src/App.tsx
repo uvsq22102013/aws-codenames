@@ -6,6 +6,7 @@ import Game from "./pages/Game";
 import JoinGame from "./pages/JoinGame";
 import Teams from "./pages/Teams";
 import {ProtectedJoin, ProtectedRoute} from "./components/ProtectedRoute"; // Importez le composant ProtectedRoute
+import { ChatProvider } from './contexts/ChatContext';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/game/:partieId" element={<ProtectedRoute><Game /></ProtectedRoute>} />
+        <Route path="/game/:partieId" element={<ProtectedRoute><ChatProvider><><Game /></></ChatProvider></ProtectedRoute>} />
         <Route path="/join" element={<ProtectedJoin><JoinGame /></ProtectedJoin>} />
         <Route path="/teams/:partieId" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
       </Routes>

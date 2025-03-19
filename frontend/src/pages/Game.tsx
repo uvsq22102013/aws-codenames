@@ -8,7 +8,7 @@ import { getToken } from '../../utils/token';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
-
+import Chat from '../components/Chat';
 const socket = io('http://localhost:3000');
 
 const Game = () => {
@@ -502,7 +502,11 @@ const Game = () => {
               </div>
             </div>
           </div>
+          <div className={styles.chatContainer}>
+              <Chat />
+          </div>
         </div>
+        
         
         {/* Zone indices - Seulement pour maître espion */}
         {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(

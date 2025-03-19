@@ -1,15 +1,20 @@
 import { Server, Socket } from 'socket.io';
-// import { JSEncrypt } from 'jsencrypt';
+import { trouverMembreEquipe, trouverMembreUtilisateur } from '../services/game.service';
+
 import {renitPartie} from '../utils/creationPartie';
 import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte, verifierGagnant} from '../services/game.service';
 import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload, DeselectionCarte_Payload } from '../types/game.types';
 import { verifierTokenSocket } from '../utils/verifierToken';
+import { log } from 'console';
 
-// const crypterData = (data: any, publicKey: string) => {
-//   const encryptor = new JSEncrypt();
-//   encryptor.setPublicKey(publicKey);
-//   return encryptor.encrypt(JSON.stringify(data)); // convertir  l'objet en string avant chiffrement
-// };
+
+interface ChatMessage {
+  content: string;
+  utilisateurId: number;
+  pseudo: string;
+  timestamp: Date;
+  channel: 'global' | 'equipe' | 'espion';
+}
 
 export default function gameSocket(io: Server, socket: Socket) {
   console.log(`User connecté : ${socket.id}`);
@@ -159,5 +164,71 @@ export default function gameSocket(io: Server, socket: Socket) {
   
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);
+  });
+
+  // Rejoindre les rooms de chat
+  socket.on('rejoindreChat', async (data: { partieId: string; utilisateurId: number }) => {
+    const membre = await trouverMembreEquipe({
+      partieId: data.partieId,
+      utilisateurId: data.utilisateurId,
+    });
+
+    if (!membre) return;
+
+    // Rejoindre les rooms appropriées
+    socket.join(`partie-${data.partieId}-global`); // Tous les joueurs
+
+    if (membre.role === 'MAITRE_ESPION') {
+      socket.join(`partie-${data.partieId}-espion-${membre.equipe.toLowerCase()}`); // Espions de la même équipe
+      socket.join(`partie-${data.partieId}-espion-all`); // Tous les espions
+    } else {
+      socket.join(`partie-${data.partieId}-agent-${membre.equipe.toLowerCase()}`); // Agents de la même équipe
+    }
+  });
+
+  // Envoyer un message
+  socket.on('envoyerMessage', async (data: ChatMessage & { partieId: string }) => {
+    log(`Message envoyé dans la partie ${data.partieId}`);
+    log(`Contenu : ${data.content}`);
+    const membre = await trouverMembreEquipe({
+      partieId: data.partieId,
+      utilisateurId: data.utilisateurId,
+    });
+    const utilisateur = trouverMembreUtilisateur({
+      utilisateurId: data.utilisateurId,
+    });
+
+    if (!membre) return;
+
+    // Vérifier les permissions
+    if (data.channel === 'espion' && membre.role !== 'MAITRE_ESPION') return;
+
+    // Déterminer les rooms cibles
+    let rooms: string[] = [];
+    switch (data.channel) {
+      case 'global':
+        rooms = [`partie-${data.partieId}-global`];
+        break;
+      case 'equipe':
+        rooms = [`partie-${data.partieId}-agent-${membre.equipe.toLowerCase()}`];
+        break;
+      case 'espion':
+        rooms = [
+          `partie-${data.partieId}-espion-${membre.equipe.toLowerCase()}`,
+          `partie-${data.partieId}-espion-all`,
+        ];
+        break;
+    }
+
+    // Diffuser le message
+    rooms.forEach((room) => {
+      io.to(room).emit('nouveauMessage', {
+        content: data.content,
+        utilisateurId: data.utilisateurId,
+        pseudo: utilisateur?.pseudo || 'Utilisateur',
+        timestamp: new Date(),
+        channel: data.channel,
+      });
+    });
   });
 }

@@ -6,6 +6,80 @@
     font-family: 'Quicksand', sans-serif;
 }
 
+
+/* Game.module.css */
+
+.chatContainer {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 300px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.messages-container {
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.message {
+    padding: 8px;
+    margin: 8px 0;
+    background: #1a202c;
+    border-radius: 6px;
+    color: white;
+}
+
+.timestamp {
+    font-size: 0.8em;
+    color: #a0aec0;
+    margin-right: 8px;
+}
+
+.user {
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.content {
+    word-break: break-word;
+}
+
+form {
+    display: flex;
+    gap: 8px;
+}
+
+input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #4a5568;
+    border-radius: 6px;
+    background: #2d3748;
+    color: white;
+}
+
+button {
+    padding: 8px 12px;
+    background: #4299e1;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #3182ce;
+}
+
 section {
     position: relative;
     width: 100vw;
