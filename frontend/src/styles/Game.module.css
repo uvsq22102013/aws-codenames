@@ -139,7 +139,7 @@ section .container .cartes {
 
 section .container .indice {
     position: fixed;
-    top: 85%;
+    top: 90%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 64%;
@@ -264,7 +264,7 @@ section .container .indice {
     }
     section .container .historique {
         position: fixed;
-        top: 69%;
+        top: 68.7%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 47%;
@@ -283,7 +283,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 100;
     }
     section .container .indice {
         width: 90%;

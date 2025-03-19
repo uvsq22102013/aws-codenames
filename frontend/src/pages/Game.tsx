@@ -302,7 +302,7 @@ const Game = () => {
           <div className='relative'>
             <button onClick={bouttonJoueurs} className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">Joueurs : 👤 {partie.membres.length}</button>
             {montrerJoueurs && (
-              <div className="absolute left-0 mt-1 w-{100%} bg-[#222] shadow-xl border border-yellow-400 text-white rounded shadow-lg z-10 flex flex-col p-1 ">
+              <div className="absolute left-0 mt-1 w-{100%} bg-[#222] shadow-xl border border-yellow-400 text-white rounded shadow-lg flex flex-col p-1 ">
                 <p className='text-[10px]'>Joueurs dans la partie:</p>
                 {/* Liste des joueurs */}
                 <div className="flex flex-wrap gap-x-1 gap-y-1">
@@ -311,7 +311,7 @@ const Game = () => {
                       <button onClick={() => setJoueurSelectionne(joueurSelectionne === m.utilisateur.pseudo ? null : m.utilisateur.pseudo)} key={m.utilisateur.id} className="text-[10px] text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-1 py-1 text-center mb-1 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 w-auto disabled " disabled={!isHost() || getJoueurIdByPseudo(m.utilisateur.pseudo)==partie?.createurId}>{m.utilisateur.pseudo}</button>
                       {/* Bulle d'options */}
                       {joueurSelectionne === m.utilisateur.pseudo && (
-                        <div className="absolute left-[50%]  -translate-x-1/2 mt-1 top-full w-[330%] bg-[#222] text-black rounded shadow-xl z-10 flex flex-col p-1 text-[10px] border border-blue-500 items-center">
+                        <div className="absolute left-[50%]  -translate-x-1/2 mt-1 top-full w-[330%] bg-[#222] text-black rounded shadow-xl flex flex-col p-1 text-[10px] border border-blue-500 items-center">
                           <p className="text-center text-white">{m.utilisateur.pseudo}</p>
                           <button onClick={expulser} className="w-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Expulser</button>
                           <button onClick={mettreHote} className="w-full text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">Mettre Hôte</button>
@@ -345,11 +345,16 @@ const Game = () => {
             <div className="relative">
               <button onClick={bouttonUtilisateur} className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">{utilisateur.pseudo}</button>
               {montrerOptions && (
-                <div className="absolute right-0 mt-2 sm:w-[150%] md:w-[150%] bg-[#222] border border-yellow-400 rounded shadow-xl z-10 flex flex-col gap-2 p-2">
+                <div className="absolute right-0 mt-2 sm:w-[150%] md:w-[150%] bg-[#222] border border-yellow-400 rounded shadow-xl flex flex-col gap-2 p-2">
                   <button  onClick={devenirSpec} className="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Devenir Spectateur</button>
                   {getEquipeUtilisateur() === "ROUGE" &&(<button  onClick={handleClickChangeTeam} className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">↔️ Changer d'équipe</button>)}
                   {getEquipeUtilisateur() === "BLEU" &&(<button  onClick={handleClickChangeTeam} className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">↔️ Changer d'équipe</button>)}
-                  <button  onClick={quitterPartie} className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Quitter la Partie</button>
+                  {!isHost() && (
+                    <button  onClick={quitterPartie} className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Quitter la Partie</button>
+                  )}
+                  {isHost() && (
+                    <button  onClick={quitterPartie} className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Terminer la Partie</button>
+                  )}
                 </div>
               )}
             </div>
@@ -410,7 +415,7 @@ const Game = () => {
                 <button onClick={handleRedEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
               </div>
             )}
-              <h3 className="font-bold text-center mt-5">Espions</h3>
+              <h3 className="font-bold text-center mt-2">Espions</h3>
             {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
               <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
@@ -434,7 +439,7 @@ const Game = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
+          <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full">
             {cartes.map((carte: any) => {
 
               const estSelectionnee = carte.joueursSelection && carte.joueursSelection.length > 0;
@@ -478,7 +483,7 @@ const Game = () => {
                   <button onClick={handleBlueEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
                 </div>
               )}     
-                <h3 className="font-bold text-center mt-5">Espions</h3>    
+                <h3 className="font-bold text-center mt-2">Espions</h3>    
               {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
                 <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
               ))}  
