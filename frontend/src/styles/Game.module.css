@@ -94,6 +94,7 @@ section .container .rouge {
     top: 10%;
     left: 1.5%;
     width: 20%;
+    height: 30%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -105,6 +106,7 @@ section .container .bleu {
     top: 10%;
     right: 1.5%;
     width: 20%;
+    height: 30%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -113,9 +115,10 @@ section .container .bleu {
 
 section .container .historique {
     position: fixed;
-    top: 30%;
+    top: 35%;
     right: 1.5%;
     width: 20%;
+    height: 60%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -131,7 +134,7 @@ section .container .cartes {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 1000;
+    z-index: 100;
 }
 
 section .container .indice {
@@ -191,11 +194,11 @@ section .container .indice {
     }
     section .container .historique {
         position: fixed;
-        top: 71%;
+        top: 69.5%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 43%;
-        height: 0;
+        width: 40%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -203,14 +206,14 @@ section .container .indice {
     }
     section .container .cartes {
         position: fixed;
-        top: 37%;
+        top: 35%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 80%;
+        width: 100%;
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 100;
     }
     section .container .indice {
         width: 90%;
@@ -219,7 +222,7 @@ section .container .indice {
     }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
     section .container .nav {
         position: fixed;
         top: 0;
@@ -265,7 +268,7 @@ section .container .indice {
         left: 50%;
         transform: translate(-50%, -50%);
         width: 47%;
-        height: 5%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -288,7 +291,7 @@ section .container .indice {
         padding: 10px;
     }
 }
-
+/*Telephones*/
 @media screen and (max-width: 480px) {
     section .container .nav {
         position: fixed;
@@ -331,11 +334,11 @@ section .container .indice {
     }
     section .container .historique {
         position: fixed;
-        top: 72%;
+        top: 69%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 47%;
-        height: 5%;
+        height: 30%;
         display: flex;
         align-items: center;
         padding: 20px;
@@ -346,15 +349,15 @@ section .container .indice {
         top: 40%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 97%;
+        width: 110%;
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 100;
     }
     section .container .indice {
         width: 90%;
-        top: 92%;
+        top: 90%;
         padding: 10px;
     }
 }

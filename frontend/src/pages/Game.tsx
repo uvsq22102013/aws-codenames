@@ -393,7 +393,7 @@ const Game = () => {
         </div> */}
           
         <div className={styles.rouge}>
-          <div className="bg-red-500 rounded w-full">
+          <div className="bg-red-500 rounded w-full h-full">
             <p className='text-center font-bold text-xl mt-2'>{nbCarteRouge}</p>
             <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
             {montrerBouttonAgentRouge && (
@@ -410,7 +410,7 @@ const Game = () => {
                 <button onClick={handleRedEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
               </div>
             )}
-              <h3 className="font-bold text-center mb-1">Espions</h3>
+              <h3 className="font-bold text-center mt-5">Espions</h3>
             {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
               <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
@@ -461,8 +461,7 @@ const Game = () => {
         </div>
         <div className={styles.bleu}>
           {/*Cote bleu et historique*/}
-          <div className="w-1/5 flex flex-col w-full">
-            <div className="bg-blue-700 text-black rounded w-full">
+            <div className="bg-blue-700 text-black rounded w-full h-full">
               <p className='text-center font-bold text-xl mt-2'>{nbCarteBleu}</p>
               <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
               {montrerBouttonAgentBleu && (
@@ -479,16 +478,15 @@ const Game = () => {
                   <button onClick={handleBlueEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>Devenir espion</button>
                 </div>
               )}     
-                <h3 className="font-bold text-center mt-2">Espions</h3>    
+                <h3 className="font-bold text-center mt-5">Espions</h3>    
               {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
                 <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
               ))}  
             </div>
-          </div>
         </div>
         <div>
           <div className={styles.historique}>
-            <div className="bg-gray-800 p-2 rounded mt-4 h-[30vh] sm:h-[24vh] md:h-[30vh] lg:h-[60vh] flex flex-col w-full">     
+            <div className="bg-gray-800 p-2 rounded mt-4 h-full flex flex-col w-full">     
               <p className="text-xs text-center">Historique</p>
               {/* Ligne de séparation */}
               <div className="border-t border-gray-300 mt-2 mb-2"></div>
@@ -522,7 +520,7 @@ const Game = () => {
                 onChange={(e) => setNombreMots(Number(e.target.value))}
                 className="p-2 rounded bg-gray-700 text-white w-16"
               />
-              <button onClick={donnerIndice} className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-2.5 py-2 ml-2 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+              <button onClick={donnerIndice} className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-2.5 py-2 ml-2 mt-2 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
                 Valider
               </button>
             </div>
@@ -534,7 +532,7 @@ const Game = () => {
               <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
               <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded mt-2">
-                Valider
+                Passer le tour
               </button>
               ) : null}
             </div>
