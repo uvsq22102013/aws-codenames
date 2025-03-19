@@ -285,6 +285,9 @@ const Game = () => {
   const getnbCarteBleu = () => {
     return partie?.nbMotsBleu;
   };
+  const getGameStatus = () => {
+    return partie?.statut;
+  };
 
   if (!partie)  { chargerPartie(); 
     chargerIndice();
@@ -299,6 +302,7 @@ const Game = () => {
   const indiceEnCours = getIndiceEnCours();
   const nbCarteRouge = getnbCarteRouge();
   const nbCarteBleu = getnbCarteBleu();
+  const gameStatus = getGameStatus();
 
   return (
     <section className={styles.section}>
@@ -368,13 +372,38 @@ const Game = () => {
           </div>
         </div>
         <div className={styles.message}>
-        {/*Messages changeant selon le tour */}
-          {equipeEnCours!= equipeUtilisateur && roleEncours ==="MAITRE_ESPION" &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Les Espions adverses sont en train de jouer, veuillez attendre votre tour...</h1>)}
-          {equipeEnCours!= equipeUtilisateur && roleEncours ==="AGENT" &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Les Agents adverses sont en train de jouer, veuillez attendre votre tour...</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours != roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Vos espions sont en train de jouer, veuillez attendre votre indice...</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours != roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Vos Agents font de leur mieux pour trouver vos mots !</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Utilisez les indices donnés par vos Espions pour trouver vos mots !</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">Trouvez le meilleur indice pour que vos Agents puissent trouver vos mots !</h1>)}
+          <AnimatePresence mode="wait">
+            {equipeEnCours !== equipeUtilisateur && roleEncours === "MAITRE_ESPION" && (
+              <motion.h1 key="espion-adverse" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                Les Espions adverses sont en train de jouer, veuillez attendre votre tour...
+              </motion.h1>
+            )}
+            {equipeEnCours !== equipeUtilisateur && roleEncours === "AGENT" && (
+              <motion.h1 key="agent-adverse" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                Les Agents adverses sont en train de jouer, veuillez attendre votre tour...
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "MAITRE_ESPION" && roleEncours !== roleUtilisateur && (
+              <motion.h1 key="espion-equipe" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                Vos espions sont en train de jouer, veuillez attendre votre indice...
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "AGENT" && roleEncours !== roleUtilisateur && (
+              <motion.h1 key="agent-equipe" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                Vos Agents font de leur mieux pour trouver vos mots !
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "AGENT" && roleEncours === roleUtilisateur && (
+              <motion.h1 key="agent-utilisateur" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                Utilisez les indices donnés par vos Espions pour trouver vos mots !
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "MAITRE_ESPION" && roleEncours === roleUtilisateur && (
+              <motion.h1 key="espion-utilisateur" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                Trouvez le meilleur indice pour que vos Agents puissent trouver vos mots !
+              </motion.h1>
+            )}
+          </AnimatePresence>
         </div>
         {/* Grille des mots */}
         {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
@@ -406,7 +435,11 @@ const Game = () => {
           
         <div className={styles.rouge}>
           <div className="bg-red-500 rounded w-full h-full">
-            <p className='text-center font-bold text-xl mt-2'>{nbCarteRouge}</p>
+            <AnimatePresence mode="wait">
+              <motion.p key={`rouge-${nbCarteRouge}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }} className="text-center font-bold text-xl mt-2">
+                {nbCarteRouge}
+              </motion.p>
+            </AnimatePresence>
             <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
             {montrerBouttonAgentRouge && (
               <div className="flex justify-center mb-1">
@@ -414,7 +447,7 @@ const Game = () => {
               </div>
             )}
               <h3 className="font-bold text-center mb-1">Agents</h3>
-            {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
+            {!montrerBouttonAgentRouge && partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
               <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
             {montrerBouttonEspionRouge && (
@@ -423,7 +456,7 @@ const Game = () => {
               </div>
             )}
               <h3 className="font-bold text-center mt-2">Espions</h3>
-            {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
+            {!montrerBouttonEspionRouge && partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
               <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
           </div>
@@ -501,7 +534,11 @@ const Game = () => {
         <div className={styles.bleu}>
           {/*Cote bleu et historique*/}
             <div className="bg-blue-700 text-black rounded w-full h-full">
-              <p className='text-center font-bold text-xl mt-2'>{nbCarteBleu}</p>
+              <AnimatePresence mode="wait">
+                <motion.p key={`bleu-${nbCarteBleu}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }} className="text-center font-bold text-xl mt-2">
+                  {nbCarteBleu}
+                </motion.p>
+              </AnimatePresence>
               <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
               {montrerBouttonAgentBleu && (
                 <div className="flex justify-center mb-1">
@@ -509,7 +546,7 @@ const Game = () => {
                 </div>
               )}
                 <h3 className="font-bold text-center">Agents</h3>   
-              {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
+              {!montrerBouttonAgentBleu && partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
                 <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
               ))}
               {montrerBouttonEspionBleu && (
@@ -518,7 +555,7 @@ const Game = () => {
                 </div>
               )}     
                 <h3 className="font-bold text-center mt-2">Espions</h3>    
-              {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
+              {!montrerBouttonEspionBleu && partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
                 <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
               ))}  
             </div>
