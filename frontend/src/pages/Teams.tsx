@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
 import { io } from 'socket.io-client';
-import styles from "../styles/Login.module.css";
+import styles from "../styles/Teams.module.css";
 
 
 const socket = io('http://localhost:3000');
@@ -125,75 +125,80 @@ export default function Teams() {
   return (
     <section className={styles.section}>
       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
-      <div className="absolute left-0 w-1/2 h-full flex flex-col items-center justify-center gap-10">
-      <div className="absolute top-8 left-4 z-[10] flex items-center space-x-2">
-        <p className="text-white text-xl bg-gray-600 font-bold">Code Partie: {gameId}</p>
+      <div className={styles.code}>
         <button
-          className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
+          className="bg-gray-600 text-white font-bold px-[2%] py-[5%] w-full rounded hover:bg-gray-700"
           onClick={() => navigator.clipboard.writeText(gameId || '')}
         >
-          Copier
+          Copier le code de la partie
         </button>
       </div>
-        <h1 className="z-[10] text-blue-500 text-6xl font-bold absolute top-40">Equipe bleue</h1>
-        <button className={`w-60 z-[10] px-10 py-5 text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueEspion" ? "bg-blue-800 cursor-not-allowed" : ""}`}
-        onClick={clickedButton === "blueEspion" ? undefined : handleBlueEspionClick}
-        >
-            Maître espion
-        </button>
-        <button className={`w-60 z-[10] px-10 py-5 text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueAgent" ? "bg-blue-800 cursor-not-allowed" : ""}`}
-        onClick={clickedButton === "blueAgent" ? undefined : handleBlueAgentClick}
-        >
-          Agent
-        </button>
-        <div className="absolute z-[10] bottom-10 bg-blue-500/60 backdrop-blur-md p-3 rounded-xl w-80">
-          <h2 className="text-black text-xl font-semibold mb-2 border-b border-white/30 pb-1">
+      <div className={styles.bleu}>
+        <h1 className="text-blue-500 text-4xl sm:text-5xl md:text-6xl text-center font-bold mb-10">Equipe bleue</h1>
+        <div className={styles.boutons}>
+          <button className={`w-full py-[5%] text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueEspion" ? "bg-blue-800 cursor-not-allowed" : ""}`}
+          onClick={clickedButton === "blueEspion" ? undefined : handleBlueEspionClick}
+          >
+              Maître espion
+          </button>
+          <button className={`w-full py-[5%] text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueAgent" ? "bg-blue-800 cursor-not-allowed" : ""}`}
+          onClick={clickedButton === "blueAgent" ? undefined : handleBlueAgentClick}
+          >
+            Agent
+          </button>
+        </div>
+        <div className="absolute bottom-0 bg-blue-500/60 backdrop-blur-md p-3 rounded-xl w-[75%]">
+          <h2 className="text-black text-l sm:text-xl md:text-xl font-semibold mb-2 border-b border-white/30 pb-1">
             Joueurs de l'équipe bleue
           </h2>
           <ul className="space-y-1">
             {blueTeam.map((player: Joueur, index: number) => (
-              <li key={index} className="flex justify-between items-center text-black text-lg p-1 rounded-lg">
-              <p className="font-semibold text-black uppercase">{player.utilisateur.pseudo}</p>
-              <p className="font-semibold text-black uppercase">{player.role}</p>
+              <li key={index} className="flex justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
+              <p className="font-semibold text-black uppercase ">{player.utilisateur.pseudo}:</p>
+              <p className="font-semibold text-black uppercase ">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>
               </li>
             ))}
           </ul>
         </div>
       </div>
-      <div className="absolute right-0 w-1/2 h-full flex flex-col items-center justify-center gap-10">
-        <h1 className="z-[10] text-red-500 text-6xl font-bold absolute top-40">Equipe rouge</h1>
-        <button className={`w-60 z-[10] px-10 py-5 text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redEspion" ? "bg-red-800 cursor-not-allowed" : ""}`}
-        onClick={clickedButton === "redEspion" ? undefined : handleRedEspionClick}
-        >
-            Maître espion
-        </button>
-        <button className={`w-60 z-[10] px-10 py-5 text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redAgent" ? "bg-red-800 cursor-not-allowed" : ""}`}
-        onClick={clickedButton === "redAgent" ? undefined : handleRedAgentClick}
-        >
-            Agent
-        </button>
-        <div className="absolute z-[10] bottom-10 bg-red-500/60 backdrop-blur-md p-3 rounded-xl w-80">
-          <h2 className="text-black text-xl font-semibold mb-2 border-b border-white/30 pb-1">
+      <div className={styles.rouge}>
+        <h1 className=" text-red-500 text-4xl sm:text-5xl md:text-6xl text-center font-bold mb-10">Equipe rouge</h1>
+        <div className={styles.boutons}>
+          <button className={`w-full py-[5%] text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redEspion" ? "bg-red-800 cursor-not-allowed" : ""}`}
+          onClick={clickedButton === "redEspion" ? undefined : handleRedEspionClick}
+          >
+              Maître espion
+          </button>
+          <button className={`w-full py-[5%] text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redAgent" ? "bg-red-800 cursor-not-allowed" : ""}`}
+          onClick={clickedButton === "redAgent" ? undefined : handleRedAgentClick}
+          >
+              Agent
+          </button>
+        </div>
+        <div className="absolute bottom-0 bg-red-500/60 backdrop-blur-md p-3 rounded-xl w-[75%]">
+          <h2 className="text-black text-l sm:text-xl md:text-xl font-semibold mb-2 border-b border-white/30 pb-1">
             Joueurs de l'équipe rouge
           </h2>
           <ul className="space-y-1">
             {redTeam.map((player: Joueur, index: number) => (
-            <li key={index} className="flex justify-between items-center text-black text-lg p-1 rounded-lg">
-              <p className="font-semibold text-black uppercase">{player.utilisateur.pseudo}</p>
-              <p className="font-semibold text-black uppercase">{player.role}</p>
+            <li key={index} className="flex justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
+              <p className="font-semibold text-black uppercase">{player.utilisateur.pseudo}:</p>
+              <p className="font-semibold text-black uppercase">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>
             </li>
             ))}
           </ul>
         </div>
       </div>
+      <div className={styles.lancer}>
       {utilisateur.id === createurId && (
         <button 
-          className="absolute z-[10] top-10 bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-60"
+          className=" bg-gray-600 text-white font-bold w-full py-[5%] rounded hover:bg-gray-700"
           onClick={handleStartGame}
         >
           Lancer la partie
         </button>
       )}
+      </div>
     </section>
   );
 }
