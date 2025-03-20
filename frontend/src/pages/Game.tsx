@@ -196,7 +196,7 @@ const Game = () => {
         setMontrerBulleFinDePartie(true);
       }, 8000); // 8 secondes pour correspondre à la durée de l'animation
     }
-    if (gameStatus === "TERMINEE") {
+    if (gameStatus === "TERMINEE" && !equipeGagnante) {
       setMontrerBulleFinDePartie(true);
     }
 
@@ -497,10 +497,10 @@ const Game = () => {
             )}
             {!equipeGagnante && indiceAffiche && nbAffiche &&(
               <motion.h1
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.8 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
                 style={{
                   textShadow: `
                     -1px -1px 0 #000,  
@@ -514,7 +514,7 @@ const Game = () => {
                 {indiceAffiche} pour {nbAffiche}
               </motion.h1>
             )}
-          {montrerBulleFinDePartie && isHost() && !equipeGagnante &&(
+          {montrerBulleFinDePartie && isHost() &&(
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
                 <h2 className="text-2xl font-bold mb-4 text-white">Que souhaitez-vous faire ?</h2>
@@ -522,7 +522,6 @@ const Game = () => {
                   <button
                     onClick={() => {
                       renitPartie();
-                      setMontrerBulleFinDePartie(false);
                     }}
                     className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                   >
@@ -531,7 +530,6 @@ const Game = () => {
                   <button
                     onClick={() => {
                       quitterPartie();
-                      setMontrerBulleFinDePartie(false);
                     }}
                     className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                   >
