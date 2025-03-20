@@ -514,7 +514,7 @@ const Game = () => {
                 {indiceAffiche} pour {nbAffiche}
               </motion.h1>
             )}
-          {montrerBulleFinDePartie && isHost() && (
+          {montrerBulleFinDePartie && isHost() && !equipeGagnante &&(
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
                 <h2 className="text-2xl font-bold mb-4 text-white">Que souhaitez-vous faire ?</h2>

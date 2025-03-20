@@ -290,7 +290,7 @@ section .container .indice {
         z-index: 100;
     }
     section .container .indice {
-        width: 47%;
+        width: 90%;
         top: 90%;
         padding: 10px;
     }
