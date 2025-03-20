@@ -186,6 +186,11 @@ const Game = () => {
       setTimeout(() => setEquipeGagnante(null), 8000);
     });
 
+    socket.on('indiceDonne', (data: { indice: string, nbmots: number }) => {
+      setIndiceAffiche(data.indice);
+      setNbAffiche(data.nbmots);
+    });
+
     if (equipeGagnante) {
       setTimeout(() => {
         setMontrerBulleFinDePartie(true);
@@ -210,6 +215,8 @@ const Game = () => {
     return () => {
       socket.off('majPartie', majHandler);
       socket.off('joueurVire');
+      socket.off('indiceDonne');
+      socket.off('gagnant');
     };
   }, [partieId, utilisateur, equipeGagnante, gameStatus, indiceAffiche, nbAffiche]);
   
@@ -225,8 +232,6 @@ const Game = () => {
     });
     setMotIndice('');
     setNombreMots(1);
-    setIndiceAffiche(motIndice);
-    setNbAffiche(nombreMots);
   };
 
   const passerTour = () => {
@@ -636,7 +641,7 @@ const Game = () => {
         {gameStatus === "EN_COURS" && roleEncours === 'AGENT' && indice ? (
           <div className={styles.indice}>
             <div className=" w-full rounded text-white text-center">
-              <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
+              <h2 className="text-xl">{indice.mot} pour {indice.nbmots} mots </h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
               <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded mt-2">
                 Passer le tour
