@@ -28,6 +28,8 @@ const Game = () => {
   const [confirmerReinit, setConfirmerReinit] = useState(false);
   const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
   const [montrerBulleFinDePartie, setMontrerBulleFinDePartie] = useState(false);
+  const [indiceAffiche, setIndiceAffiche] = useState<string | null>(null);
+  const [nbAffiche, setNbAffiche] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const storedPartie = localStorage.getItem("partie");
@@ -115,6 +117,7 @@ const Game = () => {
     setConfirmerReinit(false);
   };
   const utilisateur = getUtilisateur();
+  const gameStatus = partie?.statut;
        
 
    const chargerPartie = async () => {
@@ -188,6 +191,17 @@ const Game = () => {
         setMontrerBulleFinDePartie(true);
       }, 8000); // 8 secondes pour correspondre à la durée de l'animation
     }
+    if (gameStatus === "TERMINEE") {
+      setMontrerBulleFinDePartie(true);
+    }
+
+    if (indiceAffiche && nbAffiche) {
+      const timer = setTimeout(() => {
+        setIndiceAffiche(null); // Réinitialiser après 2 secondes
+        setNbAffiche(null);
+      }, 2000);
+      return () => clearTimeout(timer); // Nettoyer le timer
+    }
 
     socket.on('partieJoin', () => {
       navigate(`/teams/${partieId}`);
@@ -197,7 +211,7 @@ const Game = () => {
       socket.off('majPartie', majHandler);
       socket.off('joueurVire');
     };
-  }, [partieId, utilisateur, equipeGagnante]);
+  }, [partieId, utilisateur, equipeGagnante, gameStatus, indiceAffiche, nbAffiche]);
   
 
   const donnerIndice = () => {
@@ -211,6 +225,8 @@ const Game = () => {
     });
     setMotIndice('');
     setNombreMots(1);
+    setIndiceAffiche(motIndice);
+    setNbAffiche(nombreMots);
   };
 
   const passerTour = () => {
@@ -285,9 +301,6 @@ const Game = () => {
   const getnbCarteBleu = () => {
     return partie?.nbMotsBleu;
   };
-  const getGameStatus = () => {
-    return partie?.statut;
-  };
 
   if (!partie)  { chargerPartie(); 
     chargerIndice();
@@ -302,7 +315,6 @@ const Game = () => {
   const indiceEnCours = getIndiceEnCours();
   const nbCarteRouge = getnbCarteRouge();
   const nbCarteBleu = getnbCarteBleu();
-  const gameStatus = getGameStatus();
 
   return (
     <section className={styles.section}>
@@ -478,6 +490,25 @@ const Game = () => {
                 </div>
               </motion.div>
             )}
+            {!equipeGagnante && indiceAffiche && nbAffiche &&(
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.8 }}
+                style={{
+                  textShadow: `
+                    -1px -1px 0 #000,  
+                     1px -1px 0 #000,
+                    -1px  1px 0 #000,
+                     1px  1px 0 #000
+                  `,
+                }}
+                className="fixed inset-0 flex items-center justify-center text-8xl text-white font-bold text-center z-50"
+              >
+                {indiceAffiche} pour {nbAffiche}
+              </motion.h1>
+            )}
           </AnimatePresence>
           {montrerBulleFinDePartie && isHost() && (
             <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -579,7 +610,7 @@ const Game = () => {
         </div>
         
         {/* Zone indices - Seulement pour maître espion */}
-        {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
+        {gameStatus === "EN_COURS" && roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
           <div className={styles.indice}>
             <div className="p-4 rounded text-center w-full">
               <h2 className="text-l text-white sm:text-xl">Donner un indice</h2>
@@ -602,7 +633,7 @@ const Game = () => {
             </div>
           </div>
         )}
-        {roleEncours === 'AGENT' && indice ? (
+        {gameStatus === "EN_COURS" && roleEncours === 'AGENT' && indice ? (
           <div className={styles.indice}>
             <div className=" w-full rounded text-white text-center">
               <h2 className="text-xl">Indice donné : {indice.mot} pour {indice.nbmots} mots </h2>
