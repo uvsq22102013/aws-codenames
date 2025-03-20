@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
 import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/login.module.css";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+
+
+const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
+
 
 
 // import { io } from 'socket.io-client';
@@ -20,6 +25,8 @@ export default function HomePage() {
   //langue du jeu
   const [language, setLanguage] = useState<"fr" | "en" | "ar">("fr"); 
   const [errorMessage, setErrorMessage] = useState(""); 
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+
 
 
 //dictionnaire des langues (anglais ou francais)
@@ -57,7 +64,12 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     errorJoin: "خطأ في الانضمام إلى اللعبة",
     wrongGameCode: "ok",
   },
+
 };
+
+
+
+
 
 
 
@@ -65,10 +77,18 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
 
   const handleCreateRoom = async () => {
     const token = getToken();
+    if (!window.grecaptcha) {
+      setErrorMessage("Erreur de chargement reCAPTCHA");
+      return;
+    }
+
+    // Récupérer le token reCAPTCHA
+    const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "create_game" });
+
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create",{}, {
+      const response = await axios.post("http://localhost:3000/api/join/create", {recaptchaToken}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -88,6 +108,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     }
 
 
+
   };
 
 // Fonction pour rejoindre une partie existante
@@ -104,11 +125,28 @@ const handleJoinRoom = async () => {
 
     }
 
+
+//RecApctha token
+    if (!window.grecaptcha) {
+      setErrorMessage("Erreur de chargement reCAPTCHA");
+      return;
+    }
+
+    // Récupérer le token reCAPTCHA
+    const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "join_game" });
+
+    if (!recaptchaToken) {
+      setErrorMessage("Échec de la vérification reCAPTCHA");
+      return;
+    }
+
     try {
+
       // Envoi d'une requête POST au backend avec axios
 
       const response = await axios.post("/api/join/join-game", {
         roomCode,
+        recaptchaToken,
       });
 
       const data = response.data;

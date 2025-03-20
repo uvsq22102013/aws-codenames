@@ -3,20 +3,33 @@ import prisma from "../prismaClient";
 import { creerPartieAvecCartes } from "../utils/creationPartie";
 import verifierToken, { RequestAvecUtilisateur } from "../utils/verifierToken";
 import { StatutPartie } from "@prisma/client";
+import verifyCaptcha from "../utils/captchaverif";
 
 
 const router = express.Router();
 
 
 // Route pour créer une partie
-router.post("/create", verifierToken , async (req, res) => {
+router.post("/create" , async (req, res) => {
+    
     const createurId = (req as RequestAvecUtilisateur).user!.id;
+
+    const { recaptchaToken } = req.body;
 
     // Vérifier si createurId est bien fourni et valide
     if (!createurId || typeof createurId !== "number") {
         res.status(400).json({ error: "L'ID du créateur est invalide" });
         return ;
     }
+
+//verification du captcha
+    const captchaResult = await verifyCaptcha(recaptchaToken);
+  if (!captchaResult || !captchaResult.success || captchaResult.score < 0.6) {
+    res.status(403).json({ error: "Échec de la vérification reCAPTCHA" });
+    return;
+  }
+
+  
 
     try {
         // Vérifier si le créateur existe dans la base de données
@@ -43,7 +56,14 @@ router.post("/create", verifierToken , async (req, res) => {
 router.post("/join-game", async (req: Request, res: Response): Promise<void> => {
 
     //on récupère le code de la partie envoyé par le front
-    const { roomCode } = req.body;
+    const { roomCode, recaptchaToken } = req.body;
+
+
+    const captchaResult = await verifyCaptcha(recaptchaToken);
+  if (!captchaResult || !captchaResult.success || captchaResult.score < 0.6) {
+    res.status(403).json({ error: "Échec de la vérification reCAPTCHA" });
+    return;
+  }
   
     try {
 
@@ -56,7 +76,7 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
       if (!game) {
 
         // si on trouve pas de partie avec cette ID, on renvoit un message d'erreur 
-        res.status(400).json({ error: "Mauvaise Code Partie" });
+        res.status(400).json({ error: "Mauvais Code Partie" });
         return;
       }
   
@@ -78,4 +98,8 @@ router.post("/join-game", async (req: Request, res: Response): Promise<void> => 
 
 
 
+
 export default router;
+
+
+

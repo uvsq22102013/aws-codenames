@@ -4,6 +4,7 @@ import http from "http"; // Ajout pour le serveur HTTP
 import { Server } from "socket.io"; // Ajout pour Socket.io
 import cors from "cors";
 
+
 import wordsRoutes from "./routes/words";
 import authRoutes from "./routes/auth";
 import joinRoutes from "./routes/join";
@@ -15,7 +16,7 @@ const app = express();
 const server = http.createServer(app); // Permet de brancher socket.io
 const io = new Server(server, {
   cors: { origin: "*" },
-});
+}); 
 
 app.use(cors());
 app.use(express.json());

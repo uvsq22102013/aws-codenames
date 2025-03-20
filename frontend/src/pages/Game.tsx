@@ -8,6 +8,7 @@ import { getToken } from '../../utils/token';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
+import ReCAPTCHA from "react-google-recaptcha-v3";
 
 const socket = io('http://localhost:3000');
 
@@ -27,6 +28,7 @@ const Game = () => {
   const [montrerBouttonEspionBleu, setmontrerBouttonEspionBleu] = useState(false);
   const [confirmerReinit, setConfirmerReinit] = useState(false);
   const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
+  const [grecaptchaVerified, setGreCaptchaVerified] = useState(false);
   const navigate = useNavigate();
 
   const storedPartie = localStorage.getItem("partie");
