@@ -435,8 +435,9 @@ const Game = () => {
             )}
           </AnimatePresence>
           <div className="grid grid-cols-5 gap-2 p-6 rounded-lg w-full h-full z-10">
-            {cartes.map((carte: any) => {
-
+            {cartes
+              .sort((a: any, b: any) => a.id - b.id)
+              .map((carte: any) => {
               const estSelectionnee = carte.joueursSelection && carte.joueursSelection.length > 0;
               const estSelectionneeParJoueur = carte.joueursSelection && carte.joueursSelection.includes(utilisateur.pseudo);
               
