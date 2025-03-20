@@ -514,7 +514,6 @@ const Game = () => {
                 {indiceAffiche} pour {nbAffiche}
               </motion.h1>
             )}
-          </AnimatePresence>
           {montrerBulleFinDePartie && isHost() && (
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
@@ -565,7 +564,9 @@ const Game = () => {
               />
           
             })}
+
           </div>
+          </AnimatePresence>
         </div>
         <div className={styles.bleu}>
           {/*Cote bleu et historique*/}

@@ -32,6 +32,7 @@ const Cellule = ({
   trouvee,
 }: CelluleProps) => {
   const [flipped, setFlipped] = useState(carte.revelee);
+  const [isAnimating, setIsAnimating] = useState(false);
   const carteRevelee = carte.revelee || roleUtilisateur === 'MAITRE_ESPION';
 
   useEffect(() => {
@@ -39,6 +40,14 @@ const Cellule = ({
       setTimeout(() => setFlipped(true), 150);
     }
   }, [carteRevelee, flipped]);
+
+  useEffect(() => {
+    if (trouvee) {
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 1000); // Arrêter l'animation après 1 seconde
+      return () => clearTimeout(timer);
+    }
+  }, [trouvee]);
 
   // Fond image selon type de carte
   const getBackgroundImage = () => {
@@ -94,7 +103,8 @@ const Cellule = ({
     <motion.div
       className={`relative px-[30%] py-[30%] sm:px-[20%] sm:py-[20%] md:px-[20%] md:py-[20%] text-[60%] sm:text-[70%] md:text-[100%] flex items-center justify-center rounded border border-gray-400 transition-all duration-300 ease-in-out`}
       whileHover={{ scale: 1.05 }}
-      whileTap={{ rotate : 90 }}
+      animate={{ scale: isAnimating? 1.2 : 1 }}
+      transition={{ duration: 0.5 }}
     >
       {/* FACE CACHEE */}
       <motion.div
