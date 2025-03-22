@@ -108,7 +108,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     });
 
     // On écoute si le créateur de la partie a lancé le jeu.
-    socket.on('partieLancee', (data) => {
+    socket.on('partieLancee', (data:any) => {
       console.log(`Partie ${data.partieId} lancée`);
       navigate(`/game/${gameId}`);
     });
@@ -169,10 +169,10 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     navigate(`/game/${gameId}`);
   };
 
-  {/*const quitterPartie = () => {
+  const quitterPartie = () => {
     socket.emit('quitterPartie', {partieId : gameId, utilisateurId: utilisateur.id});
     navigate('/join');
-  };*/}
+  };
 
 
   // Séparation des joueurs bleu et rouge contenus dans "joueurs".
@@ -222,7 +222,7 @@ console.log("Current texts:", texts[language]);
         </div>
       </div>
       <div className={styles.rouge}>
-        <h1 className=" text-red-500 text-4xl sm:text-5xl md:text-6xl text-center font-bold mb-10">Equipe rouge</h1>
+        <h1 className=" text-red-500 text-4xl sm:text-5xl md:text-6xl text-center font-bold mb-10"> {texts[language].equiperouge}</h1>
         <div className={styles.boutons}>
           <button className={`w-full py-[5%] text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redEspion" ? "bg-red-800 cursor-not-allowed" : ""}`}
           onClick={clickedButton === "redEspion" ? undefined : handleRedEspionClick}

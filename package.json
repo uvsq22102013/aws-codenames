@@ -4,6 +4,7 @@
     },
     "dependencies": {
         "@types/node": "^22.13.5",
+        "axios": "^1.8.4",
         "framer-motion": "^12.5.0"
     },
     "devDependencies": {

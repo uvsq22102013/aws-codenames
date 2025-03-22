@@ -170,6 +170,8 @@ const handleJoinRoom = async () => {
     //redirection vers la page de connexion
     navigate('/login');
     sessionStorage.removeItem('utilisateur'); 
+    sessionStorage.removeItem('token'); 
+
 };
 
   
