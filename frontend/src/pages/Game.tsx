@@ -29,6 +29,8 @@ const Game = () => {
   const [confirmerReinit, setConfirmerReinit] = useState(false);
   const [equipeGagnante, setEquipeGagnante] = useState<string | null>(null);
   const [montrerBulleFinDePartie, setMontrerBulleFinDePartie] = useState(false);
+  const [indiceAffiche, setIndiceAffiche] = useState<string | null>(null);
+  const [nbAffiche, setNbAffiche] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const storedPartie = sessionStorage.getItem("partie");
@@ -227,6 +229,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     setConfirmerReinit(false);
   };
   const utilisateur = getUtilisateur();
+  const gameStatus = partie?.statut;
        
 
    const chargerPartie = async () => {
@@ -295,10 +298,26 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       setTimeout(() => setEquipeGagnante(null), 8000);
     });
 
+    socket.on('indiceDonne', (data: { indice: string, nbmots: number }) => {
+      setIndiceAffiche(data.indice);
+      setNbAffiche(data.nbmots);
+    });
+
     if (equipeGagnante) {
       setTimeout(() => {
         setMontrerBulleFinDePartie(true);
       }, 8000); // 8 secondes pour correspondre à la durée de l'animation
+    }
+    if (gameStatus === "TERMINEE" && !equipeGagnante) {
+      setMontrerBulleFinDePartie(true);
+    }
+
+    if (indiceAffiche && nbAffiche) {
+      const timer = setTimeout(() => {
+        setIndiceAffiche(null); // Réinitialiser après 2 secondes
+        setNbAffiche(null);
+      }, 2000);
+      return () => clearTimeout(timer); // Nettoyer le timer
     }
 
     socket.on('partieJoin', () => {
@@ -308,8 +327,10 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     return () => {
       socket.off('majPartie', majHandler);
       socket.off('joueurVire');
+      socket.off('indiceDonne');
+      socket.off('gagnant');
     };
-  }, [partieId, utilisateur, equipeGagnante]);
+  }, [partieId, utilisateur, equipeGagnante, gameStatus, indiceAffiche, nbAffiche]);
   
 
   const donnerIndice = () => {
@@ -523,13 +544,38 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           </div>
         </div>
         <div className={styles.message}>
-        {/*Messages changeant selon le tour */}
-          {equipeEnCours!= equipeUtilisateur && roleEncours ==="MAITRE_ESPION" &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">{texts[language].espionad}</h1>)}
-          {equipeEnCours!= equipeUtilisateur && roleEncours ==="AGENT" &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">{texts[language].agentad}</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours != roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">{texts[language].espion}</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours != roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">{texts[language].agent}</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="AGENT" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">{texts[language].indice1}</h1>)}
-          {equipeEnCours === equipeUtilisateur && roleEncours ==="MAITRE_ESPION" && roleEncours === roleUtilisateur &&(<h1 className="text-[100%] text-white font-bold text-center mb-4 w-full">{texts[language].indice2}</h1>)}
+          <AnimatePresence mode="wait">
+            {equipeEnCours !== equipeUtilisateur && roleEncours === "MAITRE_ESPION" && (
+              <motion.h1 key="espion-adverse" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                {texts[language].espionad}
+              </motion.h1>
+            )}
+            {equipeEnCours !== equipeUtilisateur && roleEncours === "AGENT" && (
+              <motion.h1 key="agent-adverse" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                {texts[language].agentad}
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "MAITRE_ESPION" && roleEncours !== roleUtilisateur && (
+              <motion.h1 key="espion-equipe" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                {texts[language].espion}
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "AGENT" && roleEncours !== roleUtilisateur && (
+              <motion.h1 key="agent-equipe" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                {texts[language].agent}
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "AGENT" && roleEncours === roleUtilisateur && (
+              <motion.h1 key="agent-utilisateur" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                {texts[language].indice1}
+              </motion.h1>
+            )}
+            {equipeEnCours === equipeUtilisateur && roleEncours === "MAITRE_ESPION" && roleEncours === roleUtilisateur && (
+              <motion.h1 key="espion-utilisateur" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="text-[100%] text-white font-bold text-center mb-4 w-full">
+                {texts[language].indice2}
+              </motion.h1>
+            )}
+          </AnimatePresence>
         </div>
         {/* Grille des mots */}
         {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
@@ -561,7 +607,11 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           
         <div className={styles.rouge}>
           <div className="bg-red-500 rounded w-full h-full">
-            <p className='text-center font-bold text-xl mt-2'>{nbCarteRouge}</p>
+            <AnimatePresence mode="wait">
+              <motion.p key={`rouge-${nbCarteRouge}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }} className="text-center font-bold text-xl mt-2">
+                {nbCarteRouge}
+              </motion.p>
+            </AnimatePresence>
             <div className="border-t border-red-800 mb-1 w-[90%] mx-auto"></div>
             {montrerBouttonAgentRouge && (
               <div className="flex justify-center mb-1">
@@ -569,7 +619,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
               </div>
             )}
               <h3 className="font-bold text-center mb-1">{texts[language].agent1}</h3>
-            {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
+            {!montrerBouttonAgentRouge && partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'AGENT').map((m: any) => (
               <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
             {montrerBouttonEspionRouge && (
@@ -577,8 +627,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 <button onClick={handleRedEspionClick} className='text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900'>{texts[language].devespion}</button>
               </div>
             )}
-              <h3 className="font-bold text-center mb-1">{texts[language].espion1}</h3>
-            {partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
+              <h3 className="font-bold text-center mt-2">{texts[language].espion1}</h3>
+              {!montrerBouttonEspionRouge && partie.membres.filter((m: any) => m.equipe === 'ROUGE' && m.role === 'MAITRE_ESPION').map((m: any) => (
               <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
           </div>
@@ -603,8 +653,26 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
-          {montrerBulleFinDePartie && isHost() && (
+            {!equipeGagnante && indiceAffiche && nbAffiche &&(
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  textShadow: `
+                    -1px -1px 0 #000,  
+                     1px -1px 0 #000,
+                    -1px  1px 0 #000,
+                     1px  1px 0 #000
+                  `,
+                }}
+                className="fixed inset-0 flex items-center justify-center text-8xl text-white font-bold text-center z-50"
+              >
+                {indiceAffiche} pour {nbAffiche}
+              </motion.h1>
+            )}
+          {montrerBulleFinDePartie && isHost() &&(
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
                 <h2 className="text-2xl font-bold mb-4 text-white">Que souhaitez-vous faire ?</h2>
@@ -612,7 +680,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                   <button
                     onClick={() => {
                       renitPartie();
-                      setMontrerBulleFinDePartie(false);
                     }}
                     className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                   >
@@ -621,7 +688,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                   <button
                     onClick={() => {
                       quitterPartie();
-                      setMontrerBulleFinDePartie(false);
                     }}
                     className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                   >
@@ -654,12 +720,18 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
               />
           
             })}
+
           </div>
+          </AnimatePresence>
         </div>
         <div className={styles.bleu}>
           {/*Cote bleu et historique*/}
             <div className="bg-blue-700 text-black rounded w-full h-full">
-              <p className='text-center font-bold text-xl mt-2'>{nbCarteBleu}</p>
+              <AnimatePresence mode="wait">
+                <motion.p key={`bleu-${nbCarteBleu}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }} className="text-center font-bold text-xl mt-2">
+                  {nbCarteBleu}
+                </motion.p>
+              </AnimatePresence>
               <div className="border-t border-blue-900 mb-1 w-[90%] mx-auto"></div>
               {montrerBouttonAgentBleu && (
                 <div className="flex justify-center mb-1">
@@ -667,7 +739,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 </div>
               )}
                 <h3 className="font-bold text-center">{texts[language].agent1}</h3>   
-              {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
+                {!montrerBouttonAgentBleu && partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'AGENT' ).map((m: any) => (    
                 <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
               ))}
               {montrerBouttonEspionBleu && (
@@ -676,7 +748,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 </div>
               )}     
                 <h3 className="font-bold text-center mt-2">{texts[language].espion1}</h3>    
-              {partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
+                {!montrerBouttonEspionBleu && partie.membres.filter((m: any) => m.equipe === 'BLEU' && m.role === 'MAITRE_ESPION' ).map((m: any) => (    
                 <p className="text-[12px] text-center" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>   
               ))}  
             </div>
@@ -745,7 +817,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       </div>
     </div>
         {/* Zone indices - Seulement pour maître espion */}
-        {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
+        {gameStatus === "EN_COURS" && roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
           <div className={styles.indice}>
             <div className="p-4 rounded text-center w-full">
               <h2 className="text-l text-white sm:text-xl">{texts[language].indice}</h2>
@@ -768,10 +840,10 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             </div>
           </div>
         )}
-        {roleEncours === 'AGENT' && indice ? (
+        {gameStatus === "EN_COURS" && roleEncours === 'AGENT' && indice ? (
           <div className={styles.indice}>
             <div className=" w-full rounded text-white text-center">
-              <h2 className="text-xl">{texts[language].indicedonne} : {indice.mot} {texts[language].pour} {indice.nbmots} {texts[language].mots} </h2>
+              <h2 className="text-xl"> {texts[language].indicedonne} : {indice.mot} {texts[language].pour} {indice.nbmots} {texts[language].mots}</h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
               <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded mt-2">
                 {texts[language].valider}

@@ -8,6 +8,8 @@
         "framer-motion": "^12.5.0"
     },
     "devDependencies": {
+        "concurrently": "^9.1.2",
         "@types/socket.io-client": "^1.4.36"
+
     }
 }

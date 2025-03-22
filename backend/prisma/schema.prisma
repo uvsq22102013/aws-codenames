@@ -169,3 +169,10 @@ model Message {
   partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
   utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 }
+
+model Reset {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String   @unique
+  createdAt DateTime @default(now())
+}

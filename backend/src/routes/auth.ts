@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import prisma from "../prismaClient";
+import { verifyEmailDomain } from "../utils/emailVerifier"; // Import the function
+
 import verifyCaptcha from "../utils/captchaverif";  // Assure-toi que le fichier captchaVerification exporte correctement la fonction
 
 const router = express.Router();
@@ -10,17 +12,22 @@ const router = express.Router();
 
 // Partie qui se charge de l'inscription
 router.post("/register", async (req: Request, res: Response): Promise<void> => {
+    //Recupere les donnees de la requete 
     const { pseudo, email, mdp, mdp2, captchaToken } = req.body;
-
+    //Essaye plusieurs verifications pour l'inscription et essaye de créer un utilisateur
     try {
-        // Vérifier le token reCAPTCHA
+        //Cherche si un utilisateur avec le mail existe déjà en bdd
         const captchaResult = await verifyCaptcha(captchaToken);
         if (!captchaResult?.success || captchaResult.score < 0.6) {
             res.status(400).json({ error: "Vérification reCAPTCHA échouée" });
             return;
         }
+        const isEmailDomainValid = await verifyEmailDomain(email);
+        if (!isEmailDomainValid) {
+            res.status(400).json({ error: "Email invalide." });
+            return;
+        }
 
-        // Vérifier si un utilisateur avec le mail existe déjà en BDD
         const existingMail = await prisma.utilisateur.findUnique({
             where: { email }
         });

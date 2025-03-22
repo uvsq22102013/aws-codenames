@@ -1,91 +1,52 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-
-// Declare grecaptcha on the Window interface
-declare global {
-  interface Window {
-    grecaptcha: any;
-  }
-}
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { setUtilisateur } from '../../utils/utilisateurs';
-import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
+import styles from "../styles/Login.module.css";
 
 
 export default function Login() {
-  const [login, setLogin] = useState("");//Login povant être un email ou un pseudo
-  const [password, setPassword] = useState("");//Mot de passe
-  const [error, setError] = useState(""); // Stocke l'erreur à afficher
-  const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
-  const [grecaptchaLoaded, setGreCaptchaLoaded] = useState(false); // État pour vérifier si reCAPTCHA est chargé
-  const navigate = useNavigate();//Permet de changer de page  
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");    
+  const navigate = useNavigate();  
 
+  const handleSend = async () => {
+    setError("");
 
-  //Gere la connexion
-  const handleLogin = async () => {
-    setError(""); // Reset de l'erreur
-
-    //Essaye de faire un POST sur back pour gerer la connexion 
     try {
-
-      const token = await window.grecaptcha.execute('6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu', { action: 'login' });
-      console.log("Token reCAPTCHA reçu : ", token); //pour voir si c'est bon dans la console
-
-
-
-      const response = await axios.post("/api/auth/login", {
-        pseudo: login,
-        email: login,
-        mdp: password,
-        captchaToken: token,
+      const response = await axios.post("/api/forgot", {
+        email: email,
       });
-      //Genere un token contenant les données de l'utilisateur connecté 
-      sessionStorage.setItem("token", response.data.token);
-      sessionStorage.setItem("utilisateur", JSON.stringify(response.data.user));
-      setUtilisateur(response.data.user);
-      //Renvoi vers la page game
-      navigate('/join', { state: { user: response.data.user } });
-      //Si le POST echoue, renvoi une erreur
+      alert("Email envoyé, vérifiez dans vos spams");
+      navigate('/login');
     } catch (error: any) {
-      setError(error.response?.data?.error || "Erreur de connexion front.");
+      setError(error.response?.data?.error || "Erreur front de mdp oublié.");
     }
   };
 
 
-  //HTML utilisant Tailwind css de la page de connexion
   return (
     <section className={styles.section}>
        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
       <div className={styles.signin}>
         <div className={styles.content}>
 
-          <h2 >Sign In</h2>
+          <h3 >Mot de passe oublié</h3>
+
+          <p className="text-white">Vous recevrez un email de réinitialisation</p>
 
           <div className={styles.form}>
 
             {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
             <div className={styles.inputBox}>
 
-              <input type="text" onChange={(e) => setLogin(e.target.value)} required /> <i>Username</i>
+              <input type="text" onChange={(e) => setEmail(e.target.value)} required /> <i>Email</i>
 
             </div>
+
 
             <div className={styles.inputBox}>
 
-              <input type={showPassword ? "text" : "password"} onChange={(e) => setPassword(e.target.value)} required /> <i>Password</i>
-              <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300" onClick={() => setShowPassword(!showPassword)}> {showPassword ? "🙈" : "👁️"}</button>
-
-
-            </div>
-
-            <div className={styles.links}> <a href="/forgot">Forgot Password</a> <a href="/register">Signup</a>
-
-            </div>
-
-            <div className={styles.inputBox}>
-
-              <input onClick={handleLogin} disabled={!login || !password} type="submit" value="Login" />
+              <input onClick={handleSend} disabled={!email} type="submit" value="Envoyer" />
 
             </div>
 

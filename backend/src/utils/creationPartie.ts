@@ -44,7 +44,7 @@ async function genererCartesPourPartie(partieId: string, langue: string) {
 
 export async function creerPartieAvecCartes(createurId: number, langue: string) {
 
-  const partieId = genererIdPartie(12);
+  const partieId = genererIdPartie(6);
 
   const partie = await prisma.partie.create({
     data: {

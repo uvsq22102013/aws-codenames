@@ -225,7 +225,7 @@ section .container .rouge {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 10;
 }
 
 section .container .bleu {
@@ -237,7 +237,7 @@ section .container .bleu {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 10;
 }
 
 section .container .historique {
@@ -249,7 +249,7 @@ section .container .historique {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 10;
 }
 
 section .container .chat {
@@ -320,7 +320,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .bleu {
         position: fixed;
@@ -331,7 +331,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .historique {
         position: fixed;
@@ -343,7 +343,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .chat {
         position: fixed;
@@ -404,7 +404,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .bleu {
         position: fixed;
@@ -415,7 +415,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .historique {
         position: fixed;
@@ -427,7 +427,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .chat {
         position: fixed;
@@ -491,7 +491,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .bleu {
         position: fixed;
@@ -502,7 +502,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .historique {
         position: fixed;
@@ -514,7 +514,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 10;
     }
     section .container .chat {
         position: fixed;
