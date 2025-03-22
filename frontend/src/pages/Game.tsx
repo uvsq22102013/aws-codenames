@@ -30,6 +30,7 @@ const Game = () => {
   const [montrerBulleFinDePartie, setMontrerBulleFinDePartie] = useState(false);
   const [indiceAffiche, setIndiceAffiche] = useState<string | null>(null);
   const [nbAffiche, setNbAffiche] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const navigate = useNavigate();
 
   const storedPartie = localStorage.getItem("partie");
@@ -171,6 +172,12 @@ const Game = () => {
       chargerPartie();
       chargerIndice();
     };
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
   
     socket.on('majPartie', majHandler);
 
@@ -217,6 +224,7 @@ const Game = () => {
       socket.off('joueurVire');
       socket.off('indiceDonne');
       socket.off('gagnant');
+      window.removeEventListener("resize", handleResize);
     };
   }, [partieId, utilisateur, equipeGagnante, gameStatus, indiceAffiche, nbAffiche]);
   
@@ -597,7 +605,13 @@ const Game = () => {
         </div>
         <div>
           <div className={styles.historique}>
-            <div className="bg-gray-800 p-2 rounded mt-4 h-full flex flex-col w-full">     
+            <div className="bg-gray-800 p-2 rounded mt-4 h-full flex flex-col w-full">
+              {/* Bouton tchat visible seulement si écran ≤ 1024px */}
+              {isMobile && (
+                <button data-popover-target="popover-default" className=" bg-gray-700 text-white p-0.5 rounded shadow-md mb-1">
+                  💬
+                </button>
+              )}   
               <p className="text-xs text-center">Historique</p>
               {/* Ligne de séparation */}
               <div className="border-t border-gray-300 mt-2 mb-2"></div>

@@ -70,7 +70,7 @@ section .container {
 
 section .container .nav {
     position: fixed;
-    top: 0;
+    top: 1%;
     width: 97%;
     display: flex;
     align-items: center;
@@ -115,10 +115,10 @@ section .container .bleu {
 
 section .container .historique {
     position: fixed;
-    top: 43%;
+    top: 47%;
     right: 1.5%;
     width: 20%;
-    height: 55%;
+    height: 50%;
     display: flex;
     align-items: center;
     padding: 20px;
@@ -204,7 +204,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 10;
+        z-index: 1000;
     }
     section .container .cartes {
         position: fixed;
@@ -276,7 +276,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 10;
+        z-index: 1000;
     }
     section .container .cartes {
         position: fixed;
@@ -348,7 +348,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 10;
+        z-index: 1000;
     }
     section .container .cartes {
         position: fixed;
