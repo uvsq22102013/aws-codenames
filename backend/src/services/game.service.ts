@@ -20,11 +20,49 @@ export async function lancerPartie(partieId:string) {
     });
 }
 
-export async function quitterPartie(partieId : string,utilisateurId : number ) {
-    await prisma.membreEquipe.delete({
-        where : {utilisateurId_partieId: { utilisateurId: utilisateurId, partieId: partieId }},
+export async function quitterPartie(partieId: string, utilisateurId: number) {
+    console.log(`Tentative de suppression du membre : utilisateurId=${utilisateurId}, partieId=${partieId}`);
+  
+    // Vérifiez si le membre existe
+    const membre = await prisma.membreEquipe.findUnique({
+      where: { utilisateurId_partieId: { utilisateurId, partieId } },
     });
-}
+  
+    if (!membre) {
+      console.error(`Erreur : Aucun membre trouvé avec utilisateurId=${utilisateurId} et partieId=${partieId}`);
+      return; // Arrêtez l'exécution si le membre n'existe pas
+    }
+  
+    // Supprimez les sélections associées
+    await prisma.selection.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimez les messages associés
+    await prisma.message.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimez les actions associées
+    await prisma.actionJeu.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimez les indices associés
+    await prisma.indice.deleteMany({
+      where: {
+        membreEquipeUtilisateurId: utilisateurId,
+        membreEquipePartieId: partieId,
+      },
+    });
+  
+    // Supprimez le membre de l'équipe
+    await prisma.membreEquipe.delete({
+      where: { utilisateurId_partieId: { utilisateurId, partieId } },
+    });
+  
+    console.log(`Membre supprimé avec succès : utilisateurId=${utilisateurId}, partieId=${partieId}`);
+  }
 export async function gameOver(partieId:string) {
     const partie = await prisma.partie.findUnique({
         where: {id:partieId},
@@ -40,19 +78,69 @@ export async function changerHost(partieId:string, utilisateurId:number) {
         },
     });
 }
-export async function virerJoueur(partieId:string, utilisateurId:number) {
-    await prisma.membreEquipe.delete({
-        where: {utilisateurId_partieId: {utilisateurId, partieId}},
+export async function virerJoueur(partieId: string, utilisateurId: number) {
+    // Supprimer les sélections associées
+    await prisma.selection.deleteMany({
+      where: { utilisateurId, partieId },
     });
-}
-
-
-export async function devenirSpectateur(payload:{partieId:string, utilisateurId:number}) {
-    await prisma.membreEquipe.delete({
-        where: {utilisateurId_partieId: {utilisateurId:payload.utilisateurId, partieId:payload.partieId}},
+  
+    // Supprimer les messages associés
+    await prisma.message.deleteMany({
+      where: { utilisateurId, partieId },
     });
-    return payload.partieId;
-}
+  
+    // Supprimer les actions associées
+    await prisma.actionJeu.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimer les indices associés
+    await prisma.indice.deleteMany({
+      where: {
+        membreEquipeUtilisateurId: utilisateurId,
+        membreEquipePartieId: partieId,
+      },
+    });
+  
+    // Supprimer le membre de l'équipe
+    await prisma.membreEquipe.delete({
+      where: { utilisateurId_partieId: { utilisateurId, partieId } },
+    });
+  }
+
+  export async function devenirSpectateur(payload: { partieId: string; utilisateurId: number }) {
+    const { partieId, utilisateurId } = payload;
+  
+    // Supprimer les sélections associées
+    await prisma.selection.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimer les messages associés
+    await prisma.message.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimer les actions associées
+    await prisma.actionJeu.deleteMany({
+      where: { utilisateurId, partieId },
+    });
+  
+    // Supprimer les indices associés
+    await prisma.indice.deleteMany({
+      where: {
+        membreEquipeUtilisateurId: utilisateurId,
+        membreEquipePartieId: partieId,
+      },
+    });
+  
+    // Supprimer le membre de l'équipe
+    await prisma.membreEquipe.delete({
+      where: { utilisateurId_partieId: { utilisateurId, partieId } },
+    });
+  
+    return partieId;
+  }
 
 export async function getHost(partieId:string) {
     const partie = await prisma.partie.findUnique({
@@ -76,6 +164,11 @@ export async function getPartiePourUtilisateur(partieId: string, utilisateurId: 
      } },
     membres: { include: { utilisateur: true } },
     actions: { include: { carte: { include: { mot: true } }, utilisateur: true }},
+    messages: { include: { 
+        utilisateur: true,
+        partie: true,
+        
+    } }
     },
     });
   
@@ -97,7 +190,28 @@ export async function getPartiePourUtilisateur(partieId: string, utilisateurId: 
             : [],
         trouvee: carte.trouveeParEquipe !== null
       }));
-
+      
+    const messagesFiltres = partie.messages.filter((message) => {
+        if (message.channel === 'GLOBAL') {
+            return true;
+        }
+        if (message.channel === 'EquipeROUGE' && monEquipe === Equipe.ROUGE) {
+            return true;
+        }
+        if (message.channel === 'EquipeBLEU' && monEquipe === Equipe.BLEU) {
+            return true;
+        }
+        if (message.channel === 'ESPIONROUGE' && monEquipe === Equipe.ROUGE && monRole === Role.MAITRE_ESPION) {
+            return true;
+        }
+        if (message.channel === 'ESPIONBLEU' && monEquipe === Equipe.BLEU && monRole === Role.MAITRE_ESPION) {
+            return true;
+        }
+        if (message.channel === 'ESPIONALL' && monRole === Role.MAITRE_ESPION) {
+            return true;
+        }
+        return false;
+    });
     const membresFiltres = partie.membres.map((membre) => {
     ///   if (membre.equipe === monEquipe) {
     return membre;
@@ -111,6 +225,7 @@ export async function getPartiePourUtilisateur(partieId: string, utilisateurId: 
     membres: membresFiltres,
     roleEncours : roleEncours,
     equipeEncours : equipeEncours,
+    messages: messagesFiltres,
     };
     }
 
@@ -119,7 +234,11 @@ export async function getPartiePourUtilisateur(partieId: string, utilisateurId: 
         where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
     });
 }
-  
+  export async function trouverUtilisateur(utilisateurId:number) {
+    return await prisma.utilisateur.findUnique({
+        where : {id: utilisateurId},
+    });
+}
 
 export async function donnerIndice(payload: {partieId : string, utilisateurId:number, motDonne:string, nombreMots:number,equipe : Equipe}) {
 
@@ -316,6 +435,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
             });
         }
     }
+
     
 }
 
@@ -469,3 +589,52 @@ export async function recupererDernierIndice(partieId: string) {
         },
     });
 }
+
+export async function nouveauMessage(payload: {
+    content: string;
+    utilisateurId: number;
+    pseudo: string;
+    timestamp: Date;
+    channel: 'GLOBAL' | 'EquipeROUGE' | 'EquipeBLEU' | 'ESPIONROUGE' | 'ESPIONBLEU' | 'ESPIONALL';
+    partieId: string;
+  }) {
+    const utilisateur = await prisma.utilisateur.findUnique({
+      where: { id: payload.utilisateurId },
+    });
+    if (!utilisateur) {
+      console.log(`Utilisateur avec ID ${payload.utilisateurId} n'exite pas.`);
+    }
+  
+    const partie = await prisma.partie.findUnique({
+      where: { id: payload.partieId },
+    });
+    const membre = await prisma.membreEquipe.findUnique({
+        where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
+    });
+    if (!partie) {
+      console.log(`Partie avec ID ${payload.partieId} n'exite pas.`);
+    }
+    if(!membre) {
+        console.log(`Utilisateur avec ID ${payload.utilisateurId} n'exite pas.`);
+    } else if (membre.role === 'INCONNU') {
+        console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire.`);
+    }
+    else if(payload.channel.includes('ESPION') && membre.role !== 'MAITRE_ESPION'){
+        console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire dans ce chanel car pas espion.`);
+    }
+    else if (membre.role === 'MAITRE_ESPION' && (payload.channel ===  'EquipeBLEU' || payload.channel ===  'EquipeROUGE' || payload.channel ===  'GLOBAL')){
+        console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire dans ce chanel car espion.`);
+    }else {
+        await prisma.message.create({
+            data: {
+              contenu: payload.content,
+              utilisateurId: payload.utilisateurId,
+              partieId: payload.partieId,
+              dateMessage: payload.timestamp || new Date(),
+              channel: payload.channel,
+              pseudo: payload.pseudo || 'Anonyme',
+            },
+          });
+    }
+    
+  }

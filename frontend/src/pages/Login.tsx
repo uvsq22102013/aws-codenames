@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -24,8 +25,8 @@ export default function Login() {
         mdp: password,
       });
       //Genere un token contenant les données de l'utilisateur connecté 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("utilisateur", JSON.stringify(response.data.user));
+      sessionStorage.setItem("token", response.data.token);
+      sessionStorage.setItem("utilisateur", JSON.stringify(response.data.user));
       setUtilisateur(response.data.user);
       alert("Connexion réussie !");
       //Renvoi vers la page game

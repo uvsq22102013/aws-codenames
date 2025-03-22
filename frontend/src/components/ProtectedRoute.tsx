@@ -6,7 +6,7 @@ import { JSX } from "react";
 export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const utilisateur = getUtilisateur();
   const token = getToken();
-  const partie = localStorage.getItem('partie');
+  const partie = sessionStorage.getItem('partie');
 
   if (!utilisateur || !token) {
     return <Navigate to="/login" />;

@@ -38,6 +38,15 @@ enum Equipe {
   BLEU
 }
 
+enum ChatChannel {
+  GLOBAL
+  EquipeROUGE
+  EquipeBLEU
+  ESPIONROUGE
+  ESPIONBLEU
+  ESPIONALL
+}
+
 model Utilisateur {
   id              Int      @id @default(autoincrement())
   pseudo          String   @unique
@@ -149,11 +158,13 @@ model ActionJeu {
 }
 
 model Message {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   partieId      String
   utilisateurId Int
   contenu       String
-  dateMessage   DateTime @default(now())
+  channel       ChatChannel
+  pseudo        String
+  dateMessage   DateTime    @default(now())
 
   partie      Partie      @relation(fields: [partieId], references: [id], onDelete: Cascade)
   utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)

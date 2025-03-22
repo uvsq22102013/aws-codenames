@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +80,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
       }
       //message qui confirme que la partie a bien été créée
       const data = JSON.stringify(response.data);
-      localStorage.setItem("partie", data);
+      sessionStorage.setItem("partie", data);
 
       //on renvoi le joueur vers le lien de la partie
       navigate(`/teams/${response.data.id}`);
@@ -112,7 +113,7 @@ const handleJoinRoom = async () => {
       });
 
       const data = response.data;
-      localStorage.setItem("partie", JSON.stringify(data.game));
+      sessionStorage.setItem("partie", JSON.stringify(data.game));
   
       navigate(`/teams/${response.data.game.id}`);
 

@@ -2,7 +2,7 @@ export const verificationAcces = (utilisateur: string, token: string, navigate: 
     if (!utilisateur || !token) {
         console.log('Accès refusé');
         navigate('/login');
-        localStorage.clear();
+        sessionStorage.clear();
         return false;
     }
 }

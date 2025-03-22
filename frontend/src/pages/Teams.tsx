@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
-import { io } from 'socket.io-client';
 import styles from "../styles/Teams.module.css";
-
-
-const socket = io('http://localhost:3000');
+import socket from '../../utils/socket';
 
 interface Joueur {
   utilisateur: {
@@ -23,7 +20,7 @@ export default function Teams() {
 
   const navigate = useNavigate();
 
-  const storedPartie = localStorage.getItem("partie");
+  const storedPartie = sessionStorage.getItem("partie");
   let gameId: string | undefined, createurId: number | undefined;
 
   if (storedPartie) {

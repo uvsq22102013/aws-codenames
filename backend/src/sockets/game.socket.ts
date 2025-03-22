@@ -1,18 +1,67 @@
 import { Server, Socket } from 'socket.io';
-// import { JSEncrypt } from 'jsencrypt';
 import {renitPartie} from '../utils/creationPartie';
-import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte, verifierGagnant} from '../services/game.service';
+import { validerCarte,recupererDernierIndice, donnerIndice, selectionnerCarte, changerRole, lancerPartie, trouverMembreEquipe, finDeviner, quitterPartie, changerHost, getHost, virerJoueur, devenirSpectateur, deselectionnerCarte, verifierGagnant, trouverUtilisateur, nouveauMessage} from '../services/game.service';
 import { FinDeviner_Payload, Indice_Payload, SelectionCarte_Payload, RejoindrePartie_Payload, changerHost_Payload, virerJoueur_Payload, renitPartie_Payload, devenirSpectateur_Payload, DeselectionCarte_Payload } from '../types/game.types';
 import { verifierTokenSocket } from '../utils/verifierToken';
+import { log } from 'console';
 
-// const crypterData = (data: any, publicKey: string) => {
-//   const encryptor = new JSEncrypt();
-//   encryptor.setPublicKey(publicKey);
-//   return encryptor.encrypt(JSON.stringify(data)); // convertir  l'objet en string avant chiffrement
-// };
+
+interface ChatMessage {
+  content: string;
+  utilisateurId: number;
+  pseudo: string;
+  timestamp: Date;
+  channel: 'GLOBAL' | 'EquipeROUGE' | 'EquipeBLEU'| 'ESPIONROUGE' | 'ESPIONBLEU' | 'ESPIONALL' ;
+  partieId: string;
+}
+
+function quitterRooms(socket: Socket) {
+  const rooms = Object.keys(socket.rooms);
+  rooms.forEach((room) => {
+    if (room !== socket.id) { 
+      socket.leave(room);
+    }
+  });
+}
+
+
+async function reinitialiserRooms(socket: Socket, partieId: string, utilisateurId: number) {
+  // Récupérer les informations du membre
+  const membre = await trouverMembreEquipe({
+    partieId,
+    utilisateurId,
+  });
+
+  if (!membre) {
+    console.log('Membre non trouvé');
+    return;
+  }
+
+  quitterRooms(socket);
+
+  // Rejoindre les rooms appropriées en fonction du rôle et de l'équipe
+  socket.join(`partie-${partieId}`); // Tous les joueurs rejoignent le chat global
+
+  if (membre.role === 'MAITRE_ESPION') {
+    // Rejoindre les rooms des espions
+    socket.join(`partie-${partieId}-espion-${membre.equipe.toLowerCase()}`);
+    socket.join(`partie-${partieId}-espion-all`);
+    console.log(`Joueur ${utilisateurId} (Espion) a rejoint les rooms espion`);
+  } else {
+    // Rejoindre la room des agents de l'équipe
+    socket.join(`partie-${partieId}-agent-${membre.equipe.toLowerCase()}`);
+    socket.join(`partie-${partieId}-agent-all}`);
+
+    console.log(`Joueur ${utilisateurId} (Agent) a rejoint la room agent`);
+  }
+
+  console.log(`Rooms réinitialisées pour le joueur ${utilisateurId}`);
+}
+
 
 export default function gameSocket(io: Server, socket: Socket) {
   console.log(`User connecté : ${socket.id}`);
+  
   socket.on('rejoindrePartie', (data: RejoindrePartie_Payload) => {
     console.log(`Joueur a rejoint la partie ${data.partieId}`);
     socket.join(`partie-${data.partieId}`);
@@ -21,7 +70,7 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('quitterPartie', (data: RejoindrePartie_Payload) => {
     console.log(`Joueur a quitté la partie ${data.partieId}`);
     quitterPartie(data.partieId, data.utilisateurId);
-    socket.leave(`partie-${data.partieId}`);
+    quitterRooms(socket);
   });
 
   socket.on('changerHost', async (data: changerHost_Payload) => {
@@ -54,6 +103,7 @@ export default function gameSocket(io: Server, socket: Socket) {
     if (host === data.utilisateurId) {
       const partie = await renitPartie(data.partieId);
       console.log(`Partie ${JSON.stringify(partie)} renitialisée`);
+      reinitialiserRooms(socket, data.partieId, data.utilisateurId);
       io.to(`partie-${partie.id}`).emit('majPartie', { partieId: partie.id });
 
       io.to(`partie-${partie.id}`).emit('partieJoin');
@@ -65,6 +115,7 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('devenirSpectateur', async (data: devenirSpectateur_Payload) => {
     console.log(`joueur ${data.utilisateurId} devient spectateur dans la partie ${data.partieId}`);
     const partie = await devenirSpectateur(data);
+    reinitialiserRooms(socket, data.partieId, data.utilisateurId);
     io.to(`partie-${partie}`).emit('majPartie', { partieId: partie });
       
   });
@@ -117,16 +168,20 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('changerEquipe', async (data) => {
     console.log("EMIT rcezucvhgzv");
     await changerRole(data);
+    reinitialiserRooms(socket, data.partieId, data.utilisateurId);
+
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
   });
 
   socket.on('choixEquipe', async (data) => {
     await changerRole(data);
+    reinitialiserRooms(socket, data.partieId, data.utilisateurId);
     io.to(`partie-${data.partieId}`).emit('majEquipe');
   });
 
   socket.on('changerEquipe', async (data) => {
     await changerRole(data);
+    reinitialiserRooms(socket, data.partieId, data.utilisateurId);
     io.to(`partie-${data.partieId}`).emit('majPartie', {partieId : data.partieId});
   });
 
@@ -160,4 +215,22 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);
   });
+
+
+  // Envoyer un message
+  socket.on('envoyerMessage', async (data: ChatMessage ) => {
+    log(`Message envoyé dans la partie ${data.partieId}`);
+    log(`Contenu : ${data.content}`);
+
+    await nouveauMessage(data);
+    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
+    io.to(`partie-${data.partieId}`).emit('nouveauMessage', { partieId: data.partieId });
+   
+  });
+  socket.on('majMessages', async (data: RejoindrePartie_Payload ) => {
+    log(`majMessages${data.partieId}`);
+
+   
+  });
 }
+

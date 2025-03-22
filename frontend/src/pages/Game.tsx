@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur} from '../../utils/utilisateurs';
 import { getToken } from '../../utils/token';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
+import Chat from '../components/Chat'; // Importe le composant Chat
+import socket from '../../utils/socket';
 
-const socket = io('http://localhost:3000');
 
 const Game = () => {
   const [partie, setPartie] = useState<any>(null);
@@ -30,7 +30,7 @@ const Game = () => {
   const [montrerBulleFinDePartie, setMontrerBulleFinDePartie] = useState(false);
   const navigate = useNavigate();
 
-  const storedPartie = localStorage.getItem("partie");
+  const storedPartie = sessionStorage.getItem("partie");
   let partieId: string | undefined, partieIdNumber: string | undefined;
 
   if (storedPartie) {
@@ -130,7 +130,7 @@ const Game = () => {
       const data = await res.json();
       setPartie(data);
       setCartes(data.cartes);
-      localStorage.setItem('partie', JSON.stringify(data));
+      sessionStorage.setItem('partie', JSON.stringify(data));
     } catch (err) {
       console.error('erreur chargement partie :', err);
     }
@@ -148,7 +148,7 @@ const Game = () => {
       const data = await res.json();
       if (!data) return;
       setIndice(data);
-      localStorage.setItem('indice', JSON.stringify(data));
+      sessionStorage.setItem('indice', JSON.stringify(data));
     } catch (err) {
       console.error('erreur chargement indice :', err);
     }
@@ -242,6 +242,9 @@ const Game = () => {
   const quitterPartie = () => {
     socket.emit('quitterPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
     navigate('/join');
+    sessionStorage.removeItem('partie');
+    sessionStorage.removeItem('indice');
+
   };
 
   const getJoueurIdByPseudo = (pseudo: string) => {
@@ -427,12 +430,15 @@ const Game = () => {
               <p className=" text-[12px] text-center mb-2" key={m.utilisateur.id}>{m.utilisateur.pseudo}</p>
             ))}
           </div>
-        </div>
-        <div className={styles.cartes}>
+          </div>
+          <div className={styles.chat}>
+        <Chat />
+      </div>        
+      <div className={styles.cartes}>
           <AnimatePresence>
             {equipeGagnante && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.8 }}  
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.8 }}
@@ -524,23 +530,68 @@ const Game = () => {
             </div>
         </div>
         <div>
-          <div className={styles.historique}>
-            <div className="bg-gray-800 p-2 rounded mt-4 h-full flex flex-col w-full">     
-              <p className="text-xs text-center">Historique</p>
-              {/* Ligne de séparation */}
-              <div className="border-t border-gray-300 mt-2 mb-2"></div>
-              <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600">
-                {partie.actions.map((action: any) => (    
-                  <p key={action.id} className="text-xs py-1">
-                    {action.utilisateur?.pseudo} {action.motDonne && `a donné l'indice : ${action.motDonne}`}
-                    {action.carte && `a sélectionné : ${action.carte.mot.mot}`}
-                  </p>            
-                ))}
+        <div className={styles.historique}>
+  <div className="bg-gray-800 p-2 rounded mt-4 h-full flex flex-col w-full">     
+    <p className="text-xs text-center">Historique</p>
+    <div className="border-t border-gray-300 mt-2 mb-2"></div>
+    <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600 flex-1">
+      <AnimatePresence>
+        {partie.actions.filter((action:any) => {
+            if (action.typeAction === 'SELECTION' ) return false;
+            return true;
+          }).map((action: any) => {
+          const couleurPseudo = action.equipe === 'ROUGE' ? 'text-red-500' : 'text-blue-500';
+          const couleurMot = action.carte?.type === 'ROUGE' ? 'text-red-500' : 
+                           action.carte?.type === 'BLEU' ? 'text-blue-500' : 
+                           action.carte?.type === 'ASSASSIN' ? 'text-black' : 'text-gray-400';
+
+          return (
+            <motion.div
+              key={action.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={`text-xs py-1 px-2 hover:bg-gray-600 rounded-sm ${
+                equipeEnCours === action.utilisateur?.equipe ? 'bg-gray-600' : ''
+              }`}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              <div className="flex gap-2 items-baseline">
+                {action.utilisateur?.pseudo && (
+                  <div className={`${couleurPseudo} font-semibold truncate`}>
+                    {action.utilisateur.pseudo}
+                  </div>
+                )}
+                
+                {action.motDonne && (
+                  <>
+                    <div className="text-gray-400">a donné l'indice :</div>
+                    <div className="text-yellow-400 truncate">{action.motDonne}</div>
+                  </>
+                )}
+
+                {action.carte && action.typeAction === 'VALIDERSELECTION' && (
+                  <>
+                    <div className="text-gray-400">a validé :</div>
+                    <div className={`${couleurMot} truncate`}>
+                      {action.carte.mot.mot}
+                    </div>
+                  </>
+                )}
+                {action.typeAction === 'PASSER' && (
+                  <>
+                    <div className="text-gray-400">a finie de deviner </div>
+                  </>
+                )}
               </div>
-            </div>
-          </div>
-        </div>
-        
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+</div>
+      </div>
+    </div>
         {/* Zone indices - Seulement pour maître espion */}
         {roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
           <div className={styles.indice}>

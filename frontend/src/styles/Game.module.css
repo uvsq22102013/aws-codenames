@@ -6,6 +6,133 @@
     font-family: 'Quicksand', sans-serif;
 }
 
+
+/* src/styles/Chat.module.css */
+
+.chat-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 300px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.channel-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.channel-selector button {
+    padding: 6px 12px;
+    background: #2d3748;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.channel-selector button.active {
+    background: #4299e1;
+}
+
+.channel-selector button:hover {
+    background: #4a5568;
+}
+
+.messages-container {
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.text-xxs {
+    font-size: 0.7rem;
+    line-height: 0.9rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #4a5568;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #718096;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+.text-red-400 {
+    color: #f87171;
+}
+
+.text-blue-400 {
+    color: #60a5fa;
+}
+
+.text-purple-400 {
+    color: #c084fc;
+}
+
+.text-gray-300 {
+    color: #d1d5db;
+}
+
+.text-gray-200 {
+    color: #e5e7eb;
+}
+
+.message {
+    padding: 8px;
+    margin: 8px 0;
+    background: #1a202c;
+    border-radius: 6px;
+    color: white;
+}
+
+.timestamp {
+    font-size: 0.8em;
+    color: #a0aec0;
+    margin-right: 8px;
+}
+
+.user {
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.content {
+    word-break: break-word;
+}
+
+form {
+    display: flex;
+    gap: 8px;
+}
+
+input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #4a5568;
+    border-radius: 6px;
+    background: #2d3748;
+    color: white;
+}
+
 section {
     position: relative;
     width: 100vw;
@@ -115,8 +242,20 @@ section .container .bleu {
 
 section .container .historique {
     position: fixed;
-    top: 43%;
+    top: 45%;
     right: 1.5%;
+    width: 20%;
+    height: 55%;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+section .container .chat {
+    position: fixed;
+    top: 45%;
+    left: 1.5%;
     width: 20%;
     height: 55%;
     display: flex;
@@ -206,6 +345,18 @@ section .container .indice {
         padding: 20px;
         z-index: 100;
     }
+    section .container .chat {
+        position: fixed;
+        top: 69.5%;
+        left: 0%;
+        transform: translate(-50%, -50%);
+        width: 40%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 100;
+    }
     section .container .cartes {
         position: fixed;
         top: 35%;
@@ -278,6 +429,18 @@ section .container .indice {
         padding: 20px;
         z-index: 100;
     }
+    section .container .chat {
+        position: fixed;
+        top: 68.7%;
+        left: 0%;
+        transform: translate(-50%, -50%);
+        width: 47%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 100;
+    }
     section .container .cartes {
         position: fixed;
         top: 37%;
@@ -295,7 +458,10 @@ section .container .indice {
         padding: 10px;
     }
 }
+
+
 /*Telephones*/
+
 @media screen and (max-width: 480px) {
     section .container .nav {
         position: fixed;
@@ -342,6 +508,18 @@ section .container .indice {
         position: fixed;
         top: 69%;
         left: 50%;
+        transform: translate(-50%, -50%);
+        width: 47%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 100;
+    }
+    section .container .chat {
+        position: fixed;
+        top: 69%;
+        left: 0%;
         transform: translate(-50%, -50%);
         width: 47%;
         height: 30%;
