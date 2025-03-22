@@ -17,6 +17,9 @@ export default function Register() {
   const [emailError, setEmailError] = useState("");// Erreur du mail invalide
   const [passwordError, setPasswordError] = useState("");// Erreur du mot de passe invalide
   const [passwordMatchError, setPasswordMatchError] = useState("");// Erreur du mot de passe invalide
+  const [grecaptchaLoaded, setGreCaptchaLoaded] = useState(false);
+
+
   const navigate = useNavigate();//Pour aller vers la page suivante
 
   //Fonction de validation du mot de passe 
@@ -82,11 +85,15 @@ export default function Register() {
     setError(""); // Reset de l'erreur 
     //Essaye de faire un POST sur le back pour gerer une inscription 
     try {
+      const token = await window.grecaptcha.execute('6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu', { action: 'register' });
+
+
       await axios.post("/api/auth/register", {
         pseudo,
         email,
         mdp: password,
         mdp2: password2,
+        captchaToken: token,
       });
       alert("Inscription réussie !");
       //Renvoi vers la page de connexion 

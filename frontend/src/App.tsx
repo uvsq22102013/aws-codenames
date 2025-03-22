@@ -1,3 +1,4 @@
+import { LanguageProvider } from './Context/LanguageContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -9,6 +10,7 @@ import {ProtectedJoin, ProtectedRoute} from "./components/ProtectedRoute"; // Im
 
 function App() {
   return (
+    <LanguageProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -19,6 +21,7 @@ function App() {
         <Route path="/teams/:partieId" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
+    </LanguageProvider>
   );
 }
 

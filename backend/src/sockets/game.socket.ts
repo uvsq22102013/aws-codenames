@@ -160,4 +160,9 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('disconnect', () => {
     console.log(`User déconnecté : ${socket.id}`);
   });
+
+  socket.on('deconnexion', (data) => {
+    console.log(`User déconnecté : ${socket.id}, ID utilisateur : ${data.utilisateurId}`);
+    socket.disconnect();
+  });
 }
