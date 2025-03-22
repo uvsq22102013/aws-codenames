@@ -15,6 +15,7 @@
         "@heroicons/react": "^2.2.0",
         "axios": "^1.7.9",
         "framer-motion": "^12.4.11",
+        "frontend": "file:",
         "jsencrypt": "^3.3.2",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",

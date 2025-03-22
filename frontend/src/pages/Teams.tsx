@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
 import styles from "../styles/Teams.module.css";
+import { useLanguage } from "../Context/LanguageContext";
+import quitterPartie from "./Game";
 import socket from '../../utils/socket';
 
 interface Joueur {
@@ -18,7 +20,8 @@ export default function Teams() {
   const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
   const utilisateur = getUtilisateur();
 
-  const navigate = useNavigate();
+
+  const navigate = useNavigate(); 
 
   const storedPartie = sessionStorage.getItem("partie");
   let gameId: string | undefined, createurId: number | undefined;
@@ -28,6 +31,57 @@ export default function Teams() {
     gameId = partie.id;
     createurId = partie.createurId;
   }
+
+
+
+//chargement de la langue
+const { language } = useLanguage(); 
+
+const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
+  fr: {
+    choisirEquipe: "Choisissez votre équipe",
+    copier: "Copier",
+    lancerPartie: "Lancer la partie",
+    maitreEspion: "Maître Espion",
+    joueursEquipeBleue: "Joueurs de l'équipe bleue",
+    joueursEquipeRouge: "Joueurs de l'équipe rouge",
+    agent: "Agent",
+    maximumEspion: "Il ne peut y avoir que 2 maîtres espions par équipe.",
+    equipebleue: "Equipe bleue",
+    equiperouge: "Equipe rouge",
+    codepartie: "Code Partie:",
+    quitter : "Quitter la partie",
+  },
+  en: {
+    choisirEquipe: "Choose your team",
+    copier: "Copy",
+    lancerPartie: "Start game",
+    maitreEspion: "Master Spy",
+    joueursEquipeBleue: "Blue team players",
+    joueursEquipeRouge: "Red team players",
+    agent: "Agent",
+    maximumEspion: "There can only be 2 master spies per team.",
+    equipebleue: "Blue team",
+    equiperouge: "Red team",
+    codepartie: "Game Code:",
+    quitter : "Leave the game",
+  },
+  ar: {
+    choisirEquipe: "اختر فريقك",
+    copier: "نسخ",
+    lancerPartie: "بدء اللعبة",
+    maitreEspion: "ماستر اسبيون",
+    joueursEquipeBleue: "لاعبي الفريق الأزرق",
+    joueursEquipeRouge: "لاعبي الفريق الأحمر",
+    agent: "وكيل",
+    maximumEspion: "لا يمكن أن يكون هناك سوى جاسوسين رئيسيين 2 في كل فريق.",
+    equipebleue: "الفريق الأزرق",
+    equiperouge: "الفريق الأحمر",
+    codepartie: "رمز اللعبة:",
+    quitter : "مغادرة اللعبة",
+  },
+};
+
 
 
   // Requete pour récupérer les membres de la même partie dans la base de données
@@ -87,7 +141,7 @@ export default function Teams() {
     if (blueEspionCount < 2) {
       handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
     } else {
-      alert("Il peut y avoir au maximum deux maître espions dans l'équipe bleue.");
+      alert(texts[language].maximumEspion);
     }
   };
 
@@ -101,7 +155,7 @@ export default function Teams() {
     if (redEspionCount < 2) {
       handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
     } else {
-      alert("Il peut y avoir au maximum deux maître espions dans l'équipe rouge.");
+      alert(texts[language].maximumEspion);
     }
   };
 
@@ -115,9 +169,18 @@ export default function Teams() {
     navigate(`/game/${gameId}`);
   };
 
+  {/*const quitterPartie = () => {
+    socket.emit('quitterPartie', {partieId : gameId, utilisateurId: utilisateur.id});
+    navigate('/join');
+  };*/}
+
+
   // Séparation des joueurs bleu et rouge contenus dans "joueurs".
   const blueTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "BLEU");
   const redTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "ROUGE");
+
+  console.log("Current language:", language);
+console.log("Current texts:", texts[language]);
   
   return (
     <section className={styles.section}>
@@ -127,26 +190,26 @@ export default function Teams() {
           className="bg-gray-600 text-white font-bold px-[2%] py-[5%] w-full rounded hover:bg-gray-700"
           onClick={() => navigator.clipboard.writeText(gameId || '')}
         >
-          Copier le code de la partie
+          {texts[language].copier}
         </button>
       </div>
       <div className={styles.bleu}>
-        <h1 className="text-blue-500 text-4xl sm:text-5xl md:text-6xl text-center font-bold mb-10">Equipe bleue</h1>
+        <h1 className="text-blue-500 text-4xl sm:text-5xl md:text-6xl text-center font-bold mb-10">{texts[language].equipebleue}</h1>
         <div className={styles.boutons}>
           <button className={`w-full py-[5%] text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueEspion" ? "bg-blue-800 cursor-not-allowed" : ""}`}
           onClick={clickedButton === "blueEspion" ? undefined : handleBlueEspionClick}
           >
-              Maître espion
-          </button>
+            {texts[language].maitreEspion}
+            </button>
           <button className={`w-full py-[5%] text-black text-lg font-bold bg-blue-500 rounded-lg hover:bg-blue-800 transition ${clickedButton === "blueAgent" ? "bg-blue-800 cursor-not-allowed" : ""}`}
           onClick={clickedButton === "blueAgent" ? undefined : handleBlueAgentClick}
           >
-            Agent
+          {texts[language].agent}
           </button>
         </div>
         <div className="absolute bottom-0 bg-blue-500/60 backdrop-blur-md p-3 rounded-xl w-[75%]">
           <h2 className="text-black text-l sm:text-xl md:text-xl font-semibold mb-2 border-b border-white/30 pb-1">
-            Joueurs de l'équipe bleue
+          {texts[language].joueursEquipeBleue}
           </h2>
           <ul className="space-y-1">
             {blueTeam.map((player: Joueur, index: number) => (
@@ -164,17 +227,17 @@ export default function Teams() {
           <button className={`w-full py-[5%] text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redEspion" ? "bg-red-800 cursor-not-allowed" : ""}`}
           onClick={clickedButton === "redEspion" ? undefined : handleRedEspionClick}
           >
-              Maître espion
-          </button>
+            {texts[language].maitreEspion}
+            </button>
           <button className={`w-full py-[5%] text-black text-lg font-bold bg-red-500 rounded-lg hover:bg-red-800 transition ${clickedButton === "redAgent" ? "bg-red-800 cursor-not-allowed" : ""}`}
           onClick={clickedButton === "redAgent" ? undefined : handleRedAgentClick}
           >
-              Agent
-          </button>
+            {texts[language].agent}
+            </button>
         </div>
         <div className="absolute bottom-0 bg-red-500/60 backdrop-blur-md p-3 rounded-xl w-[75%]">
           <h2 className="text-black text-l sm:text-xl md:text-xl font-semibold mb-2 border-b border-white/30 pb-1">
-            Joueurs de l'équipe rouge
+          {texts[language].joueursEquipeRouge}
           </h2>
           <ul className="space-y-1">
             {redTeam.map((player: Joueur, index: number) => (
@@ -192,10 +255,17 @@ export default function Teams() {
           className=" bg-gray-600 text-white font-bold w-full py-[5%] rounded hover:bg-gray-700"
           onClick={handleStartGame}
         >
-          Lancer la partie
-        </button>
+          {texts[language].lancerPartie}
+          </button>
       )}
       </div>
+
+      <button 
+        className="absolute top-10 right-4 z-[10] bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-60"
+        onClick={quitterPartie}
+      >
+        {texts[language].quitter} 
+      </button>
     </section>
   );
 }

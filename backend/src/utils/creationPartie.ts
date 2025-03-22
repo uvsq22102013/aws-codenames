@@ -1,6 +1,11 @@
 import prisma from "../prismaClient";
 import { Partie , TypeAction,TypeCarte,StatutPartie, Equipe, Role } from "@prisma/client";
 import bcrypt from "bcrypt";
+//import { useLanguage } from "../../Context/LanguageContext";
+
+
+//const { langue } = useLanguage(); 
+
 
 async function genererCartesPourPartie(partieId: string, langue: string) {
     const mots = await prisma.mot.findMany({

@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
 import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/login.module.css";
+import { useLanguage } from "../Context/LanguageContext";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 
-// import { io } from 'socket.io-client';
+const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
-// const socket = io('http://localhost:3000');
+
+
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
 
 export default function HomePage() {
 
@@ -19,8 +25,10 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   //langue du jeu
-  const [language, setLanguage] = useState<"fr" | "en" | "ar">("fr"); 
+  const { language, setLanguage } = useLanguage();
   const [errorMessage, setErrorMessage] = useState(""); 
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+
 
 
 //dictionnaire des langues (anglais ou francais)
@@ -58,7 +66,10 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     errorJoin: "خطأ في الانضمام إلى اللعبة",
     wrongGameCode: "ok",
   },
+
 };
+
+
 
 
 
@@ -66,10 +77,18 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
 
   const handleCreateRoom = async () => {
     const token = getToken();
+    if (!window.grecaptcha) {
+      setErrorMessage("Erreur de chargement reCAPTCHA");
+      return;
+    }
+
+    // Récupérer le token reCAPTCHA
+    const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "create_game" });
+
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create",{}, {
+      const response = await axios.post("http://localhost:3000/api/join/create", {recaptchaToken}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -89,6 +108,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     }
 
 
+
   };
 
 // Fonction pour rejoindre une partie existante
@@ -105,11 +125,28 @@ const handleJoinRoom = async () => {
 
     }
 
+
+//RecApctha token
+    if (!window.grecaptcha) {
+      setErrorMessage("Erreur de chargement reCAPTCHA");
+      return;
+    }
+
+    // Récupérer le token reCAPTCHA
+    const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "join_game" });
+
+    if (!recaptchaToken) {
+      setErrorMessage("Échec de la vérification reCAPTCHA");
+      return;
+    }
+
     try {
+
       // Envoi d'une requête POST au backend avec axios
 
       const response = await axios.post("/api/join/join-game", {
         roomCode,
+        recaptchaToken,
       });
 
       const data = response.data;
@@ -123,9 +160,19 @@ const handleJoinRoom = async () => {
   };
 
   const handleChangeLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLanguage(e.target.value as "fr" | "en" | "ar");
+    const selectedLanguage = e.target.value as "fr" | "en" | "ar";
+    setLanguage(selectedLanguage);  // Met à jour la langue via le contexte
   };
 
+//fonction pour se deconnecter
+  const deconnexion = () => {
+    socket.emit('deconnexion', { utilisateurId: getUtilisateur().id });
+    //redirection vers la page de connexion
+    navigate('/login');
+    sessionStorage.removeItem('utilisateur'); 
+};
+
+  
 
   //les lignes qui suive concernent l'interface utilisateiur sur la page d'accueil
 
@@ -153,6 +200,9 @@ const handleJoinRoom = async () => {
                 clipPath: "circle(50% at center)",
               }}
             ></button>
+
+
+
   
   
             {/* Logo */}
@@ -165,6 +215,14 @@ const handleJoinRoom = async () => {
         
   <div className={styles.signin}>
   <div className={styles.content}>
+
+
+            <button
+              className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
+              onClick={deconnexion}
+            >
+              {getUtilisateur()?.pseudo}
+            </button>
 
   
             {/* Titre */}

@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// Declare grecaptcha on the Window interface
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { setUtilisateur } from '../../utils/utilisateurs';
@@ -11,7 +18,9 @@ export default function Login() {
   const [password, setPassword] = useState("");//Mot de passe
   const [error, setError] = useState(""); // Stocke l'erreur à afficher
   const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
+  const [grecaptchaLoaded, setGreCaptchaLoaded] = useState(false); // État pour vérifier si reCAPTCHA est chargé
   const navigate = useNavigate();//Permet de changer de page  
+
 
   //Gere la connexion
   const handleLogin = async () => {
@@ -19,10 +28,17 @@ export default function Login() {
 
     //Essaye de faire un POST sur back pour gerer la connexion 
     try {
+
+      const token = await window.grecaptcha.execute('6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu', { action: 'login' });
+      console.log("Token reCAPTCHA reçu : ", token); //pour voir si c'est bon dans la console
+
+
+
       const response = await axios.post("/api/auth/login", {
         pseudo: login,
         email: login,
         mdp: password,
+        captchaToken: token,
       });
       //Genere un token contenant les données de l'utilisateur connecté 
       sessionStorage.setItem("token", response.data.token);
