@@ -249,7 +249,7 @@ section .container .historique {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 10;
+    z-index: 100;
 }
 
 section .container .chat {
@@ -274,6 +274,18 @@ section .container .cartes {
     align-items: center;
     padding: 20px;
     z-index: 100;
+}
+
+section .container .affiche {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 65%;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    z-index: 1000;
 }
 
 section .container .indice {
@@ -335,24 +347,13 @@ section .container .indice {
     }
     section .container .historique {
         position: fixed;
-        top: 69.5%;
+        top: 70%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 40%;
         height: 30%;
         display: flex;
-        align-items: center;
-        padding: 20px;
-        z-index: 10;
-    }
-    section .container .chat {
-        position: fixed;
-        top: 69.5%;
-        left: 0%;
-        transform: translate(-50%, -50%);
-        width: 40%;
-        height: 30%;
-        display: flex;
+        flex-direction: column;
         align-items: center;
         padding: 20px;
         z-index: 100;
@@ -367,6 +368,17 @@ section .container .indice {
         align-items: center;
         padding: 20px;
         z-index: 100;
+    }
+    section .container .affiche {
+        position: fixed;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
     }
     section .container .indice {
         width: 90%;
@@ -419,24 +431,13 @@ section .container .indice {
     }
     section .container .historique {
         position: fixed;
-        top: 68.7%;
+        top: 67%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 47%;
         height: 30%;
         display: flex;
-        align-items: center;
-        padding: 20px;
-        z-index: 10;
-    }
-    section .container .chat {
-        position: fixed;
-        top: 68.7%;
-        left: 0%;
-        transform: translate(-50%, -50%);
-        width: 47%;
-        height: 30%;
-        display: flex;
+        flex-direction: column;
         align-items: center;
         padding: 20px;
         z-index: 100;
@@ -452,8 +453,19 @@ section .container .indice {
         padding: 20px;
         z-index: 100;
     }
+    section .container .affiche {
+        position: fixed;
+        top: 37%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 75%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+    }
     section .container .indice {
-        width: 90%;
+        width: 47%;
         top: 90%;
         padding: 10px;
     }
@@ -512,18 +524,7 @@ section .container .indice {
         width: 47%;
         height: 30%;
         display: flex;
-        align-items: center;
-        padding: 20px;
-        z-index: 10;
-    }
-    section .container .chat {
-        position: fixed;
-        top: 69%;
-        left: 0%;
-        transform: translate(-50%, -50%);
-        width: 47%;
-        height: 30%;
-        display: flex;
+        flex-direction: column;
         align-items: center;
         padding: 20px;
         z-index: 100;
@@ -538,6 +539,17 @@ section .container .indice {
         align-items: center;
         padding: 20px;
         z-index: 100;
+    }
+    section .container .affiche {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
     }
     section .container .indice {
         width: 90%;

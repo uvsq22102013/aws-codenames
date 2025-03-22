@@ -92,8 +92,40 @@ export default function Chat() {
 
 
   return (
-    <div className="bg-gray-800 p-2 rounded h-full flex flex-col">
-      <p className="text-xs text-center mb-2">Chat - {currentChannel}</p>
+    <div className="bg-gray-800 p-2 rounded h-full w-full flex flex-col">
+      <p className="text-xs text-center mb-2">Chat -
+        <select
+          value={currentChannel}
+          onChange={(e) => setCurrentChannel(e.target.value as Channel)}
+          className="bg-gray-700 text-gray-200 text-[10px] px-2 py-1 rounded border border-gray-600 flex-shrink-0"
+        >
+          {CHANNELS.filter((channel) => {
+            if (!utilisateur) return false;
+
+            if (roleUtilisateur=== 'INCONNU') return false;
+
+            if (channel.includes('ESPION') && roleUtilisateur !== 'MAITRE_ESPION') return false;
+
+            if (roleUtilisateur === 'MAITRE_ESPION' &&
+              (channel === 'EquipeBLEU' || channel === 'EquipeROUGE' || channel === 'GLOBAL')) {
+              return false;
+            }
+            if (equipeUtilisateur !== 'ROUGE' &&
+              (channel === 'EquipeROUGE' || channel === 'ESPIONROUGE')) {
+              return false;
+            }
+            if (equipeUtilisateur !== 'BLEU' &&
+              (channel === 'EquipeBLEU' || channel === 'ESPIONBLEU')) {
+              return false;
+            }
+            return true;
+          }).map((channel) => (
+            <option key={channel} value={channel} className="bg-gray-800">
+              #{channel.toLowerCase()}
+            </option>
+          ))}
+        </select>
+      </p>
       <div className="border-t border-gray-300 mb-2"></div>
       
       <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600 flex-1">
@@ -135,52 +167,20 @@ export default function Chat() {
         </AnimatePresence>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-2 flex gap-2">
-        <select
-          value={currentChannel}
-          onChange={(e) => setCurrentChannel(e.target.value as Channel)}
-          className="bg-gray-700 text-gray-200 text-xs px-2 py-1 rounded border border-gray-600 flex-shrink-0"
-        >
-          {CHANNELS.filter((channel) => {
-            if (!utilisateur) return false;
-
-            if (roleUtilisateur=== 'INCONNU') return false;
-
-            if (channel.includes('ESPION') && roleUtilisateur !== 'MAITRE_ESPION') return false;
-
-            if (roleUtilisateur === 'MAITRE_ESPION' &&
-              (channel === 'EquipeBLEU' || channel === 'EquipeROUGE' || channel === 'GLOBAL')) {
-              return false;
-            }
-            if (equipeUtilisateur !== 'ROUGE' &&
-              (channel === 'EquipeROUGE' || channel === 'ESPIONROUGE')) {
-              return false;
-            }
-            if (equipeUtilisateur !== 'BLEU' &&
-              (channel === 'EquipeBLEU' || channel === 'ESPIONBLEU')) {
-              return false;
-            }
-            return true;
-          }).map((channel) => (
-            <option key={channel} value={channel} className="bg-gray-800">
-              #{channel.toLowerCase()}
-            </option>
-          ))}
-        </select>
-        
+      <form onSubmit={handleSubmit} className="mt-2 flex gap-1">       
         <input
           type="text"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder="Écrire un message..."
-          className="bg-gray-700 text-gray-200 text-xs px-2 py-1 rounded border border-gray-600 flex-grow"
+          className="bg-gray-700 text-gray-200 text-[10px] px-1 py-1 rounded border border-gray-600 flex-grow"
         />
         
         <button
           type="submit"
-          className="bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded border border-gray-600 hover:bg-gray-600"
+          className="bg-gray-700 text-gray-200 text-xs px-1 py-1 rounded border border-gray-600 hover:bg-gray-600"
         >
-          Envoyer
+          ➤
         </button>
       </form>
     </div>

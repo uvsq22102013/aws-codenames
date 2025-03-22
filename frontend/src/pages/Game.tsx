@@ -31,6 +31,8 @@ const Game = () => {
   const [montrerBulleFinDePartie, setMontrerBulleFinDePartie] = useState(false);
   const [indiceAffiche, setIndiceAffiche] = useState<string | null>(null);
   const [nbAffiche, setNbAffiche] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+  const [montrerChat, setMontrerChat] = useState(false);
   const navigate = useNavigate();
 
   const storedPartie = sessionStorage.getItem("partie");
@@ -283,6 +285,15 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       chargerPartie();
       chargerIndice();
     };
+
+    const handleResize = (): void => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
+    if(!isMobile){
+      setMontrerChat(false);
+    }
   
     socket.on('majPartie', majHandler);
 
@@ -448,7 +459,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             <button onClick={bouttonJoueurs} className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900">{texts[language].joueurs} {partie.membres.length}</button>
             {montrerJoueurs && (
               <div className="absolute left-0 mt-1 w-{100%} bg-[#222] shadow-xl border border-yellow-400 text-white rounded shadow-lg z-10 flex flex-col p-1 ">
-                <p className='text-[10px]'>{texts[language].joueurspartie} :</p>
+                <p className='text-[10px]'>{texts[language].joueurspartie}</p>
                 {/* Liste des joueurs */}
                 <div className="flex flex-wrap gap-x-1 gap-y-1">
                   {partie.membres.map((m: any) => (
@@ -497,7 +508,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
 
             {/* Fenêtre modale des règles */}
-//      {montrerRegles && (
+        {montrerRegles && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-9999">
           <div className="bg-white p-5 rounded-lg shadow-lg w-96 relative">
             {/* Bouton pour fermer */}
@@ -633,9 +644,11 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             ))}
           </div>
           </div>
+          {!isMobile &&(
           <div className={styles.chat}>
-        <Chat />
-      </div>        
+            <Chat />
+          </div> 
+          )}       
       <div className={styles.cartes}>
           <AnimatePresence>
             {equipeGagnante && (
@@ -652,25 +665,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                   </h2>
                 </div>
               </motion.div>
-            )}
-            {!equipeGagnante && indiceAffiche && nbAffiche &&(
-              <motion.h1
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.5 }}
-                transition={{ duration: 0.2 }}
-                style={{
-                  textShadow: `
-                    -1px -1px 0 #000,  
-                     1px -1px 0 #000,
-                    -1px  1px 0 #000,
-                     1px  1px 0 #000
-                  `,
-                }}
-                className="fixed inset-0 flex items-center justify-center text-8xl text-white font-bold text-center z-50"
-              >
-                {indiceAffiche} pour {nbAffiche}
-              </motion.h1>
             )}
           {montrerBulleFinDePartie && isHost() &&(
             <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -753,69 +747,99 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
               ))}  
             </div>
         </div>
-        <div>
+        <div className={styles.affiche}>
+            {!equipeGagnante && indiceAffiche && nbAffiche &&(
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  textShadow: `
+                    -1px -1px 0 #000,  
+                     1px -1px 0 #000,
+                    -1px  1px 0 #000,
+                     1px  1px 0 #000
+                  `,
+                }}
+                className="fixed inset-0 flex items-center justify-center text-8xl text-white font-bold text-center z-50"
+              >
+                {indiceAffiche} pour {nbAffiche}
+              </motion.h1>
+            )}
+        </div>
         <div className={styles.historique}>
-  <div className="bg-gray-800 p-2 rounded mt-4 h-full flex flex-col w-full">     
-    <p className="text-xs text-center">{texts[language].historique}</p>
-    <div className="border-t border-gray-300 mt-2 mb-2"></div>
-    <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600 flex-1">
-      <AnimatePresence>
-        {partie.actions.filter((action:any) => {
-            if (action.typeAction === 'SELECTION' ) return false;
-            return true;
-          }).map((action: any) => {
-          const couleurPseudo = action.equipe === 'ROUGE' ? 'text-red-500' : 'text-blue-500';
-          const couleurMot = action.carte?.type === 'ROUGE' ? 'text-red-500' : 
-                           action.carte?.type === 'BLEU' ? 'text-blue-500' : 
-                           action.carte?.type === 'ASSASSIN' ? 'text-black' : 'text-gray-400';
+          {/* Bouton tchat visible seulement si écran ≤ 1024px */}
+          {isMobile && (
+            <button onClick={() => setMontrerChat(!montrerChat)} className=" bg-gray-700 text-white p-0.5 rounded shadow-md mb-1">
+              {montrerChat ?"📖" : "💬"}
+            </button>
+          )} 
+        {!montrerChat && (
+          <div className="bg-gray-800 p-2 rounded h-full flex flex-col w-full">     
+            <p className="text-xs text-center">{texts[language].historique}</p>
+            <div className="border-t border-gray-300 mt-2 mb-2"></div>
+              <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600 flex-1">
+                <AnimatePresence>
+                  {partie.actions.filter((action:any) => {
+                      if (action.typeAction === 'SELECTION' ) return false;
+                      return true;
+                    }).map((action: any) => {
+                    const couleurPseudo = action.equipe === 'ROUGE' ? 'text-red-500' : 'text-blue-500';
+                    const couleurMot = action.carte?.type === 'ROUGE' ? 'text-red-500' : 
+                            action.carte?.type === 'BLEU' ? 'text-blue-500' : 
+                            action.carte?.type === 'ASSASSIN' ? 'text-black' : 'text-gray-400';
 
-          return (
-            <motion.div
-              key={action.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={`text-xs py-1 px-2 hover:bg-gray-600 rounded-sm ${
-                equipeEnCours === action.utilisateur?.equipe ? 'bg-gray-600' : ''
-              }`}
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              <div className="flex gap-2 items-baseline">
-                {action.utilisateur?.pseudo && (
-                  <div className={`${couleurPseudo} font-semibold truncate`}>
-                    {action.utilisateur.pseudo}
-                  </div>
-                )}
-                
-                {action.motDonne && (
-                  <>
-                    <div className="text-gray-400">a donné l'indice :</div>
-                    <div className="text-yellow-400 truncate">{action.motDonne}</div>
-                  </>
-                )}
+                    return (
+                      <motion.div
+                        key={action.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className={`text-xs py-1 px-2 hover:bg-gray-600 rounded-sm ${
+                          equipeEnCours === action.utilisateur?.equipe ? 'bg-gray-600' : ''
+                        }`}
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
+                        <div className="flex gap-2 items-baseline">
+                          {action.utilisateur?.pseudo && (
+                            <div className={`${couleurPseudo} font-semibold truncate`}>
+                              {action.utilisateur.pseudo}
+                            </div>
+                          )}
+                    
+                          {action.motDonne && (
+                            <>
+                              <div className="text-gray-400">a donné l'indice :</div>
+                              <div className="text-yellow-400 truncate">{action.motDonne}</div>
+                            </>
+                          )}
 
-                {action.carte && action.typeAction === 'VALIDERSELECTION' && (
-                  <>
-                    <div className="text-gray-400">a validé :</div>
-                    <div className={`${couleurMot} truncate`}>
-                      {action.carte.mot.mot}
-                    </div>
-                  </>
-                )}
-                {action.typeAction === 'PASSER' && (
-                  <>
-                    <div className="text-gray-400">a finie de deviner </div>
-                  </>
-                )}
+                          {action.carte && action.typeAction === 'VALIDERSELECTION' && (
+                            <>
+                              <div className="text-gray-400">a validé :</div>
+                              <div className={`${couleurMot} truncate`}>
+                                {action.carte.mot.mot}
+                              </div>
+                            </>
+                          )}
+                          {action.typeAction === 'PASSER' && (
+                            <>
+                              <div className="text-gray-400">a finie de deviner </div>
+                            </>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
-</div>
-      </div>
-    </div>
+            </div>
+        )}
+        {montrerChat &&(
+          <Chat />
+        )}
+        </div>
         {/* Zone indices - Seulement pour maître espion */}
         {gameStatus === "EN_COURS" && roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
           <div className={styles.indice}>
@@ -843,7 +867,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
         {gameStatus === "EN_COURS" && roleEncours === 'AGENT' && indice ? (
           <div className={styles.indice}>
             <div className=" w-full rounded text-white text-center">
-              <h2 className="text-xl"> {texts[language].indicedonne} : {indice.mot} {texts[language].pour} {indice.nbmots} {texts[language].mots}</h2>
+              <h2 className="text-xl"> {indice.mot} {texts[language].pour} {indice.nbmots} {texts[language].mots}</h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
               <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded mt-2">
                 {texts[language].valider}

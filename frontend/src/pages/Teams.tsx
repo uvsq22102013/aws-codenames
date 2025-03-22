@@ -40,7 +40,7 @@ const { language } = useLanguage();
 const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   fr: {
     choisirEquipe: "Choisissez votre équipe",
-    copier: "Copier",
+    copier: "Copier le code",
     lancerPartie: "Lancer la partie",
     maitreEspion: "Maître Espion",
     joueursEquipeBleue: "Joueurs de l'équipe bleue",
@@ -54,7 +54,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   },
   en: {
     choisirEquipe: "Choose your team",
-    copier: "Copy",
+    copier: "Copy the code",
     lancerPartie: "Start game",
     maitreEspion: "Master Spy",
     joueursEquipeBleue: "Blue team players",
@@ -68,7 +68,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   },
   ar: {
     choisirEquipe: "اختر فريقك",
-    copier: "نسخ",
+    copier: "انسخ الكود",
     lancerPartie: "بدء اللعبة",
     maitreEspion: "ماستر اسبيون",
     joueursEquipeBleue: "لاعبي الفريق الأزرق",
@@ -186,12 +186,19 @@ console.log("Current texts:", texts[language]);
     <section className={styles.section}>
       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
       <div className={styles.code}>
-        <p className="text-white text-xl bg-gray-600 font-bold">Code Partie: {gameId}</p>
         <button
           className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
           onClick={() => navigator.clipboard.writeText(gameId || '')}
         >
           {texts[language].copier}
+        </button>
+      </div>
+      <div className={styles.quitter}>
+        <button 
+          className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
+          onClick={quitterPartie}
+        >
+          {texts[language].quitter} 
         </button>
       </div>
       <div className={styles.bleu}>
@@ -260,13 +267,6 @@ console.log("Current texts:", texts[language]);
           </button>
       )}
       </div>
-
-      <button 
-        className="absolute top-10 right-4 z-[10] bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-60"
-        onClick={quitterPartie}
-      >
-        {texts[language].quitter} 
-      </button>
     </section>
   );
 }

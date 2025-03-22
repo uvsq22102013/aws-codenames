@@ -113,6 +113,18 @@ section .code {
     gap: 10px;
     z-index: 100;
 }
+
+section .quitter {
+    position: fixed;
+    top: 1.5%;
+    width: 20%;
+    right: 1%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
 @media (max-width: 900px) {
     section span {
         width: calc(10vw - 2px);
