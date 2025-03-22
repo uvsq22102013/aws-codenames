@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import prisma from "../prismaClient";
+import { verifyEmailDomain } from "../utils/emailVerifier"; // Import the function
+
 
 const router = express.Router();
 
@@ -11,6 +13,13 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
     const { pseudo, email, mdp, mdp2 } = req.body;
     //Essaye plusieurs verifications pour l'inscription et essaye de créer un utilisateur
     try {
+
+        const isEmailDomainValid = await verifyEmailDomain(email);
+        if (!isEmailDomainValid) {
+            res.status(400).json({ error: "Email invalide." });
+            return;
+        }
+
         //Cherche si un utilisateur avec le mail existe déjà en bdd
         const existingMail = await prisma.utilisateur.findUnique({
             where: { email }
