@@ -1,23 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-wrapper-object-types */
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import styles from "../styles/Login.module.css"; // Si tu préfères les CSS Modules
 
-export default function Register() {
-  const [pseudo, setPseudo] = useState("");//Pseudo
-  const [email, setEmail] = useState("");//Email
-  const [password, setPassword] = useState("");//Mot de passe
-  const [password2, setPassword2] = useState("");//Confirmer le mot de passe
-  const [error, setError] = useState(""); // Stocke l'erreur à afficher
-  const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
-  const [showPassword2, setShowPassword2] = useState(false); // État pour afficher/masquer la confirmation du mot de passe
-  const [emailError, setEmailError] = useState("");// Erreur du mail invalide
-  const [passwordError, setPasswordError] = useState("");// Erreur du mot de passe invalide
-  const [passwordMatchError, setPasswordMatchError] = useState("");// Erreur du mot de passe invalide
-  const navigate = useNavigate();//Pour aller vers la page suivante
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import styles from "../styles/Login.module.css";
+
+export default function Reset() {
+
+  const { code } = useParams<{ code: string }>();  
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [error, setError] = useState(""); 
+  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword2, setShowPassword2] = useState(false); 
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordMatchError, setPasswordMatchError] = useState("");
+  const navigate = useNavigate();
 
   //Fonction de validation du mot de passe 
   const validatePassword = (password: string) => {
@@ -28,19 +25,6 @@ export default function Register() {
       return false;
     } else {
       setPasswordError("");
-      return true;
-    }
-  };
-
-  //Fonction de validation d'email  
-  const validateEmail = (email: string) => {
-    //Expression regulière pour le mail   
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if ((!regex.test(email)) && (email != "")) {
-      setEmailError("Veuillez entrer une adresse email valide.");
-      return false;
-    } else {
-      setEmailError("");
       return true;
     }
   };
@@ -56,12 +40,6 @@ export default function Register() {
     }
   };
 
-  //Gere le changement pour l'email
-  const handleEmailChange = (e : any) => {
-    const value = e.target.value;
-    setEmail(value);
-    validateEmail(value); //Valide l'email en temps réel
-  };
 
   //Gere le changement pour le mot de passe
   const handlePasswordChange = (e : any) => {
@@ -77,45 +55,31 @@ export default function Register() {
     validatePasswordMatch(password,value); //Valide la correspondance entre les 2 mots de passe;
   };
   
-  //Gerer l'inscription
-  const handleRegister = async () => {
-    setError(""); // Reset de l'erreur 
-    //Essaye de faire un POST sur le back pour gerer une inscription 
+  const handleReset = async () => {
+    setError(""); 
     try {
-      await axios.post("/api/auth/register", {
-        pseudo,
-        email,
+      await axios.post(`/api/reset/${code}`, {
         mdp: password,
-        mdp2: password2,
       });
-      //Renvoi vers la page de connexion 
-      navigate("/login");
-      //Renvoi une erreur si le POST echoue 
+      alert("Le mot de passe a bien été changé.");
+      navigate('/login');
     } catch (error: any) {
-      setError(error.response?.data?.error || "Erreur d'inscription front.");
+      setError(error.response?.data?.error || "Erreur réinitialisation mdp front.");
     }
   };
-  //HTML utilisant Tailwind css de la page de Inscription
+
   return (
     <section className={styles.section}> 
       <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> 
       <div className={styles.signin}>
       <div className={styles.content}>
 
-          <h2>Sign Up</h2> 
+          <h3>Nouveau mot de passe</h3> 
 
           <div className={styles.form}>
-  
 
           {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
-          <div className={styles.inputBox}>
-            <input type="text"  onChange={(e) => setPseudo(e.target.value)} required/><i>Pseudo</i> 
-          </div> 
 
-          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-          <div className={styles.inputBox}>
-            <input type="email"  onChange={handleEmailChange} required/><i>Email</i> 
-          </div>
 
           {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
           <div className={styles.inputBox}>
@@ -133,7 +97,7 @@ export default function Register() {
           </div> 
             <div className={styles.inputBox}>
 
-              <input onClick={handleRegister} disabled={!pseudo || !email || !password || !password2 || emailError !== "" || passwordError !== "" || passwordMatchError !== ""} type="submit" value="Login"/> 
+              <input onClick={handleReset} disabled={!password || !password2 || passwordError !== "" || passwordMatchError !== ""} type="submit" value="Réinitialiser"/> 
 
             </div> 
 
