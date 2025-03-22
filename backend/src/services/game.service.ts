@@ -27,6 +27,30 @@ export async function quitterPartie(partieId: string, utilisateurId: number) {
     const membre = await prisma.membreEquipe.findUnique({
       where: { utilisateurId_partieId: { utilisateurId, partieId } },
     });
+
+    const partie = await prisma.partie.findUnique({
+        where: { id: partieId },
+    });
+
+    if (utilisateurId === partie?.createurId) {
+        const membres = await prisma.membreEquipe.findMany({
+            where: { partieId },
+        });
+
+        if (membres.length > 1) {
+            const nouveauCreateur = membres.find(m => m.utilisateurId !== utilisateurId);
+            if (nouveauCreateur) {
+                await prisma.partie.update({
+                    where: { id: partieId },
+                    data: { createurId: nouveauCreateur.utilisateurId },
+                });
+                console.log(`Le créateur a été changé : nouveau créateur ID=${nouveauCreateur.utilisateurId}`);
+            }
+        } else {
+            console.log("Aucun autre membre disponible pour devenir le créateur.");
+        }
+    }
+
   
     if (!membre) {
       console.error(`Erreur : Aucun membre trouvé avec utilisateurId=${utilisateurId} et partieId=${partieId}`);

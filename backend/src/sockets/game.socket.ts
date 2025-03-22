@@ -70,7 +70,9 @@ export default function gameSocket(io: Server, socket: Socket) {
   socket.on('quitterPartie', (data: RejoindrePartie_Payload) => {
     console.log(`Joueur a quitté la partie ${data.partieId}`);
     quitterPartie(data.partieId, data.utilisateurId);
+    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
     quitterRooms(socket);
+
   });
 
   socket.on('changerHost', async (data: changerHost_Payload) => {

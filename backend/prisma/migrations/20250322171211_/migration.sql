@@ -98,6 +98,8 @@ CREATE TABLE "Message" (
     "partieId" TEXT NOT NULL,
     "utilisateurId" INTEGER NOT NULL,
     "contenu" TEXT NOT NULL,
+    "channel" TEXT NOT NULL,
+    "pseudo" TEXT NOT NULL,
     "dateMessage" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Message_partieId_fkey" FOREIGN KEY ("partieId") REFERENCES "Partie" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Message_utilisateurId_fkey" FOREIGN KEY ("utilisateurId") REFERENCES "Utilisateur" ("id") ON DELETE CASCADE ON UPDATE CASCADE
