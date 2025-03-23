@@ -5,16 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
 import { getToken } from "../../utils/token";
 import "../index.css"
-import styles from "../styles/login.module.css";
+import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 
 const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
 
 
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 
 const socket = io('http://localhost:3000');
 
