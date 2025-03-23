@@ -139,7 +139,11 @@ export default function gameSocket(io: Server, socket: Socket) {
       return;
     }
 
-    await donnerIndice(data);
+    const indiceDonne = await donnerIndice(data);
+    if (!indiceDonne) {
+      console.log('Indice non donné, mot illégal');
+      return;
+    }
     console.log(`Back socket: Indice donné : ${data.motDonne} (${data.nombreMots})`);
     io.to(`partie-${data.partieId}`).emit('indiceDonne', { indice: data.motDonne, nbmots: data.nombreMots });
     io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });

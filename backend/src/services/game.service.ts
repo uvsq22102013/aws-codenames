@@ -264,8 +264,32 @@ export async function getPartiePourUtilisateur(partieId: string, utilisateurId: 
     });
 }
 
+//transforme les mots en minuscule et enlève les accents 
+function normalizeString(str: string): string {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+//verifie que l'indice n'est pas un mot des cartes de la partie
+async function verifierMotUnique(partieId: string, motDonne: string): Promise<boolean> {
+    const cartes = await prisma.carte.findMany({
+      where: { partieId },
+      include: { mot: true },
+    });
+    
+    const normalizedMotDonne = normalizeString(motDonne);
+
+    return !cartes.some(carte => normalizeString(carte.mot.mot) === normalizedMotDonne);
+}
+
 export async function donnerIndice(payload: {partieId : string, utilisateurId:number, motDonne:string, nombreMots:number,equipe : Equipe}) {
 
+    //valide l'indice
+    const motUnique = await verifierMotUnique(payload.partieId, payload.motDonne);
+
+    if (!motUnique) {
+        return false; // Retourner false si le mot n'est pas unique
+    }
+    
     await prisma.actionJeu.create({
         data: {
             partieId: payload.partieId,
@@ -305,7 +329,7 @@ const membreequipe = await trouverMembreEquipe({partieId:payload.partieId, utili
     
         });
     }
-    
+    return true;
     
 }
 

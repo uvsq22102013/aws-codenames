@@ -154,19 +154,21 @@ export default function Chat() {
                   className="text-xs py-1 px-2 hover:bg-gray-600 rounded-sm"
                   ref={index === messages.length - 1 ? lastMessageRef : null} // Ajoutez la ref au dernier message
                 >
-                  <div className="flex gap-2 items-baseline">
-                    <div className={`${channelColor} font-semibold`}>
-                      {msg.pseudo}
+                  <div className='flex flex-col'>
+                    <div className="flex gap-1 items-baseline">
+                      <div className={`${channelColor} font-semibold`}>
+                        {msg.pseudo}
+                      </div>
+                      <div className="text-gray-400 text-xxs">
+                        {new Date(msg.dateMessage).toLocaleTimeString('fr-FR', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </div>
                     </div>
-                    <div className="text-gray-400 text-xxs">
-                      {new Date(msg.dateMessage).toLocaleTimeString('fr-FR', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </div>
-                    <div className="flex-1 text-gray-200 overflow-wrap break-word word-break break-all whitespace-pre-line">
-                      {msg.contenu}
-                    </div>
+                      <div className="flex-1 text-gray-200 overflow-wrap break-word word-break break-all whitespace-pre-line">
+                        {msg.contenu}
+                      </div>
                   </div>
                 </motion.div>
               );

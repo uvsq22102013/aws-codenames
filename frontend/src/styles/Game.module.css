@@ -96,13 +96,6 @@
     color: #e5e7eb;
 }
 
-.message {
-    padding: 8px;
-    margin: 8px 0;
-    background: #1a202c;
-    border-radius: 6px;
-    color: white;
-}
 
 .timestamp {
     font-size: 0.8em;
@@ -242,26 +235,26 @@ section .container .bleu {
 
 section .container .historique {
     position: fixed;
-    top: 45%;
+    top: 46%;
     right: 1.5%;
     width: 20%;
-    height: 55%;
+    height: 53%;
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 1000;
+    z-index: 100;
 }
 
 section .container .chat {
     position: fixed;
-    top: 45%;
+    top: 46%;
     left: 1.5%;
     width: 20%;
-    height: 55%;
+    height: 53%;
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 1000;
+    z-index: 100;
 }
 
 section .container .cartes {
@@ -273,7 +266,7 @@ section .container .cartes {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 1000;
 }
 
 section .container .affiche {
@@ -285,7 +278,7 @@ section .container .affiche {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 section .container .indice {
@@ -518,11 +511,11 @@ section .container .indice {
     }
     section .container .historique {
         position: fixed;
-        top: 69%;
+        top: 68.5%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 47%;
-        height: 30%;
+        height: 27%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -535,6 +528,172 @@ section .container .indice {
         left: 50%;
         transform: translate(-50%, -50%);
         width: 110%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 100;
+    }
+    section .container .affiche {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+    }
+    section .container .indice {
+        width: 90%;
+        top: 90%;
+        padding: 10px;
+    }
+}
+@media screen and (max-width: 375px) {
+    section .container .nav {
+        position: fixed;
+        top: 2%;
+        width: 97%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        z-index: 1000;
+    }
+    section .container .message {
+        position: fixed;
+        top: 10%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 10;
+    }
+    section .container .rouge {
+        position: fixed;
+        top: 55%;
+        left: 1.5%;
+        width: 30%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 10;
+    }
+    section .container .bleu {
+        position: fixed;
+        top: 55%;
+        right: 1.5%;
+        width: 30%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 10;
+    }
+    section .container .historique {
+        position: fixed;
+        top: 67.5%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 47%;
+        height: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+    }
+    section .container .cartes {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 100;
+    }
+    section .container .affiche {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+    }
+    section .container .indice {
+        width: 90%;
+        top: 90%;
+        padding: 10px;
+    }
+}
+@media screen and (width: 540px) and (height: 720px) {
+    section .container .nav {
+        position: fixed;
+        top: 2%;
+        width: 97%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        z-index: 1000;
+    }
+    section .container .message {
+        position: fixed;
+        top: 10%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 10;
+    }
+    section .container .rouge {
+        position: fixed;
+        top: 55%;
+        left: 1.5%;
+        width: 30%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 10;
+    }
+    section .container .bleu {
+        position: fixed;
+        top: 55%;
+        right: 1.5%;
+        width: 30%;
+        height: 30%;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        z-index: 10;
+    }
+    section .container .historique {
+        position: fixed;
+        top: 68%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 47%;
+        height: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+    }
+    section .container .cartes {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 85%;
         display: flex;
         align-items: center;
         padding: 20px;
