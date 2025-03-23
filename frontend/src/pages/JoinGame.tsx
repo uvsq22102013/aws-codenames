@@ -14,9 +14,8 @@ const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
 
 
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:3000');
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const socket = io(backendUrl);
 
 export default function HomePage() {
 
