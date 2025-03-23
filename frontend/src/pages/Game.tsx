@@ -10,6 +10,8 @@ import {motion, AnimatePresence} from 'framer-motion';
 import { useLanguage } from "../Context/LanguageContext";
 import Chat from '../components/Chat'; // Importe le composant Chat
 import socket from '../../utils/socket';
+import axios from 'axios';
+
 
 
 const Game = () => {
@@ -234,20 +236,19 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const gameStatus = partie?.statut;
        
 
-   const chargerPartie = async () => {
+  const chargerPartie = async () => {
     try {
-
       partieIdNumber = getPartieId();
-
       const token = getToken();
-
-      const res = await fetch(`/api/parties/${partieIdNumber}`, {
+  
+      const res = await axios.get(`/api/parties/${partieIdNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-      const data = await res.json();
+  
+      if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
+      const data = res.data;
       setPartie(data);
       setCartes(data.cartes);
       sessionStorage.setItem('partie', JSON.stringify(data));
@@ -255,25 +256,25 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       console.error('erreur chargement partie :', err);
     }
   };
+  
   const chargerIndice = async () => {
     try {
       partieIdNumber = getPartieId();
-      if(partieIdNumber){
-         const token = getToken();
-
-        const res = await fetch(`/api/parties/${partieIdNumber}/indice`, {
+      if (partieIdNumber) {
+        const token = getToken();
+  
+        const res = await axios.get(`/api/parties/${partieIdNumber}/indice`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-        const data = await res.json();
+  
+        if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
+        const data = res.data;
         if (!data) return;
         setIndice(data);
         sessionStorage.setItem('indice', JSON.stringify(data));
       }
-
-     
     } catch (err) {
       console.error('erreur chargement indice :', err);
     }

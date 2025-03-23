@@ -108,7 +108,14 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
       //on renvoi le joueur vers le lien de la partie
       navigate(`/teams/${response.data.id}`);
     } catch (error) {
-      setErrorMessage(texts[language].errorCreate);
+      if (axios.isAxiosError(error) && error.response?.data?.error === "Deja dans une partie") {
+        const partieId = error.response.data.partieId;
+        const utilisateur = getUtilisateur();
+        socket.emit('quitterPartie', { partieId, utilisateurId: utilisateur.id });
+        handleCreateRoom();
+      } else {
+        setErrorMessage(texts[language].errorCreate);
+      }
     }
 
 
@@ -130,7 +137,7 @@ const handleJoinRoom = async () => {
     }
 
 
-//RecApctha token
+    //RecApctha token
     if (!window.grecaptcha) {
       setErrorMessage("Erreur de chargement reCAPTCHA");
       return;
@@ -151,6 +158,7 @@ const handleJoinRoom = async () => {
       const response = await axios.post("/api/join/join-game", {
         roomCode,
         recaptchaToken,
+        utilisateurId: utilisateur.id,
       });
 
       const data = response.data;
@@ -159,7 +167,14 @@ const handleJoinRoom = async () => {
       navigate(`/teams/${response.data.game.id}`);
 
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data?.error === "Deja dans une partie") {
+        const partieId = error.response.data.partieId;
+        const utilisateur = getUtilisateur();
+        socket.emit('quitterPartie', { partieId, utilisateurId: utilisateur.id });
+        handleJoinRoom();
+      } else {
         setErrorMessage(texts[language].wrongGameCode);
+        }
       }
   };
 

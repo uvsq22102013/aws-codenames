@@ -19,6 +19,16 @@ router.post("/create", verifierToken, async (req, res) => {
     const createurId = utilisateurReq.user.id;
     const { recaptchaToken, language } = req.body;
 
+    const joueurDansPartie = await prisma.membreEquipe.findFirst({
+        where: { utilisateurId: utilisateurReq.user.id },
+        include: { partie: true }, 
+    });
+    
+    if (joueurDansPartie) {
+        res.status(400).json({ error: "Deja dans une partie", partieId: joueurDansPartie.partie.id });
+        return;
+    }
+
 
     if (!createurId || typeof createurId !== "number") {
         res.status(400).json({ error: "L'ID du créateur est invalide" });
@@ -52,13 +62,25 @@ router.post("/create", verifierToken, async (req, res) => {
 
 // Route pour rejoindre une partie
 router.post("/join-game", async (req: Request, res: Response): Promise<void> => {
-    const { roomCode, recaptchaToken } = req.body;
+    const { roomCode, recaptchaToken, utilisateurId } = req.body;
+
+    const joueurDansPartie = await prisma.membreEquipe.findFirst({
+        where: { utilisateurId: utilisateurId },
+        include: { partie: true }, 
+    });
+    
+    if (joueurDansPartie) {
+        res.status(400).json({ error: "Deja dans une partie", partieId: joueurDansPartie.partie.id });
+        return;
+    }
 
     const captchaResult = await verifyCaptcha(recaptchaToken);
     if (!captchaResult || !captchaResult.success || captchaResult.score < 0.6) {
         res.status(403).json({ error: "Échec de la vérification reCAPTCHA" });
         return;
     }
+
+
 
     try {
         const game = await prisma.partie.findUnique({
