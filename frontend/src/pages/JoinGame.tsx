@@ -11,7 +11,6 @@ import socket from '../../utils/socket';
 
 
 
-
 const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
 
@@ -106,14 +105,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
       //on renvoi le joueur vers le lien de la partie
       navigate(`/teams/${response.data.id}`);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data?.error === "Deja dans une partie") {
-        const partieId = error.response.data.partieId;
-        const utilisateur = getUtilisateur();
-        socket.emit('quitterPartie', { partieId, utilisateurId: utilisateur.id });
-        handleCreateRoom();
-      } else {
-        setErrorMessage(texts[language].errorCreate);
-      }
+      setErrorMessage(texts[language].errorCreate);
     }
 
 
@@ -135,7 +127,7 @@ const handleJoinRoom = async () => {
     }
 
 
-    //RecApctha token
+//RecApctha token
     if (!window.grecaptcha) {
       setErrorMessage("Erreur de chargement reCAPTCHA");
       return;
@@ -156,7 +148,6 @@ const handleJoinRoom = async () => {
       const response = await axios.post("/api/join/join-game", {
         roomCode,
         recaptchaToken,
-        utilisateurId: utilisateur.id,
       });
 
       const data = response.data;
@@ -165,14 +156,7 @@ const handleJoinRoom = async () => {
       navigate(`/teams/${response.data.game.id}`);
 
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data?.error === "Deja dans une partie") {
-        const partieId = error.response.data.partieId;
-        const utilisateur = getUtilisateur();
-        socket.emit('quitterPartie', { partieId, utilisateurId: utilisateur.id });
-        handleJoinRoom();
-      } else {
         setErrorMessage(texts[language].wrongGameCode);
-        }
       }
   };
 
@@ -227,22 +211,26 @@ const bouttonUtilisateur = () => {
 
 
             {/* Bouton de déconnexion */}
+            <div className={styles.bouton}>
+            <div className="relative">
             <button
-  className="z-[10] absolute top-[3.5%] left-[90%] transform -translate-x-1/2 w-[10%] h-[7%] bg-black flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg rounded-lg text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500"
+  className="w-full px-[100%] py-[5%] bg-black flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg rounded-lg text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500"
   onClick={bouttonUtilisateur}
 >
   {getUtilisateur()?.pseudo}
 </button>
 {montrerOptions && (
-  <div className="z-[10] absolute top-[11%] left-[90%] transform -translate-x-1/2 w-[10%] bg-gray-700 rounded-lg shadow-lg">
-    <button
-      className="w-full py-2 text-white text-xs sm:text-sm md:text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-gray-400 rounded-lg"
-      onClick={deconnexion}
-    >
-      {texts[language].deco}
-    </button>
-  </div>
+  <div className="absolute left-[5%] mt-1 w-[200%] bg-[#222] border border-yellow-400 rounded shadow-lg z-10 flex flex-col gap-2 p-2 items-center">
+  <button
+    onClick={deconnexion}
+    className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
+  >
+    {texts[language].deco}
+  </button>
+</div>
 )}
+</div>
+</div>
 
 
 

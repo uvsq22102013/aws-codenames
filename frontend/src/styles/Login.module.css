@@ -54,6 +54,17 @@ section span:hover {
     transition: 0s;
 }
 
+section .bouton {
+    position: fixed;
+    top: 4%;
+    right: 6%;
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 2;
+}
 section .signin {
     position: absolute;
     width: 400px;
@@ -161,6 +172,46 @@ section .signin .content .form .inputBox i {
 input[type="submit"]:active {
     opacity: 0.6;
 }
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    section .bouton {
+        position: fixed;
+        top: 2.5%;
+        right: 15%;
+        width: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        z-index: 2;
+    }
+}
+@media (max-width: 767px) {
+    section .bouton {
+        position: fixed;
+        top: 4.5%;
+        right: 15%;
+        width: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        z-index: 10000;
+    }
+}
+@media (max-width: 480px) {
+    section .bouton {
+        position: fixed;
+        top: 3%;
+        right: 35%;
+        width: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        z-index: 10000;
+    }
+}
+
 
 @media (max-width: 900px) {
     section span {
