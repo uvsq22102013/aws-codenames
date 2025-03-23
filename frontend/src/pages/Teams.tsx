@@ -180,7 +180,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const redTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "ROUGE");
 
   console.log("Current language:", language);
-console.log("Current texts:", texts[language]);
+  console.log("Current texts:", texts[language]);
   
   return (
     <section className={styles.section}>

@@ -3,6 +3,8 @@ import express from "express";
 import http from "http"; // Ajout pour le serveur HTTP
 import { Server } from "socket.io"; // Ajout pour Socket.io
 import cors from "cors";
+import dotenv from "dotenv";
+
 
 import wordsRoutes from "./routes/words";
 import authRoutes from "./routes/auth";
@@ -13,13 +15,18 @@ import teamsRoutes from "./routes/teams";
 import forgotRoutes from "./routes/forgot";
 import resetRoutes from "./routes/reset";
 
+dotenv.config();
+
 const app = express();
-const server = http.createServer(app); // Permet de brancher socket.io
+const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: { origin: process.env.FRONTEND_URL || "https://aws-codenames-frontend.onrender.com" },
 });
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "https://aws-codenames-frontend.onrender.com",
+}));
+
 app.use(express.json());
 
 app.use("/words", wordsRoutes);
@@ -36,8 +43,8 @@ io.on("connection", (socket) => {
   gameSocket(io, socket);
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Serveur en écoute sur http://localhost:${PORT}`);
+  console.log(`Serveur en écoute sur ${PORT}`);
   
 });
