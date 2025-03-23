@@ -145,3 +145,11 @@ section .quitter {
         height: calc(20vw - 2px);
     }
 }
+
+@media (max-width: 600px) {
+    .errorMessage {
+        font-size: 14px; 
+        margin-top: 10px; 
+        white-space: normal; 
+    }
+}
