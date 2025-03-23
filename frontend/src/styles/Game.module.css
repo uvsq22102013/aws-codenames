@@ -196,7 +196,7 @@ section .container .nav {
     align-items: center;
     justify-content: space-between;
     padding: 20px;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 section .container .message {
@@ -254,7 +254,7 @@ section .container .chat {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 1000;
 }
 
 section .container .cartes {
@@ -266,7 +266,7 @@ section .container .cartes {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 1000;
+    z-index: 200;
 }
 
 section .container .affiche {
@@ -305,7 +305,7 @@ section .container .indice {
         align-items: center;
         justify-content: space-between;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .message {
         position: fixed;
@@ -389,7 +389,7 @@ section .container .indice {
         align-items: center;
         justify-content: space-between;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .message {
         position: fixed;
@@ -476,7 +476,7 @@ section .container .indice {
         align-items: center;
         justify-content: space-between;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .message {
         position: fixed;

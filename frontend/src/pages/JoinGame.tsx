@@ -215,21 +215,21 @@ const bouttonUtilisateur = () => {
 
             {/* Bouton de déconnexion */}
             <button
-              className="z-[10] absolute top-5 left-[90%] transform -translate-x-1/2 w-32 h-11 bg-black flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg rounded-lg text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500"
-              onClick={bouttonUtilisateur}
-            >
-              {getUtilisateur()?.pseudo}
-            </button>
-            {montrerOptions && (
-              <div className="absolute top-16 right-24 w-28 h-8 bg-gray-700 rounded-lg shadow-lg z-10">
-                <button
-                  className="w-full py-1 px-2 text-white text-xs sm:text-sm md:text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-gray-400"
-                  onClick={deconnexion}
-                >
-                  {texts[language].deco}
-                </button>
-              </div>
-            )}
+  className="z-[10] absolute top-[3.5%] left-[90%] transform -translate-x-1/2 w-[10%] h-[7%] bg-black flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg rounded-lg text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500"
+  onClick={bouttonUtilisateur}
+>
+  {getUtilisateur()?.pseudo}
+</button>
+{montrerOptions && (
+  <div className="z-[10] absolute top-[11%] left-[90%] transform -translate-x-1/2 w-[10%] bg-gray-700 rounded-lg shadow-lg">
+    <button
+      className="w-full py-2 text-white text-xs sm:text-sm md:text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-gray-400 rounded-lg"
+      onClick={deconnexion}
+    >
+      {texts[language].deco}
+    </button>
+  </div>
+)}
 
 
 
