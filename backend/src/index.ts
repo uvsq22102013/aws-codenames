@@ -20,11 +20,11 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: process.env.FRONTEND_URL || "https://aws-codenames-frontend.onrender.com" },
+  cors: { origin: process.env.FRONTEND_URL || "https://aws-codenames.onrender.com" },
 });
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "https://aws-codenames-frontend.onrender.com",
+  origin: process.env.FRONTEND_URL || "https://aws-codenames.onrender.com",
 }));
 
 app.use(express.json());
