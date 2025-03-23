@@ -75,10 +75,6 @@ export async function renitPartie(partieId: string) {
         nbMotsRouge : 9,
       },
     });
-    await prisma.membreEquipe.updateMany({
-      where: { partieId },
-      data: { role: Role.AGENT },
-    });
 
   
       await prisma.carte.deleteMany({ where: { partieId } });

@@ -1,6 +1,9 @@
 import { create } from "domain";
 import prisma from "../prismaClient";
 import { Equipe, TypeCarte, Role, TypeAction, StatutPartie } from '@prisma/client'; 
+import { suppressionPartieTerminee } from '../utils/suppressionPartie';
+
+
 export async function getpartieById(partieId:string) {
     return prisma.partie.findUnique({
         where: {id:partieId},
@@ -84,6 +87,8 @@ export async function quitterPartie(partieId: string, utilisateurId: number) {
     await prisma.membreEquipe.delete({
       where: { utilisateurId_partieId: { utilisateurId, partieId } },
     });
+
+    await suppressionPartieTerminee();
   
     console.log(`Membre supprimé avec succès : utilisateurId=${utilisateurId}, partieId=${partieId}`);
   }
