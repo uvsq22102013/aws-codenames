@@ -96,7 +96,7 @@ export default function Register() {
         captchaToken: token,
       });
       //Renvoi vers la page de connexion 
-      navigate("/login");
+      navigate("/");
       //Renvoi une erreur si le POST echoue 
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur d'inscription front.");
@@ -136,7 +136,7 @@ export default function Register() {
             <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword2(!showPassword2)}>{showPassword2 ? "🙈" : "👁️"}</button>
           </div>
 
-          <div className={styles.links}><a href=""></a><a href="/login">Signin</a> 
+          <div className={styles.links}><a href=""></a><a href="/">Signin</a> 
           </div> 
             <div className={styles.inputBox}>
 

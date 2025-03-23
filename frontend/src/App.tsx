@@ -1,6 +1,5 @@
 import { LanguageProvider } from './Context/LanguageContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Game from "./pages/Game";
@@ -16,8 +15,7 @@ function App() {
     <LanguageProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/reset/:code" element={<Reset />} />

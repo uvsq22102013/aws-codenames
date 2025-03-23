@@ -62,7 +62,7 @@ export default function Reset() {
         mdp: password,
       });
       alert("Le mot de passe a bien été changé.");
-      navigate('/login');
+      navigate('/');
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur réinitialisation mdp front.");
     }
@@ -93,7 +93,7 @@ export default function Reset() {
             <button type="button" className="absolute right-3 top-3 text-gray-600" onClick={() => setShowPassword2(!showPassword2)}>{showPassword2 ? "🙈" : "👁️"}</button>
           </div>
 
-          <div className={styles.links}><a href=""></a><a href="/login">Signin</a> 
+          <div className={styles.links}><a href=""></a><a href="/">Signin</a> 
           </div> 
             <div className={styles.inputBox}>
 

@@ -17,7 +17,7 @@ export default function Login() {
         email: email,
       });
       alert("Email envoyé, vérifiez dans vos spams");
-      navigate('/login');
+      navigate('/');
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur front de mdp oublié.");
     }

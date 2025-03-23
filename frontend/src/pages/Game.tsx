@@ -283,7 +283,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   useEffect(() => {
     if (!utilisateur) {
       console.error('Utilisateur non connecté');
-      navigate('/login');
+      navigate('/');
       return;
     }
   

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
 import { getToken } from "../../utils/token";
 import "../index.css"
-import styles from "../styles/login.module.css";
+import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
 
 
@@ -187,7 +187,7 @@ const handleJoinRoom = async () => {
   const deconnexion = () => {
     socket.emit('deconnexion', { utilisateurId: getUtilisateur().id });
     //redirection vers la page de connexion
-    navigate('/login');
+    navigate('/');
     sessionStorage.removeItem('utilisateur'); 
     sessionStorage.removeItem('token'); 
 

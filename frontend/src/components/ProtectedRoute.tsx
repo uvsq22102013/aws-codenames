@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const partie = sessionStorage.getItem('partie');
 
   if (!utilisateur || !token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
   else if (!partie) {
     console.log('Accès refusé');
@@ -21,7 +21,7 @@ export const ProtectedJoin = ({ children }: { children: JSX.Element }) => {
     const utilisateur = getUtilisateur();
     const token = getToken();  
     if (!utilisateur || !token) {
-      return <Navigate to="/login" />;
+      return <Navigate to="/" />;
     }
     return children;
   };
