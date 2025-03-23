@@ -9,7 +9,14 @@ import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
 import { useLanguage } from "../Context/LanguageContext";
 import Chat from '../components/Chat'; // Importe le composant Chat
-import socket from '../../utils/socket';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000', {
+  reconnection: true,
+  reconnectionAttempts: 50,
+  reconnectionDelay: 100000,
+  timeout: 500000,
+});
 
 
 const Game = () => {
@@ -43,7 +50,6 @@ const Game = () => {
     partieId = partie.id;
     partieIdNumber = partie.id;
   }
-
 const {language} = useLanguage(); //important pour récupérer la langue sélectionée sur la page join
 const [montrerRegles, setMontrerRegles] = useState(false);
 
@@ -236,6 +242,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
    const chargerPartie = async () => {
     try {
+
+      partieIdNumber = getPartieId();
+
       const token = getToken();
 
       const res = await fetch(`/api/parties/${partieIdNumber}`, {
@@ -254,18 +263,23 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   };
   const chargerIndice = async () => {
     try {
-      const token = getToken();
+      partieIdNumber = getPartieId();
+      if(partieIdNumber){
+         const token = getToken();
 
-      const res = await fetch(`/api/parties/${partieIdNumber}/indice`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-      const data = await res.json();
-      if (!data) return;
-      setIndice(data);
-      sessionStorage.setItem('indice', JSON.stringify(data));
+        const res = await fetch(`/api/parties/${partieIdNumber}/indice`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
+        const data = await res.json();
+        if (!data) return;
+        setIndice(data);
+        sessionStorage.setItem('indice', JSON.stringify(data));
+      }
+
+     
     } catch (err) {
       console.error('erreur chargement indice :', err);
     }
@@ -281,9 +295,11 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     socket.emit('rejoindrePartie', { partieId });
   
     const majHandler = () => {
-      console.log('majPartie reçue, rechargement...');
-      chargerPartie();
-      chargerIndice();
+      if(partieIdNumber){
+        console.log('majPartie reçue, rechargement...');
+        chargerPartie();
+        chargerIndice();
+      }
     };
 
     const handleResize = (): void => {
@@ -300,6 +316,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     socket.on('joueurVire', (data: { joueurId: number }) => {
       if (data.joueurId === utilisateur.id) {
         navigate('/join');
+        sessionStorage.removeItem('partie');
+        sessionStorage.removeItem('indice');
       }
     });
 
@@ -340,6 +358,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       socket.off('joueurVire');
       socket.off('indiceDonne');
       socket.off('gagnant');
+      socket.off('partieJoin');
+      window.removeEventListener("resize", handleResize);
     };
   }, [partieId, utilisateur, equipeGagnante, gameStatus, indiceAffiche, nbAffiche]);
   
@@ -384,11 +404,29 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   };
 
   const quitterPartie = () => {
-    socket.emit('quitterPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
+    socket.emit('quitterPartie', { partieId: partieIdNumber, utilisateurId: utilisateur.id });
     navigate('/join');
     sessionStorage.removeItem('partie');
     sessionStorage.removeItem('indice');
-
+    setPartie(null);
+    setCartes(null);
+    setMotIndice('');
+    setNombreMots(1);
+    setIndice(null);
+    setJoueurSelectionne(null);
+    setMontrerOption(false);
+    setMontrerJoueurs(false);
+    setmontrerBouttonAgentRouge(false);
+    setmontrerBouttonAgentBleu(false);
+    setmontrerBouttonEspionRouge(false);
+    setmontrerBouttonEspionBleu(false);
+    setConfirmerReinit(false);
+    setEquipeGagnante(null);
+    setMontrerBulleFinDePartie(false);
+    setIndiceAffiche(null);
+    setNbAffiche(null);
+    setMontrerChat(false);
+    setMontrerRegles(false);
   };
 
   const getJoueurIdByPseudo = (pseudo: string) => {
@@ -432,6 +470,10 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const getnbCarteBleu = () => {
     return partie?.nbMotsBleu;
   };
+  const getPartieId = () => {
+    return JSON.parse(sessionStorage.getItem("partie") || "{}").id;
+  };
+
 
   if (!partie)  { chargerPartie(); 
     chargerIndice();
