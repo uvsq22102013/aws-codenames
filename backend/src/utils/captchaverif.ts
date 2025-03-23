@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const SECRET_KEY = "6LfuF_gqAAAAACvQ_Gh2baYcbsOOklRtEbiEM7nl"; //clé secrete
+const SECRET_KEY = "6LfH6P0qAAAAAKx_TNib_pmq5znebcXxr35RYk6i"; //clé secrete
 
 const verifyCaptcha = async (token: string) => {
   try {
