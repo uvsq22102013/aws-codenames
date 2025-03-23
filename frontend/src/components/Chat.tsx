@@ -21,6 +21,7 @@ export default function Chat() {
   const [messageInput, setMessageInput] = useState('');
   const [currentChannel, setCurrentChannel] = useState<Channel>('GLOBAL');
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const [descendre, setDescendre] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,7 +33,7 @@ export default function Chat() {
         }
       }
     }, 1000); // Vérifie toutes les secondes
-  
+
     return () => clearInterval(interval); // Nettoie l'intervalle à la désactivation du composant
   }, [currentChannel]);
 
@@ -54,12 +55,18 @@ export default function Chat() {
 
     // Scroller automatiquement vers le dernier message
     useEffect(() => {
-      if (lastMessageRef.current) {
+      if (descendre && lastMessageRef.current) {
         lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
       }
-    }, [messages]); // Déclenchement à chaque changement de messages
+      if (descendre) {
+        setTimeout(() => {
+          setDescendre(false);
+        }, 1000);
+      }
+    }, [messages, descendre]); // Déclenchement à chaque changement de messages
 
   const handleSubmit = (e: React.FormEvent) => {
+    setDescendre(true);
     e.preventDefault();
     const utilisateur = getUtilisateur();
     
@@ -128,7 +135,7 @@ export default function Chat() {
       </p>
       <div className="border-t border-gray-300 mb-2"></div>
       
-      <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600 flex-1">
+      <div className="custom-scrollbar overflow-y-auto overflow-x-hidden bg-gray-700 rounded-lg p-1 border border-gray-600 flex-1 w-full">
         <AnimatePresence>
           {messages
             .filter(msg => msg.channel === currentChannel)
@@ -148,7 +155,7 @@ export default function Chat() {
                   ref={index === messages.length - 1 ? lastMessageRef : null} // Ajoutez la ref au dernier message
                 >
                   <div className="flex gap-2 items-baseline">
-                    <div className={`${channelColor} font-semibold truncate`}>
+                    <div className={`${channelColor} font-semibold`}>
                       {msg.pseudo}
                     </div>
                     <div className="text-gray-400 text-xxs">
@@ -157,7 +164,7 @@ export default function Chat() {
                         minute: '2-digit' 
                       })}
                     </div>
-                    <div className="flex-1 truncate text-gray-200">
+                    <div className="flex-1 text-gray-200 overflow-wrap break-word word-break break-all whitespace-pre-line">
                       {msg.contenu}
                     </div>
                   </div>
@@ -173,12 +180,12 @@ export default function Chat() {
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder="Écrire un message..."
-          className="bg-gray-700 text-gray-200 text-[10px] px-1 py-1 rounded border border-gray-600 flex-grow"
+          className="bg-gray-700 text-gray-200 text-[10px] px-1 py-1 rounded border border-gray-600 flex-grow w-[80%]"
         />
         
         <button
           type="submit"
-          className="bg-gray-700 text-gray-200 text-xs px-1 py-1 rounded border border-gray-600 hover:bg-gray-600"
+          className="bg-gray-700 text-gray-200 text-xs px-1 py-1 rounded border border-gray-600 hover:bg-gray-600 w-[20%]"
         >
           ➤
         </button>

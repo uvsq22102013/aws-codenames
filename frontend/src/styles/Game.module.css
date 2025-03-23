@@ -249,7 +249,7 @@ section .container .historique {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 1000;
 }
 
 section .container .chat {
@@ -261,7 +261,7 @@ section .container .chat {
     display: flex;
     align-items: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 1000;
 }
 
 section .container .cartes {
@@ -356,7 +356,7 @@ section .container .indice {
         flex-direction: column;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 1000;
     }
     section .container .cartes {
         position: fixed;
@@ -440,7 +440,7 @@ section .container .indice {
         flex-direction: column;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 1000;
     }
     section .container .cartes {
         position: fixed;
@@ -527,7 +527,7 @@ section .container .indice {
         flex-direction: column;
         align-items: center;
         padding: 20px;
-        z-index: 100;
+        z-index: 1000;
     }
     section .container .cartes {
         position: fixed;
