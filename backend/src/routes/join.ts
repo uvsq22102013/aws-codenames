@@ -17,7 +17,8 @@ router.post("/create", verifierToken, async (req, res) => {
     }
 
     const createurId = utilisateurReq.user.id;
-    const { recaptchaToken } = req.body;
+    const { recaptchaToken, language } = req.body;
+
 
     if (!createurId || typeof createurId !== "number") {
         res.status(400).json({ error: "L'ID du créateur est invalide" });
@@ -41,7 +42,7 @@ router.post("/create", verifierToken, async (req, res) => {
             return;
         }
 
-        const partie = await creerPartieAvecCartes(createurId, "fr");
+        const partie = await creerPartieAvecCartes(createurId, language);
         res.json(partie);
     } catch (error: any) {
         console.error("Erreur lors de la création de la partie :", error);

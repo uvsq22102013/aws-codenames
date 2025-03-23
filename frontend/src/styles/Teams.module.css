@@ -99,9 +99,16 @@ section .lancer {
     transform: translateX(-50%);
     display: flex;
     align-items: center;
+    flex-direction: column;
     width: 20%;
     z-index: 10;
 }
+
+.errorMessage {
+    color: red;
+    margin-top: 20px;
+    white-space: nowrap;
+  }
 
 section .code {
     position: fixed;

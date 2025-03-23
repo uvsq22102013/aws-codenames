@@ -19,6 +19,7 @@ export default function Teams() {
   const [clickedButton, setClickedButton] = useState(""); // Variable qui nous servira pour l'affichage.
   const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
   const utilisateur = getUtilisateur();
+  const [startErrorMessage, setStartErrorMessage] = useState<string | null>(null);
 
 
   const navigate = useNavigate(); 
@@ -51,6 +52,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     equiperouge: "Equipe rouge",
     codepartie: "Code Partie:",
     quitter : "Quitter la partie",
+    errorStartGame: "Chaque équipe doit avoir au moins un espion et un agent.",
   },
   en: {
     choisirEquipe: "Choose your team",
@@ -65,6 +67,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     equiperouge: "Red team",
     codepartie: "Game Code:",
     quitter : "Leave the game",
+    errorStartGame: "Each team must have at least one spy and one agent.",
   },
   ar: {
     choisirEquipe: "اختر فريقك",
@@ -79,6 +82,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     equiperouge: "الفريق الأحمر",
     codepartie: "رمز اللعبة:",
     quitter : "مغادرة اللعبة",
+    errorStartGame: "يجب أن يكون لكل فريق جاسوس واحد ووكيل واحد على الأقل.",
   },
 };
 
@@ -165,6 +169,16 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
   // Renvoi sur la page de jeu lors du lancement de la partie par le créateur de la partie.
   const handleStartGame = () => {
+    const blueEspions = blueTeam.filter(joueur => joueur.role === "MAITRE_ESPION").length;
+    const blueAgents = blueTeam.filter(joueur => joueur.role === "AGENT").length;
+    const redEspions = redTeam.filter(joueur => joueur.role === "MAITRE_ESPION").length;
+    const redAgents = redTeam.filter(joueur => joueur.role === "AGENT").length;
+
+    if (blueEspions < 1 || blueAgents < 1 || redEspions < 1 || redAgents < 1) {
+      setStartErrorMessage(texts[language].errorStartGame)
+      return;
+    }
+
     socket.emit('lancerPartie', { partieId: gameId, createurId });
     navigate(`/game/${gameId}`);
   };
@@ -180,7 +194,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const redTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "ROUGE");
 
   console.log("Current language:", language);
-console.log("Current texts:", texts[language]);
+  console.log("Current texts:", texts[language]);
   
   return (
     <section className={styles.section}>
@@ -259,14 +273,19 @@ console.log("Current texts:", texts[language]);
       </div>
       <div className={styles.lancer}>
       {utilisateur.id === createurId && (
-        <button 
-          className=" bg-gray-600 text-white font-bold w-full py-[5%] rounded hover:bg-gray-700"
-          onClick={handleStartGame}
-        >
-          {texts[language].lancerPartie}
+        <>
+          <button 
+            className="bg-gray-600 text-white font-bold w-full py-[5%] rounded hover:bg-gray-700"
+            onClick={handleStartGame}
+          >
+            {texts[language].lancerPartie}
           </button>
+          {startErrorMessage && (
+            <p className={styles.errorMessage}>{startErrorMessage}</p>
+          )}
+        </>
       )}
-      </div>
+    </div>
     </section>
   );
 }

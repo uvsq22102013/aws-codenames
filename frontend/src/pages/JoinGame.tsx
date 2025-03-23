@@ -7,14 +7,13 @@ import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 
 const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
 
 
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 
 const socket = io('http://localhost:3000');
 
@@ -88,7 +87,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create", {recaptchaToken}, {
+      const response = await axios.post("/api/join/create", {recaptchaToken, language}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

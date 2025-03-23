@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["src", "src/routes", "../frontend/utils/socket.ts"]
+  "include": ["src", "src/routes"]
 }

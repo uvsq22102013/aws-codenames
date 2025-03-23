@@ -9,14 +9,7 @@ import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';
 import { useLanguage } from "../Context/LanguageContext";
 import Chat from '../components/Chat'; // Importe le composant Chat
-import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:3000', {
-  reconnection: true,
-  reconnectionAttempts: 50,
-  reconnectionDelay: 100000,
-  timeout: 500000,
-});
+import socket from '../../utils/socket';
 
 
 const Game = () => {
