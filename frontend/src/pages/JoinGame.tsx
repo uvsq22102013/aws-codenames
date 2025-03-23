@@ -7,15 +7,13 @@ import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
+import socket from '../../utils/socket';
+
 
 
 const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
 
-
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:3000');
 
 export default function HomePage() {
 
@@ -87,7 +85,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     try {
 
       //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("http://localhost:3000/api/join/create", {recaptchaToken}, {
+      const response = await axios.post("/api/join/create", {recaptchaToken}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
