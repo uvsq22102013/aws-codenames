@@ -7,15 +7,14 @@ import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
+import socket from '../../utils/socket';
+
 
 
 
 const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
 
 
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const socket = io(backendUrl);
 
 export default function HomePage() {
 
