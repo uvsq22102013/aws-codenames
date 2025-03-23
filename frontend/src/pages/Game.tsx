@@ -467,8 +467,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
             {/* Fenêtre modale des règles */}
 //      {montrerRegles && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-9999">
-          <div className="bg-white p-5 rounded-lg shadow-lg w-96 relative">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 w-80 z-9999">
+          <div className="bg-white p-5 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
             {/* Bouton pour fermer */}
             <button
               className="absolute top-2 right-2 text-gray-700 hover:text-red-500"
@@ -479,7 +479,19 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
             <h2 className="text-xl font-bold mb-3">Règles du jeu</h2>
             <p className="text-sm text-gray-700">
-              Ici, tu peux écrire les règles du jeu...
+            Codenames est un jeu de deux équipes. La grille comporte 25 mots. Certains sont secrètement assignés à l'équipe rouge, d'autres à l'équipe bleue. Un joueur de chaque équipe est le maître-espion, et seuls les maîtres-espions voient les mots qui appartiennent à chaque équipe. À tour de rôle, les maîtres-espions donnent des indices à leurs coéquipiers (agents) pour les aider à deviner les mots de leur équipe. L'équipe qui devine tous les mots en premier remporte la partie.
+            </p>
+            <h2 className="text-xl font-bold mb-3">Division en équipes</h2>
+            <p className="text-sm text-gray-700">
+            Divisez tous les joueurs en deux équipes, rouge et bleue. Un joueur de chaque équipe doit cliquer sur «Rejoindre en tant que Maître-espion». Il verra alors les couleurs des cartes. Tous les autres joueurs doivent cliquer sur «Rejoindre en tant qu'Agent». Ils ne verront pas les couleurs des cartes.
+            </p>
+            <img
+              src="../images/team.png"  
+              className="w-full h-auto mb-3 rounded-lg"  
+            />
+            <h2 className="text-xl font-bold mb-3">Donner des indices</h2>
+            <p className="text-sm text-gray-700">
+            Les Maîtres-Espions donnent des indices. À votre tour, appuyez sur les mots de votre couleur pour lesquels vous souhaitez donner un indice. Saisissez ensuite un indice d'un mot correspondant à tous les mots sélectionnés. Vos Agents ne verront que l'indice et le nombre de cartes marquées.
             </p>
           </div>
         </div>

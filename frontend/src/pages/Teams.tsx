@@ -182,8 +182,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const blueTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "BLEU");
   const redTeam = joueurs.filter((joueur: Joueur) => joueur.equipe === "ROUGE");
 
-  console.log("Current language:", language);
-console.log("Current texts:", texts[language]);
   
   return (
     <section className={styles.section}>
@@ -259,7 +257,7 @@ console.log("Current texts:", texts[language]);
       )}
 
       <button 
-        className="absolute top-10 right-4 z-[10] bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-60"
+        className="absolute z-[10] top-10 right-4 bg-gray-600 text-white font-bold py-4 px-8 rounded hover:bg-gray-700 h-20 w-58"
         onClick={quitterPartie}
       >
         {texts[language].quitter} 

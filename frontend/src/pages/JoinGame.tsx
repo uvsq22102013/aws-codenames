@@ -27,11 +27,12 @@ export default function HomePage() {
   const { language, setLanguage } = useLanguage();
   const [errorMessage, setErrorMessage] = useState(""); 
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [montrerOptions, setMontrerOption] = useState(false);
 
 
 
 //dictionnaire des langues (anglais ou francais)
-const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; wrongGameCode: string; } } = {
+const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string; joinGame: string; enterRoomCode: string; createdSuccess: string; joinedSuccess: string; errorCreate: string; errorJoin: string; wrongGameCode: string; deco: string } } = {
   fr: {
     title: "CodeNames",
     createGame: "Créer une nouvelle partie",
@@ -41,7 +42,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     joinedSuccess: "Vous avez rejoint la partie ",
     errorCreate: "Erreur lors de la création de la partie",
     errorJoin: "Erreur lors de la connexion à la partie",
-    wrongGameCode: "Muavais Code Partie",
+    wrongGameCode: "Mauvais Code Partie",
+    deco : "Déconnexion",
   },
   en: {
     title: "CodeNames",
@@ -53,6 +55,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     errorCreate: "Error creating the game",
     errorJoin: "Error joining the game",
     wrongGameCode: "Wrong Game Code",
+    deco: "Logout",
   },
   ar: {
     title: "CodeNames",
@@ -63,7 +66,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
     joinedSuccess: "لقد انضممت إلى اللعبة ",
     errorCreate: "خطأ في إنشاء اللعبة",
     errorJoin: "خطأ في الانضمام إلى اللعبة",
-    wrongGameCode: "ok",
+    wrongGameCode: "رقم اللعبة خاطئ",
+    deco: "تسجيل الخروج",
   },
 
 };
@@ -169,7 +173,13 @@ const handleJoinRoom = async () => {
     //redirection vers la page de connexion
     navigate('/login');
     sessionStorage.removeItem('utilisateur'); 
+    sessionStorage.removeItem('token'); 
 };
+
+
+const bouttonUtilisateur = () => {
+  setMontrerOption(!montrerOptions);
+}
 
   
 
@@ -202,6 +212,28 @@ const handleJoinRoom = async () => {
 
 
 
+
+            {/* Bouton de déconnexion */}
+            <button
+              className="z-[10] absolute top-5 left-[90%] transform -translate-x-1/2 w-32 h-11 bg-black flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg rounded-lg text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500"
+              onClick={bouttonUtilisateur}
+            >
+              {getUtilisateur()?.pseudo}
+            </button>
+            {montrerOptions && (
+              <div className="absolute top-16 right-24 w-28 h-8 bg-gray-700 rounded-lg shadow-lg z-10">
+                <button
+                  className="w-full py-1 px-2 text-white text-xs sm:text-sm md:text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-gray-400"
+                  onClick={deconnexion}
+                >
+                  {texts[language].deco}
+                </button>
+              </div>
+            )}
+            
+
+
+
   
   
             {/* Logo */}
@@ -216,12 +248,9 @@ const handleJoinRoom = async () => {
   <div className={styles.content}>
 
 
-            <button
-              className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
-              onClick={deconnexion}
-            >
-              {getUtilisateur()?.pseudo}
-            </button>
+
+
+            
 
   
             {/* Titre */}
