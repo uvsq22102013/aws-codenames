@@ -60,6 +60,7 @@ async function reinitialiserRooms(socket: Socket, partieId: string, utilisateurI
 
 
 export default function gameSocket(io: Server, socket: Socket) {
+
   console.log(`User connecté : ${socket.id}`);
   
   socket.on('rejoindrePartie', (data: RejoindrePartie_Payload) => {
@@ -67,12 +68,19 @@ export default function gameSocket(io: Server, socket: Socket) {
     socket.join(`partie-${data.partieId}`);
   });
   
-  socket.on('quitterPartie', (data: RejoindrePartie_Payload) => {
-    console.log(`Joueur a quitté la partie ${data.partieId}`);
-    quitterPartie(data.partieId, data.utilisateurId);
-    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
+  socket.on('quitterPartie', async (data: RejoindrePartie_Payload) => {
+    console.log(`Joueur ${data.utilisateurId} a quitté la partie ${data.partieId}`);
+    
+    // Retirer le joueur de la partie
+    await quitterPartie(data.partieId, data.utilisateurId);
+
+    // Quitter toutes les rooms associées à la partie
     quitterRooms(socket);
 
+    // Notifier les autres joueurs de la mise à jour de la partie
+    io.to(`partie-${data.partieId}`).emit('majPartie', { partieId: data.partieId });
+
+    console.log(`Joueur ${data.utilisateurId} a été retiré des rooms de la partie ${data.partieId}`);
   });
 
   socket.on('changerHost', async (data: changerHost_Payload) => {

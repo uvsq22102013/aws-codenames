@@ -180,12 +180,12 @@ export default function Chat() {
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder="Écrire un message..."
-          className="bg-gray-700 text-gray-200 text-[10px] px-1 py-1 rounded border border-gray-600 flex-grow w-[80%]"
+          className="bg-gray-700 text-gray-200 w-[80%] text-[10px] px-1 py-1 rounded border border-gray-600 flex-grow"
         />
         
         <button
           type="submit"
-          className="bg-gray-700 text-gray-200 text-xs px-1 py-1 rounded border border-gray-600 hover:bg-gray-600 w-[20%]"
+          className="bg-gray-700 text-gray-200  w-[20%] text-xs px-1 py-1 rounded border border-gray-600 hover:bg-gray-600"
         >
           ➤
         </button>
