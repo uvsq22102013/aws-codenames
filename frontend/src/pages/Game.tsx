@@ -533,8 +533,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             </div>
             )}    
 
-            {/*bouton pour montrer les règles*/}
-            <button 
+             {/*bouton pour montrer les règles*/}
+             <button 
             className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs sm:text-sm md:text-sm px-1 py-1 sm:px-2.5 sm:py-2.5 md:px-2.5 md:py-2.5 text-center mb-2 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
             onClick={() => setMontrerRegles(true)}
             >
@@ -542,10 +542,10 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             </button>  
 
 
-            {/* Fenêtre modale des règles */}
-        {montrerRegles && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-9999">
-          <div className="bg-white p-5 rounded-lg shadow-lg w-96 relative">
+            {/*fenêtre modale des règles */}
+//      {montrerRegles && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 w-80 z-9999">
+          <div className="bg-white p-5 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
             {/* Bouton pour fermer */}
             <button
               className="absolute top-2 right-2 text-gray-700 hover:text-red-500"
@@ -556,7 +556,55 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
             <h2 className="text-xl font-bold mb-3">Règles du jeu</h2>
             <p className="text-sm text-gray-700">
-              Ici, tu peux écrire les règles du jeu...
+            Codenames est un jeu de deux équipes. La grille comporte 25 mots. Certains sont secrètement assignés à l'équipe rouge, d'autres à l'équipe bleue. Un joueur de chaque équipe est le maître-espion, et seuls les maîtres-espions voient les mots qui appartiennent à chaque équipe. À tour de rôle, les maîtres-espions donnent des indices à leurs coéquipiers (agents) pour les aider à deviner les mots de leur équipe. L'équipe qui devine tous les mots en premier remporte la partie.
+            </p>
+            <h2 className="text-xl font-bold mb-3 mt-3">Division en équipes</h2>
+            <p className="text-sm text-gray-700">
+            Divisez tous les joueurs en deux équipes, rouge et bleue. Un joueur de chaque équipe doit cliquer sur «Rejoindre en tant que Maître-espion». Il verra alors les couleurs des cartes. Tous les autres joueurs doivent cliquer sur «Rejoindre en tant qu'Agent». Ils ne verront pas les couleurs des cartes.
+            </p>
+            <img
+              src="../images/team.png"  
+              className="w-full h-auto mb-3 rounded-lg"  
+            />
+            <h2 className="text-xl font-bold mb-3 mt-3">Donner des indices</h2>
+            <p className="text-sm text-gray-700">
+            Les Maîtres-Espions donnent des indices. À votre tour, appuyez sur les mots de votre couleur pour lesquels vous souhaitez donner un indice. Saisissez ensuite un indice d'un mot correspondant à tous les mots sélectionnés. Vos Agents ne verront que l'indice et le nombre de cartes marquées.
+            </p>
+            <img
+              src="../images/indice.jpg"  
+              className="w-full h-auto mb-3 rounded-lg"  
+            />
+            <p className="text-sm text-gray-700">
+            Attention à la carte noire: c'est un assassin! Évitez les indices qui pourraient mener à l'assassin ou aux paroles de l'équipe adverse.
+            </p>
+            <h2 className="text-xl font-bold mb-3 mt-3">Choix des cartes</h2>
+            <p className="text-sm text-gray-700">
+            Les agents devinent les mots grâce à l'indice du Maître-espion. Vous pouvez discuter de l'indice avec vos coéquipiers grâce au chat. 
+            Selectionner une ou plusieurs cartes puis appuyez sur le bouton pour valider votre choix. Le jeu révélera alors la couleur du mot choisi.
+            </p>
+            <img
+              src="../images/cartes.png"  
+              className="w-full h-auto mb-3 rounded-lg"  
+            />
+            <p className="text-sm text-gray-700 mt-2">
+            Si vous devinez un mot de la couleur de votre équipe, vous pouvez recommencer. Il vous faudra deviner autant de mots que votre maître espion vous l'a indiqué.
+            </p>
+            <h2 className="text-xl font-bold mb-3 mt-3">Fin de tour</h2>
+            <p className="text-sm text-gray-700 mt-2">
+            Votre tour peut se terminer de trois manières:
+            </p>
+            <p className="text-sm text-gray-700 mt-2">
+            -Devinez un mot de la couleur de l'adversaire ou de la couleur neutre.
+            </p>
+            <p className="text-sm text-gray-700 mt-2">
+            -Terminez manuellement la devinette en cliquant sur le bouton.
+            </p>
+            <p className="text-sm text-gray-700 mt-2">
+            -Atteignez le nombre maximal de devinettes (indice + 1).
+            </p>
+            <h2 className="text-xl font-bold mb-3 mt-3">Victoire et défaite</h2>
+            <p className="text-sm text-gray-700 mt-2">
+            Les équipes jouent à tour de rôle. Une équipe gagne lorsque tous ses mots sont devinés. Elle perd si elle devine l'Assassin!
             </p>
           </div>
         </div>
