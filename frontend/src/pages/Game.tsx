@@ -33,6 +33,7 @@ const Game = () => {
   const [nbAffiche, setNbAffiche] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [montrerChat, setMontrerChat] = useState(false);
+  const [errIndice, setErrIndice] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const storedPartie = sessionStorage.getItem("partie");
@@ -325,6 +326,12 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       setNbAffiche(data.nbmots);
     });
 
+    socket.on('indiceNonDonne', (data: { joueurId: number }) => {
+      if (data.joueurId === utilisateur.id) {
+        setErrIndice('Vous ne pouvez pas donner cet indice');
+      }
+    });
+
     if (equipeGagnante) {
       setTimeout(() => {
         setMontrerBulleFinDePartie(true);
@@ -338,6 +345,13 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       const timer = setTimeout(() => {
         setIndiceAffiche(null); // Réinitialiser après 2 secondes
         setNbAffiche(null);
+      }, 2000);
+      return () => clearTimeout(timer); // Nettoyer le timer
+    }
+
+    if (errIndice) {
+      const timer = setTimeout(() => {
+        setErrIndice(null); // Réinitialiser après 2 secondes
       }, 2000);
       return () => clearTimeout(timer); // Nettoyer le timer
     }
@@ -929,6 +943,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
         {gameStatus === "EN_COURS" && roleUtilisateur === 'MAITRE_ESPION' && equipeUtilisateur === equipeEnCours && roleEncours === 'MAITRE_ESPION' &&(
           <div className={styles.indice}>
             <div className="p-4 rounded text-center w-full">
+              {errIndice &&(<p className="text-red-500 text-sm text-center">{errIndice}</p>)}
               <h2 className="text-l text-white sm:text-xl">{texts[language].indice}</h2>
               <input
                 type="text"
