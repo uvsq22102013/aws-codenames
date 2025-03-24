@@ -44,7 +44,7 @@ router.post("", async (req: Request, res: Response): Promise<void> => {
             from: 'noreply@aws-codenames',
             to: email,
             subject: 'Réinitialisation de mot de passe aws-codenames',
-            text: `Cliquez sur le lien suivant pour réinitialiser votre mot de passe : http://localhost:5173/reset/${code}`,
+            text: `Cliquez sur le lien suivant pour réinitialiser votre mot de passe : https://aws-codenames.onrender.com/reset/${code}`,
             replyTo: 'noreply@aws-codenames'
         };
 
