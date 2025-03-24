@@ -7,16 +7,13 @@ import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
+import socket from '../../utils/socket';
 
 
 
-const RECAPTCHA_SITE_KEY = "6LfuF_gqAAAAAPOdbfcGrFlNUh2XcazAJnmg0NCu";
+const RECAPTCHA_SITE_KEY = "6LfH6P0qAAAAAMDdNZm4qgoKLsYm8dFHlETKnF0V";
 
 
-
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:3000');
 
 export default function HomePage() {
 
