@@ -371,7 +371,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .indice {
         width: 90%;
@@ -455,7 +455,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .indice {
         width: 47%;
@@ -542,7 +542,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .indice {
         width: 90%;
@@ -625,7 +625,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .indice {
         width: 90%;
@@ -708,7 +708,7 @@ section .container .indice {
         display: flex;
         align-items: center;
         padding: 20px;
-        z-index: 1000;
+        z-index: 10000;
     }
     section .container .indice {
         width: 90%;

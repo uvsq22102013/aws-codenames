@@ -744,21 +744,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           )}       
       <div className={styles.cartes}>
           <AnimatePresence>
-            {equipeGagnante && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}  
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.8 }}
-                className="fixed inset-0 flex items-center justify-center z-50 rounded-lg before:content-[''] before:absolute before:inset-0 before:bg-cover before:bg-center before:bg-[url('/images/win.png')] before:opacity-90"
-              >
-                <div className="relative text-center z-10">
-                  <h2 className="text-6xl font-bold mb-4 text-yellow-700">
-                    {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
-                  </h2>
-                </div>
-              </motion.div>
-            )}
           {montrerBulleFinDePartie && isHost() &&(
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
@@ -861,6 +846,24 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             </motion.h1>
           </div>
         )}
+        {equipeGagnante && (
+          <div className={styles.affiche}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}  
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.8 }}
+              className="fixed inset-0 flex items-center justify-center z-50 rounded-lg before:content-[''] before:absolute before:inset-0 before:bg-cover before:bg-center before:bg-[url('/images/win.png')] before:opacity-90"
+            >
+              <div className="relative text-center z-10">
+                <h2 className="text-6xl font-bold mb-4 text-yellow-700">
+                  {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
+                </h2>
+              </div>
+            </motion.div>
+        </div>
+        )}
+        
         <div className={styles.historique}>
           <div className='h-full w-full flex flex-col items-center'>
             {/* Bouton tchat visible seulement si écran ≤ 1024px */}
