@@ -47,7 +47,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     joueursEquipeBleue: "Joueurs de l'équipe bleue",
     joueursEquipeRouge: "Joueurs de l'équipe rouge",
     agent: "Agent",
-    maximumEspion: "Il ne peut y avoir que 2 maîtres espions par équipe.",
+    maximumAgents: "Il ne peut y avoir que 4 agents par équipe.",
     equipebleue: "Equipe bleue",
     equiperouge: "Equipe rouge",
     codepartie: "Code Partie:",
@@ -62,7 +62,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     joueursEquipeBleue: "Blue team players",
     joueursEquipeRouge: "Red team players",
     agent: "Agent",
-    maximumEspion: "There can only be 2 master spies per team.",
+    maximumAgents: "There can only be 4 agents per team.",
     equipebleue: "Blue team",
     equiperouge: "Red team",
     codepartie: "Game Code:",
@@ -77,7 +77,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     joueursEquipeBleue: "لاعبي الفريق الأزرق",
     joueursEquipeRouge: "لاعبي الفريق الأحمر",
     agent: "وكيل",
-    maximumEspion: "لا يمكن أن يكون هناك سوى جاسوسين رئيسيين 2 في كل فريق.",
+    maximumAgents: "لا يمكن أن يكون هناك سوى 4 وكلاء لكل فريق.",
     equipebleue: "الفريق الأزرق",
     equiperouge: "الفريق الأحمر",
     codepartie: "رمز اللعبة:",
@@ -140,31 +140,29 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   } 
 
   const handleBlueEspionClick = () => {
-    // On vérifie si il existe déjà un joueur espion dans l'équipe bleue avant de valider le choix d'équipe.
-    const blueEspionCount = joueurs.filter(joueur => joueur.equipe === "BLEU" && joueur.role === "MAITRE_ESPION").length;
-    if (blueEspionCount < 2) {
-      handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
-    } else {
-      alert(texts[language].maximumEspion);
-    }
+    handleChoice("BLEU", "MAITRE_ESPION", "blueEspion");
   };
 
   const handleBlueAgentClick = () => {
-    handleChoice("BLEU", "AGENT", "blueAgent");
-  };
-
-  const handleRedEspionClick = () => {
-    // On vérifie si il existe déjà un joueur espion dans l'équipe rouge avant de valider le choix d'équipe.
-    const redEspionCount = joueurs.filter(joueur => joueur.equipe === "ROUGE" && joueur.role === "MAITRE_ESPION").length;
-    if (redEspionCount < 2) {
-      handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
+    const blueAgentCount = joueurs.filter(joueur => joueur.equipe === "BLEU" && joueur.role === "AGENT").length;
+    if (blueAgentCount < 4) {
+      handleChoice("BLEU", "AGENT", "blueAgent");
     } else {
-      alert(texts[language].maximumEspion);
+      alert(texts[language].maximumAgents);
     }
   };
 
+  const handleRedEspionClick = () => {
+      handleChoice("ROUGE", "MAITRE_ESPION", "redEspion");
+  };
+
   const handleRedAgentClick = () => {
-    handleChoice("ROUGE", "AGENT", "redAgent");
+    const redAgentCount = joueurs.filter(joueur => joueur.equipe === "ROUGE" && joueur.role === "AGENT").length;
+    if (redAgentCount < 4) {
+      handleChoice("ROUGE", "AGENT", "redAgent");
+    } else {
+      alert(texts[language].maximumAgents);
+    }
   };
 
   // Renvoi sur la page de jeu lors du lancement de la partie par le créateur de la partie.
