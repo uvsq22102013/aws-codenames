@@ -53,33 +53,6 @@ section span:hover {
     background: rgb(63, 64, 65);
     transition: 0s;
 }
-section .bouton {
-    position: fixed;
-    top: 1%;
-    right: 5%;
-    width: 10%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    z-index: 10000;
-}
-@media screen and (max-width: 768px) {
-    section .bouton {
-        right: 20%;
-    }
-}
-@media screen and (max-width: 480px) {
-    section .bouton {
-        right: 40%;
-    }
-}
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-    section .bouton {
-        top: 0.5%;
-        right: 15%;
-    }
-}
 
 section .signin {
     position: absolute;
