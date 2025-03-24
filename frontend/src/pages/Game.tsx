@@ -743,7 +743,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           </div> 
           )}       
       <div className={styles.cartes}>
-          <AnimatePresence>
           {montrerBulleFinDePartie && isHost() &&(
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-[#222] p-6 rounded-lg border border-yellow-400">
@@ -763,7 +762,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                     }}
                     className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                   >
-                    Terminer la partie
+                    Quitter la partie
                   </button>
                 </div>
               </div>
@@ -794,7 +793,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             })}
 
           </div>
-          </AnimatePresence>
         </div>
         <div className={styles.bleu}>
           {/*Cote bleu et historique*/}
@@ -847,13 +845,13 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           </div>
         )}
         {equipeGagnante && (
-          <div className={styles.affiche}>
+          <div className={styles.fin}>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}  
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.8 }}
-              className="fixed inset-0 flex items-center justify-center z-50 rounded-lg before:content-[''] before:absolute before:inset-0 before:bg-cover before:bg-center before:bg-[url('/images/win.png')] before:opacity-90"
+              className="absolute inset-0 bg-cover bg-center bg-[url('/images/win.png')] flex items-center justify-center"
             >
               <div className="relative text-center z-10">
                 <h2 className="text-6xl font-bold mb-4 text-yellow-700">
@@ -861,7 +859,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 </h2>
               </div>
             </motion.div>
-        </div>
+          </div>
         )}
         
         <div className={styles.historique}>
