@@ -39,9 +39,10 @@ export default function Login() {
         email: login,
         mdp: password,
         captchaToken: token,
+      }, {
+        withCredentials: true
       });
       //Genere un token contenant les données de l'utilisateur connecté 
-      sessionStorage.setItem("token", response.data.token);
       sessionStorage.setItem("utilisateur", JSON.stringify(response.data.user));
       setUtilisateur(response.data.user);
       //Renvoi vers la page game

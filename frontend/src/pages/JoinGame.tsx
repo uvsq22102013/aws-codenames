@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
-import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";
@@ -77,32 +76,30 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
   //fonction pour créer une nouvelle partie
 
   const handleCreateRoom = async () => {
-    const token = getToken();
     if (!window.grecaptcha) {
       setErrorMessage("Erreur de chargement reCAPTCHA");
       return;
     }
-
+  
     // Récupérer le token reCAPTCHA
     const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "create_game" });
-
+  
     try {
-
-      //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("/api/join/create", {recaptchaToken, language}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    
+      // Configurer Axios pour inclure les cookies
+      axios.defaults.withCredentials = true;
+  
+      // Envoyer une requête POST au backend pour créer une partie
+      const response = await axios.post("/api/join/create", { recaptchaToken, language });
+  
       if (response.status !== 200) {
         throw new Error(`Erreur HTTP : ${response.status}`);
       }
-      //message qui confirme que la partie a bien été créée
+  
+      // Message qui confirme que la partie a bien été créée
       const data = JSON.stringify(response.data);
       sessionStorage.setItem("partie", data);
-
-      //on renvoi le joueur vers le lien de la partie
+  
+      // Rediriger le joueur vers le lien de la partie
       navigate(`/teams/${response.data.id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.error === "Deja dans une partie") {
@@ -114,9 +111,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
         setErrorMessage(texts[language].errorCreate);
       }
     }
-
-
-
   };
 
 // Fonction pour rejoindre une partie existante
@@ -152,6 +146,9 @@ const handleJoinRoom = async () => {
 
       // Envoi d'une requête POST au backend avec axios
 
+      axios.defaults.withCredentials = true;
+
+      // Envoi d'une requête POST au backend avec axios
       const response = await axios.post("/api/join/join-game", {
         roomCode,
         recaptchaToken,

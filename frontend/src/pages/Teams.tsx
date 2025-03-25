@@ -4,7 +4,6 @@ import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
 import styles from "../styles/Teams.module.css";
 import { useLanguage } from "../Context/LanguageContext";
-import quitterPartie from "./Game";
 import socket from '../../utils/socket';
 
 interface Joueur {
@@ -92,6 +91,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const chargerMembres = async () => {
     try {  
       const res = await axios.get(`/api/teams/${gameId}`, {
+        withCredentials: true,
       });
       
       setJoueurs(res.data);

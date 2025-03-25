@@ -61,7 +61,7 @@ router.post("/create", verifierToken, async (req, res) => {
 });
 
 // Route pour rejoindre une partie
-router.post("/join-game", async (req: Request, res: Response): Promise<void> => {
+router.post("/join-game", verifierToken, async (req: Request, res: Response): Promise<void> => {
     const { roomCode, recaptchaToken, utilisateurId } = req.body;
 
     const joueurDansPartie = await prisma.membreEquipe.findFirst({

@@ -239,12 +239,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const chargerPartie = async () => {
     try {
       partieIdNumber = getPartieId();
-      const token = getToken();
   
       const res = await axios.get(`/api/parties/${partieIdNumber}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true,
       });
   
       if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
@@ -261,12 +258,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     try {
       partieIdNumber = getPartieId();
       if (partieIdNumber) {
-        const token = getToken();
   
         const res = await axios.get(`/api/parties/${partieIdNumber}/indice`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         });
   
         if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
