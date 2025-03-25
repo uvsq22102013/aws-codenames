@@ -77,7 +77,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
   //fonction pour créer une nouvelle partie
 
   const handleCreateRoom = async () => {
-    const token = getToken();
     if (!window.grecaptcha) {
       setErrorMessage("Erreur de chargement reCAPTCHA");
       return;
@@ -88,12 +87,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { title: string; createGame: string;
 
     try {
 
-      //ici on envoi une requete POST au backend pour créer une partie 
-      const response = await axios.post("/api/join/create", {recaptchaToken, language}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      axios.defaults.withCredentials = true;
+  
+      const response = await axios.post("/api/join/create", { recaptchaToken, language });
     
       if (response.status !== 200) {
         throw new Error(`Erreur HTTP : ${response.status}`);
@@ -150,7 +146,7 @@ const handleJoinRoom = async () => {
 
     try {
 
-      // Envoi d'une requête POST au backend avec axios
+      axios.defaults.withCredentials = true;
 
       const response = await axios.post("/api/join/join-game", {
         roomCode,
@@ -194,6 +190,8 @@ const handleJoinRoom = async () => {
 const bouttonUtilisateur = () => {
   setMontrerOption(!montrerOptions);
 }
+sessionStorage.removeItem('partie');
+
   
 
   //les lignes qui suive concernent l'interface utilisateiur sur la page d'accueil

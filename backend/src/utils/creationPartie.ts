@@ -76,7 +76,7 @@ export async function renitPartie(partieId: string) {
     const partie = await prisma.partie.update({
       where: { id: partieId },
       data: {
-        statut: StatutPartie.EN_COURS,
+        statut: StatutPartie.EN_ATTENTE,
         roleEncours: Role.MAITRE_ESPION,
         equipeEnCours: Equipe.ROUGE,
         indice: undefined,

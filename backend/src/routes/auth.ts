@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import prisma from "../prismaClient";
 import { verifyEmailDomain } from "../utils/emailVerifier"; // Import the function
-
 import verifyCaptcha from "../utils/captchaverif";  // Assure-toi que le fichier captchaVerification exporte correctement la fonction
 
 const router = express.Router();
@@ -100,15 +99,15 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Générer le token JWT
         const token = jwt.sign(
             { id: user.id, pseudo: user.pseudo },
             'testkey',
             { expiresIn: '24h' }
         );
 
+        res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 1 * 60 * 60 * 1000 });
+
         res.json({
-            token,
             user: {
                 id: user.id,
                 pseudo: user.pseudo,

@@ -254,20 +254,20 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
    const chargerPartie = async () => {
     try {
-      partieIdNumber = getPartieId();
-      const token = getToken();
+      if(getPartieId()) {
+        partieIdNumber = getPartieId();
   
-      const res = await axios.get(`/api/parties/${partieIdNumber}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
-      const data = res.data;
-      setPartie(data);
-      setCartes(data.cartes);
-      sessionStorage.setItem('partie', JSON.stringify(data));
+        const res = await axios.get(`/api/parties/${partieIdNumber}`, {
+          withCredentials: true,
+        });
+    
+        if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
+        const data = res.data;
+        setPartie(data);
+        setCartes(data.cartes);
+        sessionStorage.setItem('partie', JSON.stringify(data));
+      }
+
     } catch (err) {
       console.error('erreur chargement partie :', err);
     }
@@ -280,12 +280,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     try {
       partieIdNumber = getPartieId();
       if (partieIdNumber) {
-        const token = getToken();
   
         const res = await axios.get(`/api/parties/${partieIdNumber}/indice`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         });
   
         if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
@@ -330,6 +327,11 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     socket.on('joueurVire', (data: { joueurId: number }) => {
       if (data.joueurId === utilisateur.id) {
         navigate('/join');
+        socket.off('majPartie', majHandler);
+        socket.off('joueurVire');
+        socket.off('indiceDonne');
+        socket.off('gagnant');
+        socket.off('partieJoin');
         sessionStorage.removeItem('partie');
         sessionStorage.removeItem('indice');
       }
@@ -431,6 +433,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   };
   const renitPartie = () => {
     socket.emit('renitPartie', {partieId : partieIdNumber, utilisateurId: utilisateur.id});
+    navigate('/teams/' + getPartieId());
   };
 
   const devenirSpec = () => {
@@ -773,17 +776,13 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 <h2 className="text-2xl font-bold mb-4 text-white">Que souhaitez-vous faire ?</h2>
                 <div className="flex gap-4">
                   <button
-                    onClick={() => {
-                      renitPartie();
-                    }}
+                    onClick={renitPartie}
                     className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-8 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                   >
                     {texts[language].reinitialiser}
                   </button>
                   <button
-                    onClick={() => {
-                      quitterPartie();
-                    }}
+                    onClick={quitterPartie}
                     className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                   >
                     {texts[language].quitter_partie}

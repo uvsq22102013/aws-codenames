@@ -7,7 +7,6 @@ import { useLanguage } from "../Context/LanguageContext";
 import quitterPartie from "./Game";
 import socket from '../../utils/socket';
 import { getToken } from "../../utils/token";
-import { clear } from "console";
 
 interface Joueur {
   utilisateur: {
@@ -29,6 +28,7 @@ export default function Teams() {
   const utilisateur = getUtilisateur();
   const [startErrorMessage, setStartErrorMessage] = useState<string | null>(null);
   const [partie, setPartie] = useState<any>(null);
+  let quiter = false;
 
   const navigate = useNavigate(); 
 
@@ -98,8 +98,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
   // Requete pour récupérer les membres de la même partie dans la base de données
   const chargerMembres = async () => {
-    try {  
+    try {
       const res = await axios.get(`/api/teams/${gameId}`, {
+        withCredentials: true,
       });
       
       setJoueurs(res.data);
@@ -110,17 +111,20 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
   const chargerPartie = async () => {
     try {
-  
-      const res = await axios.get(`/api/parties/${getPartieId()}`, {
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-        },
-      });
-  
-      if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
-      const data = res.data;
-      setPartie(data);
-      sessionStorage.setItem('partie', JSON.stringify(data));
+
+      if (getPartieId() && !quiter){
+        const res = await axios.get(`/api/parties/${getPartieId()}`, {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        });
+    
+        if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
+        const data = res.data;
+        setPartie(data);
+        sessionStorage.setItem('partie', JSON.stringify(data));
+      }
+
     } catch (err) {
       console.error('erreur chargement partie :', err);
     }
@@ -221,8 +225,11 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   };
 
   const quitterPartie = () => {
+    quiter = true;
     socket.emit('quitterPartie', {partieId : gameId, utilisateurId: utilisateur.id});
     navigate('/join');
+    sessionStorage.removeItem("partie");
+
   };
 
 
