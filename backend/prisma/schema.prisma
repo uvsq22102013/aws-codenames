@@ -83,7 +83,7 @@ model Partie {
 
 model Indice {
   id                        Int          @id @default(autoincrement())
-  createur                  MembreEquipe @relation(fields: [membreEquipeUtilisateurId, membreEquipePartieId], references: [utilisateurId, partieId])
+  createur                  MembreEquipe @relation(fields: [membreEquipeUtilisateurId, membreEquipePartieId], references: [utilisateurId, partieId], onDelete: Cascade)
   mot                       String
   nbmots                    Int
   membreEquipeUtilisateurId Int
