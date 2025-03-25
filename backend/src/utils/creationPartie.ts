@@ -46,6 +46,20 @@ export async function creerPartieAvecCartes(createurId: number, langue: string) 
 
   const partieId = genererIdPartie(6);
 
+  const membre = await prisma.membreEquipe.findMany({
+    where: {
+      utilisateurId: createurId,
+    },
+  });
+
+  if (membre.length > 0) {
+    await prisma.membreEquipe.deleteMany({
+      where: {
+        utilisateurId: createurId,
+      },
+    });
+  }
+
   const partie = await prisma.partie.create({
     data: {
       id: partieId,
@@ -87,6 +101,9 @@ export async function renitPartie(partieId: string) {
 
   
       await prisma.carte.deleteMany({ where: { partieId } });
+      await prisma.actionJeu.deleteMany({ where: { partieId } });
+      await prisma.message.deleteMany({ where: { partieId } });
+
       const cartes = await genererCartesPourPartie(partie.id, partie.langue);
       await Promise.all(cartes);
       return partie;

@@ -13,7 +13,30 @@ import socket from '../../utils/socket';
 import axios from 'axios';
 import { getPartieId, getPartieStatut } from './Teams';
 
+export const chargerAutorisation =  async () => {
+  try {
+    const nbpartie = getPartieId();
+    if (nbpartie) {
 
+      const res = await axios.get(`/api/parties/${nbpartie}/membre`, {
+        withCredentials: true,
+      });
+
+      if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
+      const data = res.data;
+      if (data){
+        return true;
+      }
+      else {
+        sessionStorage.removeItem('partie');
+        return false;
+      }
+
+    }
+  } catch (err) {
+    console.error('erreur chargement Autorisation :', err);
+  }
+};
 
 const Game = () => {
   const [partie, setPartie] = useState<any>(null);
@@ -169,7 +192,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     passerTour:"تجاوز الدور"
   }
 };
-
 
 
 

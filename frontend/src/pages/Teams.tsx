@@ -4,7 +4,7 @@ import axios from "axios";
 import { getUtilisateur } from '../../utils/utilisateurs';
 import styles from "../styles/Teams.module.css";
 import { useLanguage } from "../Context/LanguageContext";
-import quitterPartie from "./Game";
+import quitterPartie, { chargerAutorisation } from "./Game";
 import socket from '../../utils/socket';
 import { getToken } from "../../utils/token";
 
@@ -23,6 +23,17 @@ export const getPartieStatut = () => {
 };
 
 export default function Teams() {
+  const navigate = useNavigate(); 
+
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      if (!(await chargerAutorisation())) {
+        sessionStorage.removeItem("partie");
+        navigate("/join");
+      }
+    };
+    checkAuthorization();
+  }, [navigate]);
   const [clickedButton, setClickedButton] = useState(""); // Variable qui nous servira pour l'affichage.
   const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
   const utilisateur = getUtilisateur();
@@ -30,7 +41,6 @@ export default function Teams() {
   const [partie, setPartie] = useState<any>(null);
   let quiter = false;
 
-  const navigate = useNavigate(); 
 
   const storedPartie = sessionStorage.getItem("partie");
   let gameId: string | undefined, createurId: number | undefined;
@@ -156,12 +166,17 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     });
     const intervalId = setInterval(() => {
       chargerMembres();
+
       chargerPartie();
-    }, 3000);
+    }, 9000);
+    
+
 
     return () => {
       socket.off('majEquipe');
-      clearInterval(intervalId);
+      socket.off('partieLancee');
+      clearInterval(intervalId); 
+
     };
   }, [ gameId , partie]);
 
@@ -278,7 +293,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           {texts[language].joueursEquipeBleue}
           </h2>
           <ul className="space-y-1">
-            {blueTeam.map((player: Joueur, index: number) => (
+            {blueTeam
+              .filter((player: Joueur) => player.role === "MAITRE_ESPION" || player.role === "AGENT")
+              .map((player: Joueur, index: number) => (
               <li key={index} className="flex justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
               <p className="font-semibold text-black uppercase ">{player.utilisateur.pseudo}:</p>
               <p className="font-semibold text-black uppercase ">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>
@@ -306,7 +323,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           {texts[language].joueursEquipeRouge}
           </h2>
           <ul className="space-y-1">
-            {redTeam.map((player: Joueur, index: number) => (
+            {redTeam.filter((player: Joueur) => player.role === "MAITRE_ESPION" || player.role === "AGENT")
+              .map((player: Joueur, index: number) => (
             <li key={index} className="flex justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
               <p className="font-semibold text-black uppercase">{player.utilisateur.pseudo}:</p>
               <p className="font-semibold text-black uppercase">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>

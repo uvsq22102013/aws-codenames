@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import prisma from "../prismaClient";
 import { creerPartieAvecCartes } from "../utils/creationPartie";
 import verifierToken, { RequestAvecUtilisateur } from "../utils/verifierToken";
-import { StatutPartie } from "@prisma/client";
+import { Equipe, Role, StatutPartie } from "@prisma/client";
 import verifyCaptcha from "../utils/captchaverif";
 
 const router = express.Router();
@@ -69,6 +69,9 @@ router.post("/join-game", verifierToken, async (req: Request, res: Response): Pr
         include: { partie: true }, 
     });
     
+    const utilisateur = await prisma.utilisateur.findUnique({
+        where: { id: utilisateurId },
+    });
     if (joueurDansPartie) {
         res.status(400).json({ error: "Deja dans une partie", partieId: joueurDansPartie.partie.id });
         return;
@@ -87,6 +90,8 @@ router.post("/join-game", verifierToken, async (req: Request, res: Response): Pr
             where: { id: roomCode },
         });
 
+
+
         if (!game) {
             res.status(400).json({ error: "Mauvais Code Partie" });
             return;
@@ -96,7 +101,20 @@ router.post("/join-game", verifierToken, async (req: Request, res: Response): Pr
             res.status(400).json({ error: "La partie est déjà en cours." });
             return;
         }
+        if (!utilisateur?.id) {
+            res.status(400).json({ error: "Utilisateur ID invalide" });
+            return;
+        }
 
+        await prisma.membreEquipe.create({
+            data: {
+              partieId: game.id,
+              utilisateurId: utilisateur.id,
+              role: Role.INCONNU,
+              equipe: Equipe.ROUGE,
+            }
+        });
+          
         res.json({ game });
     } catch (error) {
         console.error("Erreur lors de la tentative de rejoindre la partie :", error);

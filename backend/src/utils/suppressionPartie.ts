@@ -15,7 +15,21 @@ export async function suppressionPartieTerminee() {
   });
 
   for (const partie of partiesTerminees) {
-    
+    await prisma.carte.deleteMany({
+      where: { partieId: partie.id },
+    });
+    await prisma.actionJeu.deleteMany({
+      where: { partieId: partie.id },
+    });
+    await prisma.message.deleteMany({
+      where: { partieId: partie.id },
+    });
+
+    await prisma.membreEquipe.deleteMany({
+      where: { partieId: partie.id },
+    });
+
+
     await prisma.partie.delete({
       where: { id: partie.id },
     });

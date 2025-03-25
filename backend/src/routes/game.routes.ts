@@ -32,6 +32,33 @@ router.get('/:id', verifierToken , async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur', error });
   }
 });
+router.get('/:id/membre', verifierToken , async (req, res) => {
+  const partieId = req.params.id;
+  const utilisateurId = (req as RequestAvecUtilisateur).user!.id;
+
+
+  console.log(`Back: fetch partie ${partieId}`);
+  try {
+    const partie = await getPartiePourUtilisateur(partieId, utilisateurId);
+    const payload = {
+      partieId: partieId, // Remplacez par l'ID de la partie
+      utilisateurId: utilisateurId, // Remplacez par l'ID de l'utilisateur
+  };
+    const estmembre = await trouverMembreEquipe(payload);
+
+    if (!partie || !estmembre) {
+      console.log(`Back: fetch partie ${partieId} not found Ou pas membre`);
+      res.status(404).json({ message: 'Partie non trouvée' });
+      return ;
+    }
+    console.log(`Back: fetch partie ${partieId} done`);
+    res.json(true);
+  } catch (error) {
+    console.log(`Back: fetch partie ${partieId} error`);
+    console.error(error);
+    res.status(500).json({ message: 'Erreur serveur', error });
+  }
+});
 
 router.get('/:id/indice', verifierToken , async (req, res) => {
   const partieId = req.params.id;

@@ -50,7 +50,39 @@ export async function quitterPartie(partieId: string, utilisateurId: number) {
                 console.log(`Le créateur a été changé : nouveau créateur ID=${nouveauCreateur.utilisateurId}`);
             }
         } else {
-            
+            await prisma.carte.deleteMany({
+                where: { partieId: partie.id },
+              });
+              await prisma.actionJeu.deleteMany({
+                where: { partieId: partie.id },
+              });
+              await prisma.message.deleteMany({
+                where: { partieId: partie.id },
+              });
+          
+              await prisma.membreEquipe.deleteMany({
+                where: { partieId: partie.id },
+              });
+              await prisma.selection.deleteMany({
+                where: { partieId: partie.id },
+                });
+                await prisma.indice.deleteMany({
+                    where: { membreEquipePartieId: partie.id },
+                });
+          
+          
+              if (partie) {
+                try {
+                    await prisma.partie.delete({
+                  where: { id: partie.id },
+                });
+                } catch (error) {
+                console.error(`Erreur lors de la suppression de la partie : ${error}`);
+                }
+              } else {
+                console.log(`Partie with ID ${partieId} does not exist.`);
+              }
+              await suppressionPartieTerminee()
             console.log("Aucun autre membre disponible pour devenir le créateur.");
 
         }
@@ -83,10 +115,20 @@ export async function quitterPartie(partieId: string, utilisateurId: number) {
 
   
   
-      // Supprimez le membre de l'équipe
-      await prisma.membreEquipe.delete({
-        where: { utilisateurId_partieId: { utilisateurId, partieId } },
-      });
+        // Vérifiez si le membre existe avant de le supprimer
+        const membreToDelete = await prisma.membreEquipe.findUnique({
+            where: { utilisateurId_partieId: { utilisateurId, partieId } },
+        });
+
+        if (membreToDelete) {
+            // Supprimez le membre de l'équipe
+            await prisma.membreEquipe.delete({
+            where: { utilisateurId_partieId: { utilisateurId, partieId } },
+            });
+            console.log(`Membre supprimé avec succès : utilisateurId=${utilisateurId}, partieId=${partieId}`);
+        } else {
+            console.log(`Aucun membre trouvé pour utilisateurId=${utilisateurId}, partieId=${partieId}`);
+        }
   
       await suppressionPartieTerminee();
     
@@ -132,45 +174,23 @@ export async function virerJoueur(partieId: string, utilisateurId: number) {
         membreEquipePartieId: partieId,
       },
     });
-  
-    // Supprimer le membre de l'équipe
-    await prisma.membreEquipe.delete({
-      where: { utilisateurId_partieId: { utilisateurId, partieId } },
-    });
+        // Vérifiez si le membre existe avant de le supprimer
+        const membreToDelete = await prisma.membreEquipe.findUnique({
+            where: { utilisateurId_partieId: { utilisateurId, partieId } },
+        });
+
+        if (membreToDelete) {
+            // Supprimez le membre de l'équipe
+            await prisma.membreEquipe.delete({
+            where: { utilisateurId_partieId: { utilisateurId, partieId } },
+            });
+        }
   }
 
   export async function devenirSpectateur(payload: { partieId: string; utilisateurId: number }) {
-    const { partieId, utilisateurId } = payload;
-  
-    // Supprimer les sélections associées
-    await prisma.selection.deleteMany({
-      where: { utilisateurId, partieId },
-    });
-  
-    // Supprimer les messages associés
-    await prisma.message.deleteMany({
-      where: { utilisateurId, partieId },
-    });
-  
-    // Supprimer les actions associées
-    await prisma.actionJeu.deleteMany({
-      where: { utilisateurId, partieId },
-    });
-  
-    // Supprimer les indices associés
-    await prisma.indice.deleteMany({
-      where: {
-        membreEquipeUtilisateurId: utilisateurId,
-        membreEquipePartieId: partieId,
-      },
-    });
-  
-    // Supprimer le membre de l'équipe
-    await prisma.membreEquipe.delete({
-      where: { utilisateurId_partieId: { utilisateurId, partieId } },
-    });
-  
-    return partieId;
+    await quitterPartie(payload.partieId, payload.utilisateurId);
+
+    return payload.partieId;
   }
 
 export async function getHost(partieId:string) {
@@ -693,3 +713,4 @@ export async function nouveauMessage(payload: {
     }
     
   }
+  

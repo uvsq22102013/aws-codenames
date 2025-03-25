@@ -105,7 +105,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
             { expiresIn: '24h' }
         );
 
-        res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 1 * 60 * 60 * 1000 });
+        res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 2 * 60 * 60 * 1000 });
 
         res.json({
             user: {
