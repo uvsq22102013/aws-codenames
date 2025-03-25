@@ -20,9 +20,9 @@ export default defineConfig({
         ws: true,
       },
     },
-    allowedHosts: ["aws-codenames.onrender.com"],
+    allowedHosts: ["aws-codenames2.onrender.com"],
     cors: {
-      origin: process.env.VITE_FRONTEND_URL || "https://aws-codenames.onrender.com",
+      origin: process.env.VITE_FRONTEND_URL || "https://aws-codenames2.onrender.com",
     },
   },
 });
