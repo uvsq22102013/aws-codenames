@@ -63,6 +63,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     changer_equipe: "↔️ Changer d'équipe",
     quitter_partie: "Quitter la Partie",
     victoire: "Victoire !",
+    defaite: "Vous avez perdu !",
     expulser: "Expulser",
     mettrehote: "Mettre hôte",
     espionad : "Les Espions adverses sont en train de jouer, veuillez attendre votre tour...",
@@ -85,7 +86,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     motindice: "Mot indice",
     aValid:"a validé",
     donneIndice:"a donné un indice",
-    findev:"a fini de deviner"
+    findev:"a fini de deviner",
+    passerTour: "Passer le tour"
   },
   en: {
     joueurs: "Players : 👤",
@@ -100,6 +102,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     changer_equipe: "↔️ Change team",
     quitter_partie: "Leave the Game",
     victoire: "Victory!",
+    defaite: "You lost!",
     expulser: "Expel",
     mettrehote: "Set host",
     espionad : "The opposing Spies are playing, please wait your turn...",
@@ -122,7 +125,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     motindice: "Clue word",
     aValid:"validated",
     donneIndice:"gave the clue",
-    findev:"finished guessing"
+    findev:"finished guessing",
+    passerTour: "Pass the turn"
   },
   ar: {
     joueurs: "اللاعبون : 👤",
@@ -137,6 +141,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     changer_equipe: "↔️ تغيير الفريق",
     quitter_partie: "مغادرة اللعبة",
     victoire: "الانتقال!",
+    defaite:"لقد خسرت!",
     expulser: "طرد",
     mettrehote: "تعيين المضيف",
     espionad : "الجواسيس المعارضون يلعبون ، يرجى الانتظار لدورك...",
@@ -159,7 +164,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     motindice: "كلمة الدليل",
     aValid:"تم التحقق من صحتها",
     donneIndice:"أعطى الدليل",
-    findev:"انتهى التخمين"  
+    findev:"انتهى التخمين",
+    passerTour:"تجاوز الدور"
   }
 };
 
@@ -761,7 +767,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                     onClick={() => {
                       renitPartie();
                     }}
-                    className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
+                    className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-8 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                   >
                     {texts[language].reinitialiser}
                   </button>
@@ -864,7 +870,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             >
               <div className="relative text-center z-10">
                 <h2 className="text-6xl font-bold mb-4 text-yellow-700">
-                  {equipeGagnante === equipeUtilisateur ? 'Vous avez gagné !' : 'Vous avez perdu !'}
+                  {equipeGagnante === equipeUtilisateur ? texts[language].victoire : texts[language].defaite}
                 </h2>
               </div>
             </motion.div>
@@ -965,7 +971,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 className="p-2 rounded bg-gray-700 text-white w-16"
               />
               <button onClick={donnerIndice} className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-2.5 py-2 ml-2 mt-2 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
-              {texts[language].valider}
+              {texts[language].passerTour}
               </button>
             </div>
           </div>
