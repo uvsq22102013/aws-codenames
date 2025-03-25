@@ -85,7 +85,7 @@ export default function Register() {
     setError(""); // Reset de l'erreur 
     //Essaye de faire un POST sur le back pour gerer une inscription 
     try {
-      const token = await window.grecaptcha.execute('6Ld2AQArAAAAADN9khOtPwgC-uLxjaAckUqjhEEV', { action: 'register' });
+      const token = await window.grecaptcha.execute('6LdyAwArAAAAAG1XpNn7GuvvpwNnhBkv4kWCVSzg', { action: 'register' });
 
 
       await axios.post("/api/auth/register", {

@@ -29,7 +29,7 @@ export default function Login() {
     //Essaye de faire un POST sur back pour gerer la connexion 
     try {
 
-      const token = await window.grecaptcha.execute('6Ld2AQArAAAAADN9khOtPwgC-uLxjaAckUqjhEEV', { action: 'login' });
+      const token = await window.grecaptcha.execute('6LdyAwArAAAAAG1XpNn7GuvvpwNnhBkv4kWCVSzg', { action: 'login' });
       console.log("Token reCAPTCHA reçu : ", token); //pour voir si c'est bon dans la console
 
 
