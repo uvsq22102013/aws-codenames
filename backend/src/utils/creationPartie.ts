@@ -57,6 +57,15 @@ export async function creerPartieAvecCartes(createurId: number, langue: string) 
     },
     include: { createur: true, membres: true },
   });
+
+  await prisma.membreEquipe.create({
+    data: {
+      partieId: partie.id,
+      utilisateurId: createurId,
+      role: Role.MAITRE_ESPION,
+      equipe: Equipe.ROUGE,
+    }
+    });
   
     await genererCartesPourPartie(partie.id, langue);
     return partie;

@@ -11,6 +11,7 @@ import { useLanguage } from "../Context/LanguageContext";
 import Chat from '../components/Chat'; // Importe le composant Chat
 import socket from '../../utils/socket';
 import axios from 'axios';
+import { getPartieId, getPartieStatut } from './Teams';
 
 
 
@@ -251,7 +252,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   const gameStatus = partie?.statut;
        
 
-  const chargerPartie = async () => {
+   const chargerPartie = async () => {
     try {
       partieIdNumber = getPartieId();
       const token = getToken();
@@ -269,6 +270,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       sessionStorage.setItem('partie', JSON.stringify(data));
     } catch (err) {
       console.error('erreur chargement partie :', err);
+    }
+    if(getPartieStatut() === "EN_ATTENTE") {
+      navigate('/teams/' + partieIdNumber);
     }
   };
   
@@ -356,6 +360,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     if (gameStatus === "TERMINEE" && !equipeGagnante) {
       setMontrerBulleFinDePartie(true);
     }
+    if(getPartieStatut() === "EN_ATTENTE") {
+      navigate('/teams/' + partieIdNumber);
+    }
 
     if (indiceAffiche && nbAffiche) {
       const timer = setTimeout(() => {
@@ -375,6 +382,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     socket.on('partieJoin', () => {
       navigate(`/teams/${partieId}`);
     });
+    const intervalId = setInterval(() => {
+      chargerPartie();
+    }, 3000);
     
     return () => {
       socket.off('majPartie', majHandler);
@@ -383,6 +393,8 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       socket.off('gagnant');
       socket.off('partieJoin');
       window.removeEventListener("resize", handleResize);
+      clearInterval(intervalId); 
+
     };
   }, [partieId, utilisateur, equipeGagnante, gameStatus, indiceAffiche, nbAffiche]);
   
@@ -492,9 +504,6 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
   };
   const getnbCarteBleu = () => {
     return partie?.nbMotsBleu;
-  };
-  const getPartieId = () => {
-    return JSON.parse(sessionStorage.getItem("partie") || "{}").id;
   };
 
 

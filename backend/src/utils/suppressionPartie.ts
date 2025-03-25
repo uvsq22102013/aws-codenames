@@ -6,7 +6,7 @@ export async function suppressionPartieTerminee() {
   const partiesTerminees = await prisma.partie.findMany({
     where: {
       statut: {
-        in: ['TERMINEE', 'EN_COURS'],
+        in: ['TERMINEE', 'EN_COURS','EN_ATTENTE'],
       },
       membres: {
         none: {},
@@ -15,6 +15,7 @@ export async function suppressionPartieTerminee() {
   });
 
   for (const partie of partiesTerminees) {
+    
     await prisma.partie.delete({
       where: { id: partie.id },
     });

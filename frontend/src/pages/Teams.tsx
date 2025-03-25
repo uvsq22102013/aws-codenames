@@ -6,6 +6,8 @@ import styles from "../styles/Teams.module.css";
 import { useLanguage } from "../Context/LanguageContext";
 import quitterPartie from "./Game";
 import socket from '../../utils/socket';
+import { getToken } from "../../utils/token";
+import { clear } from "console";
 
 interface Joueur {
   utilisateur: {
@@ -14,13 +16,19 @@ interface Joueur {
   equipe: "BLEU" | "ROUGE";
   role: string;
 }
+export const getPartieId = () => {
+  return JSON.parse(sessionStorage.getItem("partie") || "{}").id;
+};
+export const getPartieStatut = () => {
+  return JSON.parse(sessionStorage.getItem("partie") || "{}").statut;
+};
 
 export default function Teams() {
   const [clickedButton, setClickedButton] = useState(""); // Variable qui nous servira pour l'affichage.
   const [joueurs, setJoueurs] = useState<Joueur[]>([]); // Tableau qui contiendra les joueurs de la même partie.
   const utilisateur = getUtilisateur();
   const [startErrorMessage, setStartErrorMessage] = useState<string | null>(null);
-
+  const [partie, setPartie] = useState<any>(null);
 
   const navigate = useNavigate(); 
 
@@ -99,28 +107,59 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
       console.error('Erreur chargement des membres :', err);
     }
   };
+
+  const chargerPartie = async () => {
+    try {
+  
+      const res = await axios.get(`/api/parties/${getPartieId()}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+  
+      if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);
+      const data = res.data;
+      setPartie(data);
+      sessionStorage.setItem('partie', JSON.stringify(data));
+    } catch (err) {
+      console.error('erreur chargement partie :', err);
+    }
+  };
   useEffect(() => {
 
     if (gameId) {
       // On rejoint la room socket io pour recevoir les maj
       socket.emit('rejoindrePartie', { partieId: gameId });
       chargerMembres();
+      chargerPartie();
     }
-
+    if (getPartieStatut() === "EN_COURS") {
+      navigate(`/game/${gameId}`);
+    }
+    if (getPartieStatut() === "TERMINEE") {
+      navigate(`/join`);
+    }
     socket.on('majEquipe', () => {
+      chargerPartie();
       chargerMembres();
     });
 
     // On écoute si le créateur de la partie a lancé le jeu.
     socket.on('partieLancee', (data:any) => {
+      chargerPartie();
       console.log(`Partie ${data.partieId} lancée`);
       navigate(`/game/${gameId}`);
     });
+    const intervalId = setInterval(() => {
+      chargerMembres();
+      chargerPartie();
+    }, 3000);
 
     return () => {
       socket.off('majEquipe');
+      clearInterval(intervalId);
     };
-  }, []);
+  }, [ gameId , partie]);
 
   // Fonction appelée lors du choix d'une équipe suite à un clic sur un des boutons.
   const handleChoice = async (team: "ROUGE" | "BLEU", type: "MAITRE_ESPION" | "AGENT", buttonName: string) => {
