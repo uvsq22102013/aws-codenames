@@ -83,6 +83,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     mots: "mots",
     chargement: "Chargement...",
     motindice: "Mot indice",
+    aValid:"a validé",
+    donneIndice:"a donné un indice",
+    findev:"a fini de deviner"
   },
   en: {
     joueurs: "Players : 👤",
@@ -117,6 +120,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     mots: "words",
     chargement: "Loading...",
     motindice: "Clue word",
+    aValid:"validated",
+    donneIndice:"gave the clue",
+    findev:"finished guessing"
   },
   ar: {
     joueurs: "اللاعبون : 👤",
@@ -151,6 +157,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
     mots: "كلمات",
     chargement: "جار التحميل...",
     motindice: "كلمة الدليل",
+    aValid:"تم التحقق من صحتها",
+    donneIndice:"أعطى الدليل",
+    findev:"انتهى التخمين"  
   }
 };
 
@@ -754,7 +763,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                     }}
                     className="text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                   >
-                    Relancer une partie
+                    {texts[language].reinitialiser}
                   </button>
                   <button
                     onClick={() => {
@@ -762,7 +771,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                     }}
                     className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                   >
-                    Quitter la partie
+                    {texts[language].quitter_partie}
                   </button>
                 </div>
               </div>
@@ -838,9 +847,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                   1px  1px 0 #000
                 `,
               }}
-              className="fixed inset-0 flex items-center justify-center text-8xl text-white font-bold text-center z-50"
+              className="fixed inset-0 flex flex-col w-full  items-center justify-center text-8xl text-white font-bold text-center z-50"
             >
-              {indiceAffiche} pour {nbAffiche}
+              <p className='break-all'>{indiceAffiche}</p> pour {nbAffiche}
             </motion.h1>
           </div>
         )}
@@ -896,7 +905,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                             }`}
                             style={{ whiteSpace: 'nowrap' }}
                           >
-                            <div className="flex gap-2 items-baseline">
+                            <div className="flex flex-wrap gap-1 items-baseline mb-1">
                               {action.utilisateur?.pseudo && (
                                 <div className={`${couleurPseudo} font-semibold truncate`}>
                                   {action.utilisateur.pseudo}
@@ -905,14 +914,14 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                         
                               {action.motDonne && (
                                 <>
-                                  <div className="text-gray-400">a donné l'indice :</div>
+                                  <div className="text-gray-400 break-words">{texts[language].donneIndice} :</div>
                                   <div className="text-yellow-400 truncate">{action.motDonne}</div>
                                 </>
                               )}
 
                               {action.carte && action.typeAction === 'VALIDERSELECTION' && (
                                 <>
-                                  <div className="text-gray-400">a validé :</div>
+                                  <div className="text-gray-400 break-words">{texts[language].aValid} :</div>
                                   <div className={`${couleurMot} truncate`}>
                                     {action.carte.mot.mot}
                                   </div>
@@ -920,7 +929,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                               )}
                               {action.typeAction === 'PASSER' && (
                                 <>
-                                  <div className="text-gray-400">a finie de deviner </div>
+                                  <div className="text-gray-400 break-words">{texts[language].findev} </div>
                                 </>
                               )}
                             </div>
