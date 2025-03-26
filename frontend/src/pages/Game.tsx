@@ -608,7 +608,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
             {/*fenêtre modale des règles */} 
             {montrerRegles && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-99999">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-5 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
             {/* Bouton pour fermer */}
             <button

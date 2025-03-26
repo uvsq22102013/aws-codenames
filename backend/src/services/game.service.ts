@@ -371,13 +371,23 @@ export async function selectionnerCarte(payload: { carteId: number; partieId: st
         },
     });
 
-    await prisma.selection.create({
-        data: {
+    const selectionExistante = await prisma.selection.findFirst({
+        where: {
             utilisateurId: payload.utilisateurId,
             carteId: payload.carteId,
             partieId: payload.partieId,
         },
     });
+
+    if (!selectionExistante) {
+        await prisma.selection.create({
+            data: {
+                utilisateurId: payload.utilisateurId,
+                carteId: payload.carteId,
+                partieId: payload.partieId,
+            },
+        });
+    }
 }
 
 
