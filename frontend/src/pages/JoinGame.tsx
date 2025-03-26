@@ -205,7 +205,7 @@ sessionStorage.removeItem('partie');
           {/* Bouton pseudo */}
           <div className="relative">
             <button
-              className="w-auto h-10 px-1 rounded-lg bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg text-yellow-400 hover:text-white border-yellow-400 hover:bg-yellow-500"
+              className="w-auto min-w-20 h-10 px-1 rounded-lg bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition border-2 shadow-lg text-yellow-400 hover:text-white border-yellow-400 hover:bg-yellow-500"
               onClick={bouttonUtilisateur}
             >
               {getUtilisateur()?.pseudo}
@@ -215,7 +215,7 @@ sessionStorage.removeItem('partie');
               <div className="absolute top-full right-0 w-full bg-[#222] border border-yellow-400 rounded shadow-lg z-10 flex flex-col gap-2 p-2 items-center mt-1">
                 <button
                   onClick={deconnexion}
-                  className="w-auto break-words flex flex-wrap text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
+                  className=" flex flex-wrap text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-[10px] px-1 py-1 text-center mb-1 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                 >
                   {texts[language].deco}
                 </button>

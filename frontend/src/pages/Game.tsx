@@ -1001,7 +1001,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
                 className="p-2 rounded bg-gray-700 text-white w-16"
               />
               <button onClick={donnerIndice} className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-2.5 py-2 ml-2 mt-2 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
-              {texts[language].passerTour}
+              {texts[language].valider}
               </button>
             </div>
           </div>
@@ -1012,7 +1012,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
               <h2 className="text-xl"> {indice.mot} {texts[language].pour} {indice.nbmots} {texts[language].mots}</h2>
               {roleUtilisateur === 'AGENT' && equipeUtilisateur === equipeEnCours && roleEncours === 'AGENT' ? (
               <button onClick={passerTour} className="bg-green-500 px-4 py-2 ml-2 rounded mt-2">
-                {texts[language].valider}
+                {texts[language].passerTour}
               </button>
               ) : null}
             </div>

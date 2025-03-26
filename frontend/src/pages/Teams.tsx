@@ -263,7 +263,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           className="bg-gray-600 text-white font-bold py-1 px-2 rounded hover:bg-gray-700"
           onClick={() => navigator.clipboard.writeText(gameId || '')}
         >
-          {texts[language].copier}
+          {texts[language].copier}: {gameId}
         </button>
       </div>
       <div className={styles.quitter}>
@@ -296,7 +296,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
             {blueTeam
               .filter((player: Joueur) => player.role === "MAITRE_ESPION" || player.role === "AGENT")
               .map((player: Joueur, index: number) => (
-              <li key={index} className="flex justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
+              <li key={index} className="flex flex-wrap justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
               <p className="font-semibold text-black uppercase ">{player.utilisateur.pseudo}:</p>
               <p className="font-semibold text-black uppercase ">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>
               </li>
@@ -325,9 +325,9 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
           <ul className="space-y-1">
             {redTeam.filter((player: Joueur) => player.role === "MAITRE_ESPION" || player.role === "AGENT")
               .map((player: Joueur, index: number) => (
-            <li key={index} className="flex justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
+            <li key={index} className="flex flex-wrap justify-between items-center text-black text-sm sm:text-lg md:text-lg p-1 rounded-lg">
               <p className="font-semibold text-black uppercase">{player.utilisateur.pseudo}:</p>
-              <p className="font-semibold text-black uppercase">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>
+              <p className="font-semibold text-black uppercase ">{player.role === "MAITRE_ESPION" ? "Espion" : player.role}</p>
             </li>
             ))}
           </ul>
