@@ -11,7 +11,7 @@ import socket from '../../utils/socket';
 
 
 
-const RECAPTCHA_SITE_KEY = "6LdyAwArAAAAAG1XpNn7GuvvpwNnhBkv4kWCVSzg";
+const RECAPTCHA_SITE_KEY = "6Le7ZAArAAAAAIedYAhv_AwT-uegolZGajxuOS2X";
 
 
 
