@@ -3,6 +3,7 @@ import verifierToken, { RequestAvecUtilisateur } from '../utils/verifierToken';
 
 const router = express.Router();
 
+// Route qui s'occupe des requêtes pour les routes sécurisées.
 router.get('/', verifierToken, (req: RequestAvecUtilisateur, res: Response) => {
   if (req.user) {
     res.status(200).json({ authenticated: true, user: req.user });

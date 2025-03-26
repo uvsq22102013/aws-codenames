@@ -406,6 +406,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
         where: { id: payload.partieId },
         select: { equipeEnCours: true },
     });
+    // Vérifie si c'est bien au tour du joueur qui a fait la sélection avant de valider le changement dans la bdd
     if (await autoriserTour(payload.partieId, payload.utilisateurId, payload.equipe)) {
         await prisma.actionJeu.create({
             data: {
@@ -430,6 +431,8 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 carteId:payload.carteId
             },
         });
+
+        // Termine la partie si la carte validée est l'assassin
         if (carte.type === TypeCarte.ASSASSIN){
             await prisma.partie.update({
                 where: {id:payload.partieId},
@@ -439,11 +442,12 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 },
             });
 
+            // Révèle toutes les cartes lorsque le partie est terminée
             await prisma.carte.updateMany({
                 where: {partieId: payload.partieId},
                 data: {revelee: true},
             });
-
+            // Si la carte validée est neutre ou bien de la couleur de l'équipe adverse, on passe le tour
         } else if (carte.type === TypeCarte.NEUTRE || carte.type === TypeCarte.BLEU && equipeEnCoursconst?.equipeEnCours === Equipe.ROUGE || carte.type === TypeCarte.ROUGE && equipeEnCoursconst?.equipeEnCours === Equipe.BLEU) {
             await prisma.partie.update({
                 where: { id: payload.partieId },
@@ -458,6 +462,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
             });
             
         }
+        // On décremente de 1 le nombre de mots restants de l'équipe bleue
         if( carte.type === TypeCarte.BLEU ){
             await prisma.partie.update({
                 where: {id: payload.partieId},
@@ -468,6 +473,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 },
             });
         }
+        // On décémente de 1 le nombre de mots restants de l'équipe rouge
         if( carte.type === TypeCarte.ROUGE ){
             await prisma.partie.update({
                 where: {id: payload.partieId},
@@ -493,7 +499,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 revelee: false,
             },
         });
-    
+        // Si l'équipe bleue n'a plus de mots à trouver alors elle gagne
         if (equipeBleuCartes.length === 0) {
             await prisma.partie.update({
                 where: { id: payload.partieId },
@@ -506,6 +512,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
                 where: {partieId: payload.partieId},
                 data: {revelee: true},
             });
+            // Si l'équipe rouge n'a plus de mots à trouver alors elle gagne
         } else if (equipeRougeCartes.length === 0) {
             await prisma.partie.update({
                 where: { id: payload.partieId },
@@ -524,6 +531,7 @@ export async function validerCarte(payload:{carteId:number ,partieId : string,ut
     
 }
 
+// Fonction retournant la couleur de l'équipe qui a gagné si la partie est terminée.
 export async function verifierGagnant(payload: { partieId: string }) {
     const partie = await prisma.partie.findUnique({
       where: { id: payload.partieId },
@@ -553,6 +561,8 @@ export async function rejoindrePartie(payload:{partieId : string,utilisateurId:n
         });
     }
 }
+
+// Retourne l'équipe dont c'est le tour
 export async function equipeEnCours(payload:{partieId : string}) {
     const partie = await prisma.partie.findUnique({
         where: {id:payload.partieId},
@@ -562,6 +572,8 @@ export async function equipeEnCours(payload:{partieId : string}) {
     });
     return partie?.equipeEnCours;
 }
+
+// Retourne le rôle dont c'est le tour (Agent ou Espion)
 export async function roleEnCours(payload:{partieId : string}) {
     const partie = await prisma.partie.findUnique({
         where: {id:payload.partieId},
@@ -572,6 +584,7 @@ export async function roleEnCours(payload:{partieId : string}) {
     return partie?.roleEncours;
 }
 
+// Vérifie si l'utilisateur existe dans la bdd
 export async function utilisateurExist(utilisateurId: number, pseudo: string) {
     const utilisateur = await prisma.utilisateur.findUnique({
         where: {id :utilisateurId },
@@ -675,6 +688,7 @@ export async function recupererDernierIndice(partieId: string) {
     });
 }
 
+// Gestion des nouveaux messages dans le chat
 export async function nouveauMessage(payload: {
     content: string;
     utilisateurId: number;
@@ -686,13 +700,13 @@ export async function nouveauMessage(payload: {
     const utilisateur = await prisma.utilisateur.findUnique({
       where: { id: payload.utilisateurId },
     });
-    if (!utilisateur) {
+    if (!utilisateur) { 
       console.log(`Utilisateur avec ID ${payload.utilisateurId} n'exite pas.`);
-    }
+    } 
   
-    const partie = await prisma.partie.findUnique({
-      where: { id: payload.partieId },
-    });
+    const partie = await prisma.partie.findUnique({  
+      where: { id: payload.partieId },  
+    }); 
     const membre = await prisma.membreEquipe.findUnique({
         where : {utilisateurId_partieId: { utilisateurId: payload.utilisateurId, partieId: payload.partieId }},
     });
@@ -701,15 +715,16 @@ export async function nouveauMessage(payload: {
     }
     if(!membre) {
         console.log(`Utilisateur avec ID ${payload.utilisateurId} n'exite pas.`);
-    } else if (membre.role === 'INCONNU') {
-        console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire.`);
+    } else if (membre.role === 'INCONNU') {  
+        console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire.`);  
     }
-    else if(payload.channel.includes('ESPION') && membre.role !== 'MAITRE_ESPION'){
+    else if(payload.channel.includes('ESPION') && membre.role !== 'MAITRE_ESPION'){ 
         console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire dans ce chanel car pas espion.`);
     }
     else if (membre.role === 'MAITRE_ESPION' && (payload.channel ===  'EquipeBLEU' || payload.channel ===  'EquipeROUGE' || payload.channel ===  'GLOBAL')){
         console.log(`Utilisateur avec ID ${payload.utilisateurId} n'as pas le droit d'ecrire dans ce chanel car espion.`);
-    }else {
+    }else { 
+
         await prisma.message.create({
             data: {
               contenu: payload.content,

@@ -9,6 +9,7 @@ export default function Login() {
   const [error, setError] = useState("");    
   const navigate = useNavigate();  
 
+  // Fonction pour envoyer une requête de demande d'envoi d'email de réinitilaisation du mdp
   const handleSend = async () => {
     setError("");
 
@@ -17,6 +18,8 @@ export default function Login() {
         email: email,
       });
       alert("Email envoyé, vérifiez dans vos spams");
+
+      // Retour à la page login
       navigate('/');
     } catch (error: any) {
       setError(error.response?.data?.error || "Erreur front de mdp oublié.");

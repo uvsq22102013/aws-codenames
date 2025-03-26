@@ -8,8 +8,10 @@ interface RequestAvecUtilisateur extends Request {
 }
 
 export function verifierToken(req: RequestAvecUtilisateur, res: Response, next: NextFunction): void {
+  // On récupère le token dans le cookie
   const token = req.cookies.token; 
 
+  // Si il n'y a pas de Token alors renvoi d'une erreur
   if (!token) {
     console.log('back 1er if dans verif : Token manquant');
     res.status(401).json({ message: 'Token manquant' });   
@@ -18,6 +20,7 @@ export function verifierToken(req: RequestAvecUtilisateur, res: Response, next: 
   }
 
   try { 
+    // Vérification de la validité du token avec jwt.verify
     const decoded = jwt.verify(token, 'testkey') as { id: number; pseudo: string };
     req.user = decoded;
     next();

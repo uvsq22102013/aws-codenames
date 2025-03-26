@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 
+// Route qui gère ce qu'il se passe dans la page du choix du nouveau mot de passe
 router.post("/:code", async (req: Request, res: Response): Promise<void> => {
     const { code } = req.params; 
     const { mdp } = req.body; 
@@ -18,6 +19,7 @@ router.post("/:code", async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Si la requete est faite plus de 20 min après la création  du lien de reset, on le supprime
         const twenty = 20 * 60 * 1000; 
         const now = new Date();
         const createdAt = new Date(resetEntry.createdAt);
@@ -29,8 +31,10 @@ router.post("/:code", async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Hachage du mdp avant de le stocker
         const hashedPassword = await bcrypt.hash(mdp, 10);
 
+        // Update du mot de passe en recherchant l'email
         await prisma.utilisateur.update({
             where: { email: resetEntry.email },
             data: { mdp_hash: hashedPassword }

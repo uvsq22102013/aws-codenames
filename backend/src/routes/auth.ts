@@ -2,8 +2,8 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import prisma from "../prismaClient";
-import { verifyEmailDomain } from "../utils/emailVerifier"; // Import the function
-import verifyCaptcha from "../utils/captchaverif";  // Assure-toi que le fichier captchaVerification exporte correctement la fonction
+import { verifyEmailDomain } from "../utils/emailVerifier"; 
+import verifyCaptcha from "../utils/captchaverif"; 
 
 const router = express.Router();
 
@@ -19,11 +19,13 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
         const captchaResult = await verifyCaptcha(captchaToken);
         if (!captchaResult?.success || captchaResult.score < 0.6) {
             res.status(400).json({ error: "Vérification reCAPTCHA échouée" });
+            
             return;
         }
         const isEmailDomainValid = await verifyEmailDomain(email);
         if (!isEmailDomainValid) {
             res.status(400).json({ error: "Email invalide." });
+
             return;
         }
 
@@ -32,6 +34,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
         });
         if (existingMail) {
             res.status(400).json({ error: "Cet email est déjà utilisé." });
+
             return;
         }
 
@@ -41,6 +44,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
         });
         if (existingUser) {
             res.status(400).json({ error: "Ce nom d'utilisateur est déjà utilisé." });
+
             return;
         }
 
@@ -68,6 +72,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
         const captchaResult = await verifyCaptcha(captchaToken);
         if (!captchaResult?.success || captchaResult.score < 0.6) {
             res.status(400).json({ error: "Vérification reCAPTCHA échouée" });
+             
             return;
         }
 
@@ -86,32 +91,33 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 
         // Définir l'utilisateur trouvé (pseudo ou email)
         let user: any;
-        if (existingPseudo) {
+        if (existingPseudo) {  
             user = existingPseudo;
+
         } else {
             user = existingMail;
         }
-
+ 
         // Vérifier si le mot de passe est valide
         const isPasswordValid = await bcrypt.compare(mdp, user.mdp_hash);
-        if (!isPasswordValid) {
+        if (!isPasswordValid) { 
             res.status(400).json({ error: "Login ou mot de passe incorrect." });
             return;
         }
 
-        const token = jwt.sign(
+        const token = jwt.sign( 
             { id: user.id, pseudo: user.pseudo },
             'testkey',
             { expiresIn: '24h' }
         );
 
-        res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 2 * 60 * 60 * 1000 });
-
+        res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 2 * 60 * 60 * 1000 });
+  
         res.json({
             user: {
-                id: user.id,
-                pseudo: user.pseudo,
-                email: user.email,
+                id: user.id,  
+                pseudo: user.pseudo, 
+                email: user.email, 
             },
         });
     } catch (error) {

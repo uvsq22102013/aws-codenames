@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 
 const router = express.Router();
 
+// Route qui s'occupe de l'envoi d'email de reset du mot de passe
 router.post("", async (req: Request, res: Response): Promise<void> => {
     const {email} = req.body;
 
@@ -18,6 +19,7 @@ router.post("", async (req: Request, res: Response): Promise<void> => {
             return;
         }
         
+        // Generation du code qui sera dans l'URL pour garantir la sécurité.
         const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let code = '';
         for (let i = 0; i < 12; i++) {
@@ -31,7 +33,7 @@ router.post("", async (req: Request, res: Response): Promise<void> => {
             create: { email, code },
         });
 
-
+        // Email qui est utilisé pour envoyer le lien de reset
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -48,6 +50,7 @@ router.post("", async (req: Request, res: Response): Promise<void> => {
             replyTo: 'noreply@aws-codenames'
         };
 
+        // Envoi de l'email
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error("Erreur d'envoi d'email :", error);

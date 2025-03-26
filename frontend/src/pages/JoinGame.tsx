@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur } from "../../utils/utilisateurs";
-import { getToken } from "../../utils/token";
 import "../index.css"
 import styles from "../styles/Login.module.css";
 import { useLanguage } from "../Context/LanguageContext";

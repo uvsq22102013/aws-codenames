@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { getUtilisateur} from '../../utils/utilisateurs';
-import { getToken } from '../../utils/token';
 import styles from "../styles/Game.module.css";
 import Cellule from '../components/Cellule';
 import {motion, AnimatePresence} from 'framer-motion';

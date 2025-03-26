@@ -6,7 +6,6 @@ import styles from "../styles/Teams.module.css";
 import { useLanguage } from "../Context/LanguageContext";
 import quitterPartie, { chargerAutorisation } from "./Game";
 import socket from '../../utils/socket';
-import { getToken } from "../../utils/token";
 
 interface Joueur {
   utilisateur: {
@@ -124,9 +123,7 @@ const texts: { [key in "fr" | "en" | "ar"]: { [key: string]: string } } = {
 
       if (getPartieId() && !quiter){
         const res = await axios.get(`/api/parties/${getPartieId()}`, {
-          headers: {
-            Authorization: `Bearer ${getToken()}`,
-          },
+          withCredentials: true,
         });
     
         if (res.status !== 200) throw new Error(`Erreur HTTP : ${res.status}`);

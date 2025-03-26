@@ -9,57 +9,53 @@ import { RequestAvecUtilisateur } from '../utils/verifierToken';
 
 const router = Router();
 
-
+// Route d'envoi des informations de la partie
 router.get('/:id', verifierToken , async (req, res) => {
   const partieId = req.params.id;
   const utilisateurId = (req as RequestAvecUtilisateur).user!.id;
 
 
-  console.log(`Back: fetch partie ${partieId}`);
   try {
     const partie = await getPartiePourUtilisateur(partieId, utilisateurId);
 
     if (!partie) {
-      console.log(`Back: fetch partie ${partieId} not found`);
       res.status(404).json({ message: 'Partie non trouvée' });
       return ;
     }
-    console.log(`Back: fetch partie ${partieId} done`);
     res.json(partie);
   } catch (error) {
-    console.log(`Back: fetch partie ${partieId} error`);
     console.error(error);
     res.status(500).json({ message: 'Erreur serveur', error });
   }
 });
+
+// Vérifie si l'utilisateur est bien membre de la partie
 router.get('/:id/membre', verifierToken , async (req, res) => {
   const partieId = req.params.id;
-  const utilisateurId = (req as RequestAvecUtilisateur).user!.id;
+  const utilisateurId = (req as RequestAvecUtilisateur).user!.id;  
 
 
-  console.log(`Back: fetch partie ${partieId}`);
   try {
     const partie = await getPartiePourUtilisateur(partieId, utilisateurId);
     const payload = {
-      partieId: partieId, // Remplacez par l'ID de la partie
-      utilisateurId: utilisateurId, // Remplacez par l'ID de l'utilisateur
-  };
+      partieId: partieId, 
+      utilisateurId: utilisateurId, 
+  }; 
     const estmembre = await trouverMembreEquipe(payload);
 
     if (!partie || !estmembre) {
-      console.log(`Back: fetch partie ${partieId} not found Ou pas membre`);
       res.status(404).json({ message: 'Partie non trouvée' });
       return ;
     }
-    console.log(`Back: fetch partie ${partieId} done`);
     res.json(true);
   } catch (error) {
-    console.log(`Back: fetch partie ${partieId} error`);
     console.error(error);
     res.status(500).json({ message: 'Erreur serveur', error });
   }
 });
 
+
+// Route pour récupérer un indice
 router.get('/:id/indice', verifierToken , async (req, res) => {
   const partieId = req.params.id;
 
@@ -72,10 +68,8 @@ router.get('/:id/indice', verifierToken , async (req, res) => {
     //   res.status(404).json({ message: 'indice non trouvée' });
     //   return ;
     // }
-    console.log(`Back: fetch indice de la partie ${partieId} done`);
     res.json(indice);
   } catch (error) {
-    console.log(`Back: fetch indice de la partie  ${partieId} error`);
     console.error(error);
     res.status(500).json({ message: 'Erreur serveur', error });
   }

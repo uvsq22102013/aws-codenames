@@ -19,6 +19,7 @@ router.post("/create", verifierToken, async (req, res) => {
     const createurId = utilisateurReq.user.id;
     const { recaptchaToken, language } = req.body;
 
+    // Récupère la partie dans laquelle le joueur est déjà
     const joueurDansPartie = await prisma.membreEquipe.findFirst({
         where: { utilisateurId: utilisateurReq.user.id },
         include: { partie: true }, 
@@ -64,6 +65,7 @@ router.post("/create", verifierToken, async (req, res) => {
 router.post("/join-game", verifierToken, async (req: Request, res: Response): Promise<void> => {
     const { roomCode, recaptchaToken, utilisateurId } = req.body;
 
+    // Récupère la partie dans laquelle le joueur est déjà
     const joueurDansPartie = await prisma.membreEquipe.findFirst({
         where: { utilisateurId: utilisateurId },
         include: { partie: true }, 
@@ -72,11 +74,14 @@ router.post("/join-game", verifierToken, async (req: Request, res: Response): Pr
     const utilisateur = await prisma.utilisateur.findUnique({
         where: { id: utilisateurId },
     });
+
+    // Renvoie l'erreur si le joueur est déjà dans une partie
     if (joueurDansPartie) {
         res.status(400).json({ error: "Deja dans une partie", partieId: joueurDansPartie.partie.id });
         return;
     }
 
+    // Vérification du score du captcha
     const captchaResult = await verifyCaptcha(recaptchaToken);
     if (!captchaResult || !captchaResult.success || captchaResult.score < 0.6) {
         res.status(403).json({ error: "Échec de la vérification reCAPTCHA" });
@@ -105,7 +110,7 @@ router.post("/join-game", verifierToken, async (req: Request, res: Response): Pr
             res.status(400).json({ error: "Utilisateur ID invalide" });
             return;
         }
-
+        
         await prisma.membreEquipe.create({
             data: {
               partieId: game.id,
